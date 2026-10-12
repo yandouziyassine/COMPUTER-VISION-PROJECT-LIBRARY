@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finger Paint</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      margin: 0;
+      padding: 20px;
+    }
+    
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #1e1e1e;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    h1 { margin: 0; font-size: 24px; }
+    .dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background-color: #ef4444; transition: background-color 0.3s;
+    }
+    .dot.live { background-color: #4ade80; }
+    
+    /* Buttons */
+    .btn-group { display: flex; gap: 10px; }
+    button {
+      border: none; padding: 10px 16px; border-radius: 6px;
+      font-weight: bold; cursor: pointer; transition: opacity 0.2s;
+    }
+    button:hover { opacity: 0.8; }
+    .btn-cam { background-color: #3b82f6; color: white; }
+    .btn-quit { background-color: #ef4444; color: white; }
+    
+    /* Main Layout (Vertical Flexbox) */
+    .main-layout {
+      display: flex;
+      flex-direction: column; /* Empile les éléments de haut en bas */
+      gap: 20px;
+    }
+
+    /* Video Section (Takes full width) */
+    .video-section {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background-color: #1e1e1e; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      width: 100%;
+      box-sizing: border-box; /* S'assure que le padding ne déborde pas de la page */
+    }
+    /* La caméra s'adapte à la largeur du conteneur sans se déformer */
+    .video-section img { max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #333; }
+    
+    /* Guide Section (Takes full width, sits below) */
+    .guide-section {
+      background-color: #1e1e1e; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .guide-section h2 { margin-top: 0; color: #4ade80; border-bottom: 1px solid #333; padding-bottom: 10px; }
+    .guide-section ul { padding-left: 20px; line-height: 1.6; color: #d1d5db; }
+    .guide-section li { margin-bottom: 12px; }
+    .highlight { color: #60a5fa; font-weight: bold; }
+
+    /* Status Panel */
+    .status-panel {
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; margin-top: 20px;
+      padding: 15px; background-color: #1e1e1e; border-radius: 8px; font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+        <h1>Finger Paint</h1>
+        <div id="live-dot" class="dot"></div>
+        <span id="conn-label" style="font-weight: 500; font-size: 14px; color: #ef4444;">Connecting...</span>
+    </div>
+    
+    <div class="btn-group">
+        <button id="btn-camera" class="btn-cam">Disable Camera</button>
+        <button id="btn-quit" class="btn-quit">Exit Application</button>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    
+    <div class="video-section">
+      <img id="video-stream" src="/video_feed" alt="Video stream" onload="onStreamLoad()" onerror="onStreamError()"/>
+      <div id="offline-msg" style="display: none; color: #ef4444; margin-top: 15px; font-weight: bold;">
+          Video stream disconnected.
+      </div>
+      
+      <div class="status-panel" style="width: 100%; box-sizing: border-box;">
+        <div>FPS: <span id="stat-fps" style="color: #a0a0a0;">0</span></div>
+        <div>Mode: <span id="stat-mode" style="color: #a0a0a0;">-</span></div>
+        <div>Color: <span id="stat-color" style="color: #a0a0a0;">-</span></div>
+        <div>Eraser: <span id="stat-eraser" style="color: #a0a0a0;">Off</span></div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h2>User Guide</h2>
+      <p>Place your hand in front of the camera to start interacting with the virtual canvas.</p>
+      
+      <ul>
+        <li><span class="highlight">Draw:</span> Raise your index finger. The tip of your finger acts as your brush.</li>
+        <li><span class="highlight">Erase (Gesture):</span> Use the erase mode by forming the appropriate gesture (e.g., two fingers up or an open hand, depending on your setup).</li>
+        <li><span class="highlight">Change Color:</span> Hover your virtual cursor over the color buttons located in the on-screen toolbar.</li>
+        <li><span class="highlight">Toggle Eraser (Button):</span> Touch the eraser icon in the virtual toolbar to switch to eraser mode.</li>
+        <li><span class="highlight">Clear All:</span> Touch the "Clear" button in the toolbar to wipe the entire canvas.</li>
+      </ul>
+      
+      <div style="margin-top: 30px; padding: 15px; background-color: #2a2a2a; border-radius: 6px; font-size: 14px;">
+        <strong>Tip:</strong> Ensure you have good lighting in your room so that the hand tracking remains optimal and smooth.
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const dot      = document.getElementById('live-dot');
+    const connLbl  = document.getElementById('conn-label');
+    const offMsg   = document.getElementById('offline-msg');
+    const statFps  = document.getElementById('stat-fps');
+    const statMode = document.getElementById('stat-mode');
+    const statClr  = document.getElementById('stat-color');
+    const statErs  = document.getElementById('stat-eraser');
+
+    function onStreamLoad() {
+      dot.classList.add('live');
+      connLbl.textContent = 'Live';
+      connLbl.style.color = '#4ade80';
+      offMsg.style.display = 'none';
+    }
+
+    function onStreamError() {
+      dot.classList.remove('live');
+      connLbl.textContent = 'Disconnected';
+      connLbl.style.color = '#ef4444';
+      offMsg.style.display = 'block';
+    }
+
+    const modeColors = { DRAW: '#4ade80', ERASE: '#60a5fa', IDLE: '#a0a0a0' };
+
+    async function pollStatus() {
+      try {
+        const res  = await fetch('/status');
+        if (!res.ok) throw new Error("Server unreachable");
+        const data = await res.json();
+
+        statFps.textContent  = data.fps;
+        statMode.textContent = data.mode;
+        statMode.style.color = modeColors[data.mode] || '#fff';
+        statClr.textContent  = data.color;
+        statErs.textContent  = data.eraser_mode ? 'On' : 'Off';
+        statErs.style.color  = data.eraser_mode ? '#60a5fa' : '#a0a0a0';
+      } catch (e) {
+        onStreamError();
+      }
+    }
+
+    // Status polling loop (every 500ms)
+    setInterval(pollStatus, 500);
+
+    // --- Camera Button Handling ---
+    const btnCamera = document.getElementById('btn-camera');
+    if (btnCamera) {
+      btnCamera.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/toggle_camera', { method: 'POST' });
+          const data = await res.json();
+          
+          if (data.camera_active) {
+            btnCamera.textContent = "Disable Camera";
+            btnCamera.style.backgroundColor = "#3b82f6"; // Blue
+          } else {
+            btnCamera.textContent = "Enable Camera";
+            btnCamera.style.backgroundColor = "#10b981"; // Green
+          }
+        } catch (error) {
+          console.error("Error toggling camera:", error);
+        }
+      });
+    }
+
+    // --- Quit Button Handling ---
+    const btnQuit = document.getElementById('btn-quit');
+    if (btnQuit) {
+      btnQuit.addEventListener('click', async () => {
+        if (confirm("Are you sure you want to stop the server and exit the application?")) {
+          try {
+            await fetch('/quit', { method: 'POST' });
+            document.body.innerHTML = `
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #121212;">
+                <h1 style="color: #4ade80;">Server stopped successfully.</h1>
+                <p style="margin-top: 10px; color: #a0a0a0;">You can now close this tab or window.</p>
+              </div>
+            `;
+          } catch (error) {
+            console.error("Error attempting to quit:", error);
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

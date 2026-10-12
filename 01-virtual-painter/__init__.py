@@ -1,0 +1,1 @@
+# This file makes the 'FingerPaint' directory a Python package.

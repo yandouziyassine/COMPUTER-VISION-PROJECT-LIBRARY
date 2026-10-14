@@ -1,0 +1,28 @@
+{
+ "detection": {
+  "mAP50": 0.709,
+  "mAP50-95": 0.4612,
+  "per_class": {
+   "ball": {
+    "AP50": 0.4384,
+    "AP50-95": 0.2135
+   },
+   "player": {
+    "AP50": 0.9795,
+    "AP50-95": 0.7088
+   }
+  },
+  "ms_per_image": 60.0
+ },
+ "teams": {
+  "frames": 130,
+  "frames_scored": 121,
+  "mean_silhouette": 0.803,
+  "mean_share_other": 0.185,
+  "note": "no team ground truth; silhouette in [-1, 1], higher = cleaner color split"
+ },
+ "possession": {
+  "frames_with_ball_and_owner": 41,
+  "frames": 130
+ }
+}

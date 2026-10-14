@@ -4,7 +4,7 @@ import pytest
 
 np = pytest.importorskip("numpy")
 
-from conftest import load_module  # noqa: E402
+from conftest import load_defs, load_module  # noqa: E402
 
 m = load_module("14", "metrics.py")
 K = (500.0, 500.0, 320.0, 240.0)
@@ -49,3 +49,24 @@ def test_eval_mask_applies_eigen_crop_and_range():
     gt[200, 200] = 12.0
     mask = m.eval_mask(gt)
     assert not mask[0, 0] and not mask[100, 100] and not mask[200, 200] and mask[300, 300]
+
+
+def test_poster_quad_lies_inside_the_wall():
+    cv2 = pytest.importorskip("cv2")
+    poster = load_defs("14", "poster_test.py", ["wall_plane", "poster_quad"],
+                       {"np": np, "cv2": cv2, "backproject": m.backproject, "fit_plane": m.fit_plane})
+    z = np.full((480, 640), 3.0)                       # fronto-parallel wall 3 m away
+    wall = np.zeros((480, 640), bool)
+    wall[100:400, 150:550] = True
+    quad = poster.poster_quad(wall, z, K)
+    assert quad is not None
+    qx, qy = quad[:, 0].round().astype(int), quad[:, 1].round().astype(int)
+    assert wall[qy.clip(0, 479), qx.clip(0, 639)].all()
+
+
+def test_intrinsics_from_fov_and_from_35mm_focal():
+    meas = load_defs("14", "measure.py", ["DEFAULT_FOV", "intrinsics_from_fov", "intrinsics_from_35mm"], {"np": np})
+    fx, fy, cx, cy = meas.intrinsics_from_fov(640, 480, 90.0)
+    assert fx == pytest.approx(320.0) and (cx, cy) == (320.0, 240.0)
+    fx, *_ = meas.intrinsics_from_35mm(4000, 3000, 36.0)          # 36 mm equivalent = sensor width
+    assert fx == pytest.approx(4000.0)

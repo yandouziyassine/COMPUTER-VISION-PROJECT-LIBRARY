@@ -1,0 +1,19 @@
+{
+ "video": "vehicles.mp4",
+ "resolution": [
+  3840,
+  2160
+ ],
+ "frames_processed": 538,
+ "processing_fps": 3.43,
+ "line_in": 2,
+ "line_out": 5,
+ "unique_tracks": 19,
+ "tracks_by_class": {
+  "car": 10,
+  "truck": 6,
+  "bus": 3
+ },
+ "mean_speed_kmh": 108.5,
+ "median_speed_kmh": 119.1
+}

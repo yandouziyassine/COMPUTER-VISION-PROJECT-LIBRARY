@@ -1,0 +1,5 @@
+ultralytics
+supervision<0.31
+opencv-python
+numpy
+pillow

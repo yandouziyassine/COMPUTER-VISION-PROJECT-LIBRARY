@@ -229,3 +229,5 @@ outputs/
 /*.exe
 /*.pdf
 rf-venv/
+# Ultralytics settings/fonts created next to a script when it runs before common.paths
+**/Ultralytics/

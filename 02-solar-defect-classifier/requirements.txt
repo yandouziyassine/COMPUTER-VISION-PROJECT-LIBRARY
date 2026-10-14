@@ -1,0 +1,8 @@
+torch
+torchvision
+timm
+grad-cam
+scikit-learn
+matplotlib
+pillow
+gradio

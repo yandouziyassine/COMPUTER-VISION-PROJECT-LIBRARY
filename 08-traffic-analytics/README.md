@@ -14,7 +14,7 @@ On the 4K sample highway video (538 frames, ~21 s):
 |---|---|
 | Vehicles tracked (unique IDs) | 19 (10 cars, 6 trucks, 3 buses) |
 | Counting line crossings | 2 in · 5 out |
-| Median / mean speed | 119 / 109 km/h (plausible for a 130 km/h motorway) |
+| Median / mean speed | 119 / 109 km/h as calibrated; **≈ 132 / 120 km/h** after the lane-marking check below |
 | Processing speed | 3.4 FPS on CPU at 4K input (YOLO at 960 px) |
 
 <p float="left">
@@ -23,6 +23,25 @@ On the 4K sample highway video (538 frames, ~21 s):
 </p>
 
 *Left: tracked vehicles with IDs, speeds and the counting line. Right: accumulated traffic heatmap.*
+
+### Calibration check: the road's own ruler
+
+Speeds depend on one assumption: that the road polygon is a 25 m × 250 m patch. There is no radar data for this
+video, but the road carries two rulers of its own. [`calibration_check.py`](calibration_check.py) removes the
+cars (median of 25 frames), warps the road to a bird's-eye view with the same calibration, finds the white
+markings and measures them in "calibrated meters":
+
+![calibration check](docs/calibration_check.jpg)
+
+| Ruler | Measured with the current calibration | Typical European motorway | Implied correction |
+|---|---|---|---|
+| Lane width (4 lanes, both carriageways) | 3.42 m | 3.75 m | ×1.10 across |
+| Dashed lane line: dash + gap period | 16.2 m (dashes 6.1–6.4 m) | 6 m + 12 m = 18 m | ×1.11 along |
+
+Two independent measurements agree: the patch is about **10 % larger** than assumed, so the speeds above are
+~10 % low. Corrected, the median becomes **≈ 132 km/h** (mean ≈ 120 km/h), right at the motorway's 130 km/h
+limit. Caveat: the standards are typical values, not confirmed for this exact road; the measured dash length
+(~6 m) is consistent with the 6 m + 12 m pattern.
 
 ## How it works
 
@@ -63,10 +82,11 @@ camera, change `SOURCE` (4 road corners in pixels), `TARGET_W/H` (their real siz
 
 ## What I learned / what didn't work
 
-- **Speed is only as good as the calibration.** The 25 m × 250 m road size is an estimate; a
-  10 % error there is a 10 % speed error. Real deployments measure lane markings
-  (dashed lines have standard lengths) to calibrate. The speeds are also **not validated** against
-  ground truth (no radar/GPS data for this video): they're plausible, not measured.
+- **Speed is only as good as the calibration.** The 25 m × 250 m road size was an estimate; measuring the lane
+  markings showed it was ~10 % off, which is a 10 % speed error. The speeds are still **not validated** against
+  ground truth (no radar/GPS data for this video); the markings make them consistent, not measured.
+- **Median of frames is a free background model.** Cars move, markings don't: the per-pixel median of 25 frames
+  spread over 21 s gives an empty road to measure.
 - A code review found the road rectangle mapped 250 m to 249 units (speeds ~0.4 % low). Fixed in the
   code; the numbers above come from the run before the fix.
 - **Far vehicles are the weak point.** At the top of the frame cars are a few pixels tall, so the

@@ -1,0 +1,61 @@
+{
+ "assumed_patch_m": [
+  25,
+  250
+ ],
+ "marking_x_m": [
+  3.3,
+  6.6,
+  10.0,
+  11.4,
+  13.13,
+  14.3,
+  14.85,
+  18.35,
+  21.85
+ ],
+ "spacing_between_markings_m": [
+  3.3,
+  3.4,
+  1.4,
+  1.73,
+  1.17,
+  0.55,
+  3.5,
+  3.5
+ ],
+ "dashed_lines": [
+  {
+   "x_m": 6.6,
+   "dash_m": 6.05,
+   "gap_m": 10.05,
+   "period_m": 16.1,
+   "n_dashes": 15
+  },
+  {
+   "x_m": 13.13,
+   "dash_m": 1.55,
+   "gap_m": 2.4,
+   "period_m": 3.95,
+   "n_dashes": 14
+  },
+  {
+   "x_m": 14.3,
+   "dash_m": 3.52,
+   "gap_m": 2.45,
+   "period_m": 5.97,
+   "n_dashes": 18
+  },
+  {
+   "x_m": 18.35,
+   "dash_m": 6.4,
+   "gap_m": 9.95,
+   "period_m": 16.35,
+   "n_dashes": 15
+  }
+ ],
+ "lane_width_m": 3.42,
+ "dash_period_m": 16.23,
+ "across_scale_if_3.75m_lanes": 1.096,
+ "along_scale_if_18m_period": 1.109
+}

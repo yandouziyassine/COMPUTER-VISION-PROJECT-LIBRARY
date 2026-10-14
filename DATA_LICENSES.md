@@ -13,6 +13,8 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 |---|---|---|---|
 | 02 | Faulty Solar Panel images (Kaggle) | ❓ | License not recorded when downloaded; check the Kaggle dataset page |
 | 03 | ICDAR 2019 SROIE receipts (HF mirror `jsdnrs/ICDAR2019-SROIE`) | ✅ CC BY 4.0 | Attribution: Huang et al., ICDAR 2019 |
+| 05 | Sign Language MNIST (Kaggle `datamunge/sign-language-mnist`) | ✅ CC0 1.0 | |
+| 05 | MediaPipe Hand Landmarker model (Google) | ✅ Apache-2.0 | Downloaded by `app.py` |
 | 06 | Vehicle Registration Plates (Roboflow / Augmented Startups, HF `keremberke/license-plate-object-detection`) | ✅ CC BY 4.0 | |
 | 06 | UK Car Plate VRN dataset (HF `spawn99/UK-Car-Plate-VRN-Dataset`) | ✅ MIT | Synthetic plates |
 | 07 | Hard Hat Workers (Roboflow, HF `keremberke/hard-hat-detection`) | ✅ CC BY 4.0 | |
@@ -26,6 +28,8 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 | 16, 14, 17, 18 | COCO val2017 images + annotations | ✅ CC BY 4.0 annotations | Images: Flickr, under their original licenses |
 | 18 | VQAv2 questions/answers (visualqa.org) | ✅ CC BY 4.0 | |
 | 20 | Football players & ball (Roboflow, HF `keremberke/football-object-detection`) | ✅ CC BY 4.0 | |
+| 20 | Football pitch keypoints (Kaggle `danielmachniak/football-pitch-keypoints-detection`) | ✅ MIT | 32-landmark layout as in Roboflow's open `sports` toolkit |
+| 14 | NYU Depth V2 labeled subset (Silberman et al., ECCV 2012) | ⚠️ research use | Planned upgrade; evaluated locally, never redistributed |
 
 ## Pretrained models
 

@@ -1,0 +1,44 @@
+{
+ "vqav2_val_subset": {
+  "n": 300,
+  "pool_questions_on_our_images": 26333,
+  "accuracy": 0.583,
+  "s_per_question": 2.09,
+  "accuracy_yes/no": 0.695,
+  "n_yes/no": 118,
+  "accuracy_number": 0.48,
+  "n_number": 34,
+  "accuracy_other": 0.518,
+  "n_other": 148
+ },
+ "ur_fall_zero_shot": {
+  "videos": 70,
+  "frames_per_video": 8,
+  "sensitivity": 0.033,
+  "specificity": 1.0,
+  "accuracy": 0.586,
+  "s_per_video": 10.8
+ },
+ "ur_fall_zero_shot_lying": {
+  "question": "These frames are from one video, in time order. In the last frames, is the person lying on the floor? Answer yes or no.",
+  "videos": 70,
+  "frames_per_video": 8,
+  "sensitivity": 0.133,
+  "specificity": 0.975,
+  "accuracy": 0.614,
+  "s_per_video": 14.7
+ },
+ "vqav2_val_subset_standard": {
+  "prompt": "Answer the question using a single word or phrase.",
+  "n": 300,
+  "pool_questions_on_our_images": 26333,
+  "accuracy": 0.67,
+  "s_per_question": 2.46,
+  "accuracy_yes/no": 0.847,
+  "n_yes/no": 118,
+  "accuracy_number": 0.461,
+  "n_number": 34,
+  "accuracy_other": 0.577,
+  "n_other": 148
+ }
+}

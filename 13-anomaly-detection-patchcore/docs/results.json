@@ -1,0 +1,32 @@
+{
+ "bottle": {
+  "image_auroc": 1.0,
+  "pixel_auroc": 0.9835,
+  "n_train": 209,
+  "n_test": 83,
+  "patches_seen": 163856,
+  "memory_bank": 16385,
+  "fit_seconds": 625.0,
+  "ms_per_test_image": 394.0
+ },
+ "metal_nut": {
+  "image_auroc": 0.999,
+  "pixel_auroc": 0.9853,
+  "n_train": 220,
+  "n_test": 115,
+  "patches_seen": 172480,
+  "memory_bank": 17248,
+  "fit_seconds": 578.2,
+  "ms_per_test_image": 565.8
+ },
+ "grid": {
+  "image_auroc": 0.9766,
+  "pixel_auroc": 0.9766,
+  "n_train": 264,
+  "n_test": 78,
+  "patches_seen": 206976,
+  "memory_bank": 20697,
+  "fit_seconds": 843.4,
+  "ms_per_test_image": 529.6
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "n_test": 100,
+ "dice_mean": 0.8972,
+ "iou_mean": 0.8333,
+ "dice_median": 0.9369,
+ "share_dice_above_0.8": 0.87,
+ "share_dice_below_0.5": 0.03,
+ "ms_per_image_cpu_256px": 69.1
+}

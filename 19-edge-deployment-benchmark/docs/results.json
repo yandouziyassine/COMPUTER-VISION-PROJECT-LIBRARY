@@ -1,0 +1,116 @@
+{
+ "system": {
+  "cpu": "Intel64 Family 6 Model 189 Stepping 1, GenuineIntel",
+  "openvino_devices": {
+   "CPU": "Intel(R) Core(TM) Ultra 7 258V",
+   "GPU": "Intel(R) Arc(TM) 140V GPU (16GB) (iGPU)",
+   "NPU": "Intel(R) AI Boost"
+  },
+  "torch": "2.14.1+cpu",
+  "onnxruntime": "1.23.2",
+  "openvino": "2026.4.1-22982-e213a147257-releases/2026/4",
+  "model": "yolo11n",
+  "input": [
+   1,
+   3,
+   640,
+   640
+  ],
+  "runs": 100,
+  "cpu_threads": 4,
+  "accuracy_set": "first 500 COCO val2017 images (held out)",
+  "int8_calibration_set": "COCO128 (train2017)"
+ },
+ "latency": [
+  {
+   "mean_ms": 141.23,
+   "p50_ms": 119.07,
+   "p90_ms": 225.13,
+   "fps": 7.1,
+   "runtime": "PyTorch",
+   "precision": "FP32",
+   "device": "CPU"
+  },
+  {
+   "mean_ms": 61.22,
+   "p50_ms": 56.02,
+   "p90_ms": 66.51,
+   "fps": 16.3,
+   "runtime": "ONNX Runtime",
+   "precision": "FP32",
+   "device": "CPU"
+  },
+  {
+   "mean_ms": 47.16,
+   "p50_ms": 42.81,
+   "p90_ms": 60.27,
+   "fps": 21.2,
+   "runtime": "OpenVINO",
+   "precision": "FP32",
+   "device": "CPU"
+  },
+  {
+   "mean_ms": 21.52,
+   "p50_ms": 20.56,
+   "p90_ms": 26.15,
+   "fps": 46.5,
+   "runtime": "OpenVINO",
+   "precision": "INT8",
+   "device": "CPU"
+  },
+  {
+   "mean_ms": 5.92,
+   "p50_ms": 5.76,
+   "p90_ms": 6.57,
+   "fps": 169.0,
+   "runtime": "OpenVINO",
+   "precision": "FP16",
+   "device": "GPU"
+  },
+  {
+   "mean_ms": 5.38,
+   "p50_ms": 5.28,
+   "p90_ms": 6.25,
+   "fps": 185.9,
+   "runtime": "OpenVINO",
+   "precision": "INT8",
+   "device": "GPU"
+  },
+  {
+   "mean_ms": 6.35,
+   "p50_ms": 5.99,
+   "p90_ms": 6.7,
+   "fps": 157.4,
+   "runtime": "OpenVINO",
+   "precision": "FP16",
+   "device": "NPU"
+  },
+  {
+   "mean_ms": 6.15,
+   "p50_ms": 6.09,
+   "p90_ms": 6.65,
+   "fps": 162.5,
+   "runtime": "OpenVINO",
+   "precision": "INT8",
+   "device": "NPU"
+  }
+ ],
+ "accuracy": {
+  "PyTorch FP32": {
+   "mAP50-95": 0.4181,
+   "mAP50": 0.5762
+  },
+  "ONNX FP32": {
+   "mAP50-95": 0.4241,
+   "mAP50": 0.5791
+  },
+  "OpenVINO FP32": {
+   "mAP50-95": 0.424,
+   "mAP50": 0.5793
+  },
+  "OpenVINO INT8": {
+   "mAP50-95": 0.4231,
+   "mAP50": 0.5768
+  }
+ }
+}

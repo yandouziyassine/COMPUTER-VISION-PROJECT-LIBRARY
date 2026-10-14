@@ -1,0 +1,10 @@
+torch
+ultralytics
+onnx
+onnxslim
+onnxruntime
+openvino
+nncf
+pycocotools     # builds the held-out COCO val2017 accuracy set
+numpy
+matplotlib

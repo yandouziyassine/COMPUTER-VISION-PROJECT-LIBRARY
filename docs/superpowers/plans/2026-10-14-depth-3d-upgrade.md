@@ -89,7 +89,7 @@ def test_distance_between_backprojected_pixels():
 def test_plane_fit_and_plane_depth():
     fx, fy, cx, cy = K
     v, u = np.mgrid[100:200, 200:300]
-    z = 3.0 + 0.002 * (u - cx)                         # tilted wall
+    z = 1.0 / (1 / 3.0 + 0.0002 * (u - cx))            # tilted wall: for a plane, 1/depth is linear in pixels
     pts = m.backproject(u.ravel(), v.ravel(), z.ravel(), K)
     n, d = m.fit_plane(pts)
     assert np.allclose(m.plane_depth(u, v, n, d, K), z, atol=1e-6)

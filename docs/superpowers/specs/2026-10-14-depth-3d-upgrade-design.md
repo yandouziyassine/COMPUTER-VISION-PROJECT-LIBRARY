@@ -1,6 +1,6 @@
 # Project 14 upgrade: where machine 3D vision fails, and measuring the world from one photo
 
-Date: 2026-10-14 · Status: proposed, waiting for the owner's approval
+Date: 2026-10-14 · Status: approved by the owner on 2026-10-14, with one addition (Part C below)
 
 ## Goal
 
@@ -56,9 +56,26 @@ Evaluation uses the standard NYU test split (654 images). Everything runs on the
 5. **Measuring app** (`measure_app.py`, Gradio): upload a photo, click two points, get meters, with an
    uncertainty band taken from step 3. Optional: a reference length to calibrate.
 
+## Part C · What you see vs what the computer "sees" (owner request)
+
+A visual section, first in the README, that makes the gap between human and machine 3D perception obvious at a
+glance. For each example, one row of panels:
+
+1. **What you see**: the photo.
+2. **What the computer sees**: the raw numbers it receives (a zoomed pixel grid with values: no depth, no
+   objects, only brightness).
+3. **What it infers**: the predicted depth map (near = bright).
+4. **The truth** (NYU examples only): the measured depth from the Kinect sensor, plus an error map.
+5. **In 3D**: the point cloud re-rendered from a side view, where errors become visible as bent walls or
+   posters bulging out of the wall.
+
+Examples are chosen to tell the story: one where the model is right, one mirror or window (failure), one poster
+composite from Part A (the illusion), one real illusion photo. Built by `see_vs_infer.py`; the same panels feed
+the website card and a short GIF.
+
 ## Deliverables
 
-- Code: `benchmark.py`, `failures.py`, `poster_test.py`, `measure.py`, `measure_eval.py`, `measure_app.py`,
+- Code: `benchmark.py`, `failures.py`, `poster_test.py`, `see_vs_infer.py`, `measure.py`, `measure_eval.py`, `measure_app.py`,
   existing `depth3d.py` / `view.py` unchanged.
 - Figures: error-by-class bar chart, poster-test examples and illusion-score distribution, illusion gallery,
   measurement-error curve.

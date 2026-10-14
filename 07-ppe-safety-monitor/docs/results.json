@@ -1,0 +1,55 @@
+{
+ "object_level": {
+  "mAP50": 0.8277,
+  "mAP50-95": 0.4569,
+  "per_class": {
+   "hardhat": {
+    "AP50": 0.8462,
+    "AP50-95": 0.4391
+   },
+   "no-hardhat": {
+    "AP50": 0.8092,
+    "AP50-95": 0.4747
+   }
+  },
+  "ms_per_image": 50.7
+ },
+ "site_alerts": {
+  "images": 2001,
+  "images_with_violation": 413,
+  "sweep": [
+   {
+    "conf_threshold": 0.25,
+    "alert_precision": 0.878,
+    "alert_recall": 0.908,
+    "TP": 375,
+    "FP": 52,
+    "FN": 38
+   },
+   {
+    "conf_threshold": 0.4,
+    "alert_precision": 0.92,
+    "alert_recall": 0.831,
+    "TP": 343,
+    "FP": 30,
+    "FN": 70
+   },
+   {
+    "conf_threshold": 0.5,
+    "alert_precision": 0.958,
+    "alert_recall": 0.77,
+    "TP": 318,
+    "FP": 14,
+    "FN": 95
+   },
+   {
+    "conf_threshold": 0.6,
+    "alert_precision": 0.97,
+    "alert_recall": 0.552,
+    "TP": 228,
+    "FP": 7,
+    "FN": 185
+   }
+  ]
+ }
+}

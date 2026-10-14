@@ -36,13 +36,13 @@ Everything else is explained here. Formulas are kept short and always come with 
 15. [Classic machine learning: trees and gradient boosting](#15-classic-machine-learning-trees-and-gradient-boosting-15)
 16. [Measuring a classifier](#16-measuring-a-classifier-02-07-10-15)
 17. [Threshold-free metrics: ROC and AUROC](#17-threshold-free-metrics-roc-and-auroc-13-15)
-18. [Data leakage and grouped cross-validation](#18-data-leakage-and-grouped-cross-validation-15-10)
+18. [Data leakage and grouped cross-validation](#18-data-leakage-and-grouped-cross-validation-05-10-15)
 19. [Unsupervised learning: clustering](#19-unsupervised-learning-clustering-20)
 
 **Part 4 · Deep learning**
 20. [Neural networks and gradient descent](#20-neural-networks-and-gradient-descent-02-11-12)
-21. [Convolutional neural networks (CNNs)](#21-convolutional-neural-networks-cnns-02-11-12-13)
-22. [Training in practice](#22-training-in-practice-02-11-12)
+21. [Convolutional neural networks (CNNs)](#21-convolutional-neural-networks-cnns-02-05-11-12-13)
+22. [Training in practice](#22-training-in-practice-02-05-11-12)
 23. [Transfer learning and fine-tuning](#23-transfer-learning-and-fine-tuning-02-06-07-09-11-12-20)
 24. [Looking inside: Grad-CAM](#24-looking-inside-grad-cam-02)
 25. [Domain shift](#25-domain-shift-02-12-17)
@@ -416,7 +416,7 @@ above good ones almost perfectly, before any threshold is chosen (**13**). When 
 **precision–recall curve** and its area (average precision) are more informative; they reappear in detection
 (chapter 29).
 
-## 18. Data leakage and grouped cross-validation (15, 10)
+## 18. Data leakage and grouped cross-validation (05, 10, 15)
 
 **Data leakage** is when information from the test set sneaks into training, making results look better than they
 will be in reality. The most common form in vision is **near-duplicates across the split**:
@@ -429,6 +429,11 @@ The fix is to split by **group** (video, person, patient), not by image. Fall de
 **StratifiedGroupKFold**: each video sequence lives entirely in one fold, and every fold keeps a similar share of
 falls (**15**). LFW's official protocol likewise keeps identities separated between folds (**10**). A random
 seed fixed for every split makes results reproducible (**11**).
+
+When the groups are not recorded, you cannot split by them, and the test score becomes optimistic. Sign Language
+MNIST was generated from only 1,704 photos expanded into 34,627 images; a third of its test images are near
+copies of training images, and even a linear model on raw pixels scores ~99 % on those. A model can reach 100 %
+there and still fail on a new person's hand, so the project measures robustness instead (**05**).
 
 ## 19. Unsupervised learning: clustering (20)
 
@@ -472,7 +477,7 @@ Training repeats four steps on small **batches** of examples:
 One pass over the whole training set is an **epoch**. The final layer outputs **logits** (raw scores), turned
 into probabilities that sum to 1 by the **softmax** function.
 
-## 21. Convolutional neural networks (CNNs) (02, 11, 12, 13)
+## 21. Convolutional neural networks (CNNs) (02, 05, 11, 12, 13)
 
 A fully connected layer on a 224×224×3 image would need 150,528 weights *per neuron* and would not know that
 nearby pixels are related. **Convolutional layers** fix both: each layer learns a set of small kernels
@@ -488,13 +493,16 @@ nearby pixels are related. **Convolutional layers** fix both: each layer learns 
   objects. PatchCore deliberately uses **middle layers** (layers 2 and 3 of a WideResNet-50): local enough to
   point at a small scratch, abstract enough to ignore pixel noise (**13**).
 
+A small CNN trained **from scratch** is enough for tiny images: three conv blocks (28 → 14 → 7 → 3 pixels) read
+28×28 hand signs with ~0.4 M parameters (**05**).
+
 Famous architectures you will meet:
 - **ResNet** adds **skip connections** (each block outputs `input + f(input)`), which let gradients flow through
   very deep networks. ResNet-18 is used in **11** and **12**; WideResNet-50 in **13**.
 - **EfficientNet** scales depth, width and resolution together for a good accuracy/compute balance (**02**).
 - **Batch normalization** layers re-center and re-scale activations during training, which stabilizes it.
 
-## 22. Training in practice (02, 11, 12)
+## 22. Training in practice (02, 05, 11, 12)
 
 Getting a network to train well is a craft. The main tools:
 
@@ -508,6 +516,10 @@ Getting a network to train well is a craft. The main tools:
 - **Early stopping / checkpoint selection**: watch the validation metric each epoch and keep the best weights,
   not the last.
 - **Class imbalance**: weight the loss or resample so rare classes are not ignored.
+
+Augmentation is a **specification** of what the model should ignore, and it protects only against what it
+includes. In the sign-language project, training with rotations and shifts doubled accuracy on a 30° tilt, but
+the augmented model became *worse* under blur, which it had never seen (**05**).
 
 On a CPU, every one of these choices also has a **time** cost, which is why this repo leans on the next idea,
 transfer learning.
@@ -1060,6 +1072,7 @@ Computer vision watches people, so it carries real risks:
 | 01 Virtual painter | 1, 2, 33, 34 |
 | 02 Solar panel defects | 13, 14, 16, 20–25 |
 | 03 Document scanner + receipt OCR | 1–10, 41, 49 |
+| 05 Sign language translator | 18, 21, 22, 33, 52 |
 | 06 License plates | 23, 27–29, 41 |
 | 07 PPE safety monitor | 16, 23, 27–30 |
 | 08 Traffic analytics | 10, 28, 34–36 |

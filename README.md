@@ -1,6 +1,6 @@
 # Computer Vision Project Library
 
-**18 end-to-end computer vision projects**, from classical OpenCV to fine-tuned detectors, segmentation,
+**19 end-to-end computer vision projects**, from classical OpenCV to fine-tuned detectors, segmentation,
 3D, and foundation models, each **measured on a real benchmark** and documented with what worked,
 what didn't and why. Everything was trained and evaluated on **a laptop CPU** (Intel Core Ultra 7, no
 NVIDIA GPU), which shaped the engineering: transfer learning, careful evaluation, and deployment with
@@ -31,7 +31,7 @@ pixels to foundation models, each pointing to the projects where the concept is 
 | 02 | [Solar Panel Defects](02-solar-defect-classifier/) | 82.9 % test accuracy, 6 classes | Transfer learning, class imbalance, Grad-CAM (revealed shortcut learning) | ★★ |
 | 03 | [Document Scanner + Receipt OCR](03-document-scanner-ocr/) | Page found 68 % (0.6 % corner error); totals 78 % on clean scans | Classical page detection, perspective warp, OCR, synthetic test photos | ★★★ |
 | 04 | AI Gym Coach | — | *planned: needs videos with known rep counts* | 📋 |
-| 05 | Sign Language Translator | — | *planned: needs the Kaggle Sign Language MNIST files* | 📋 |
+| 05 | [Sign Language Translator](05-sign-language-translator/) | 99.9 % test, but 72 % at a 30° tilt; leakage audit | CNN from scratch, augmentation ablation, robustness curves, webcam app | ★★★ |
 | 06 | [License Plate Recognition](06-license-plate-recognition/) | Detection mAP50 0.983; 80–90 % of plates read exactly | YOLO11n fine-tuned on CPU, OCR, plate-format correction | ★★★ |
 | 07 | [PPE Safety Monitor](07-ppe-safety-monitor/) | mAP50 0.828; 90.8 % of violations flagged | YOLO fine-tuning, alert-level metrics, threshold choice | ★★ |
 | 08 | [Traffic Analytics](08-traffic-analytics/) | 19 vehicles tracked, speeds in km/h, 3.4 FPS at 4K | ByteTrack tracking, line counting, homography | ★★ |

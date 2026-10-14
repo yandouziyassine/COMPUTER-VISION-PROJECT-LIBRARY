@@ -1,0 +1,82 @@
+{
+ "videos": {
+  "falls": 30,
+  "daily_activities": 40,
+  "adl_with_lying_down": 16
+ },
+ "rule_based": {
+  "sensitivity": 0.8,
+  "specificity": 0.95,
+  "accuracy": 0.886,
+  "TP": 24,
+  "FN": 6,
+  "FP": 2,
+  "TN": 38,
+  "median_latency_s": 0.95,
+  "false_alarm_videos": [
+   "adl-06",
+   "adl-38"
+  ],
+  "missed_falls": [
+   "fall-12",
+   "fall-13",
+   "fall-16",
+   "fall-18",
+   "fall-22",
+   "fall-24"
+  ]
+ },
+ "learned_gradient_boosting_cv5": {
+  "sensitivity": 1.0,
+  "specificity": 0.8,
+  "accuracy": 0.886,
+  "TP": 30,
+  "FN": 0,
+  "FP": 8,
+  "TN": 32,
+  "median_latency_s": 0.6,
+  "false_alarm_videos": [
+   "adl-16",
+   "adl-17",
+   "adl-30",
+   "adl-31",
+   "adl-32",
+   "adl-33",
+   "adl-38",
+   "adl-39"
+  ],
+  "missed_falls": []
+ },
+ "learned_threshold_sweep": [
+  {
+   "threshold": 0.5,
+   "sensitivity": 1.0,
+   "specificity": 0.8,
+   "median_latency_s": 0.6
+  },
+  {
+   "threshold": 0.6,
+   "sensitivity": 0.967,
+   "specificity": 0.825,
+   "median_latency_s": 0.7
+  },
+  {
+   "threshold": 0.7,
+   "sensitivity": 0.967,
+   "specificity": 0.875,
+   "median_latency_s": 0.7
+  },
+  {
+   "threshold": 0.8,
+   "sensitivity": 0.967,
+   "specificity": 0.925,
+   "median_latency_s": 0.7
+  },
+  {
+   "threshold": 0.9,
+   "sensitivity": 0.967,
+   "specificity": 1.0,
+   "median_latency_s": 0.7
+  }
+ ]
+}

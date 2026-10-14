@@ -1,0 +1,8 @@
+ultralytics
+rapidocr-openvino
+openvino
+opencv-python
+numpy
+pyarrow
+pillow
+matplotlib

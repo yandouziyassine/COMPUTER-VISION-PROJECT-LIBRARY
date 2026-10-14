@@ -1,0 +1,36 @@
+{
+ "detection_test_882_images": {
+  "yolo11n_finetuned_here_1500_imgs_cpu": {
+   "mAP50": 0.9825,
+   "mAP50-95": 0.6862,
+   "precision": 0.9863,
+   "recall": 0.9572,
+   "ms_per_image": 47.2
+  },
+  "pretrained_morsetechlab_v1n": {
+   "mAP50": 0.9926,
+   "mAP50-95": 0.7169,
+   "precision": 0.9942,
+   "recall": 0.98,
+   "ms_per_image": 42.5
+  }
+ },
+ "ocr_uk_plates": {
+  "front_plate": {
+   "n": 300,
+   "exact_match_raw": 0.613,
+   "char_accuracy_raw": 0.905,
+   "exact_match_with_uk_syntax": 0.897,
+   "char_accuracy_with_uk_syntax": 0.95,
+   "ms_per_plate": 349.6
+  },
+  "augmented_front_plate": {
+   "n": 300,
+   "exact_match_raw": 0.503,
+   "char_accuracy_raw": 0.867,
+   "exact_match_with_uk_syntax": 0.803,
+   "char_accuracy_with_uk_syntax": 0.924,
+   "ms_per_plate": 190.3
+  }
+ }
+}

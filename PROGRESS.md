@@ -59,7 +59,7 @@ planned (login, dataset size, GPU or API key).
 |---|---|---|---|
 | ✅ | 10 | Face Recognition | DONE: YuNet + SFace (OpenCV zoo). LFW 10-fold 99.35 % ± 0.37, TAR@FAR0.1 % 98.8 %. Attendance CLI tested (2 enrolled + 1 unknown). Ethics section. Anti-spoofing not implemented |
 | ✅ | 12 | Satellite Land-Cover | DONE: EuroSAT RGB. ResNet-18 fine-tuned 98.07 % test (macro F1 0.981) vs CLIP zero-shot 47.4 % (domain shift) |
-| ✅ | 07 | PPE Safety Monitor | DONE: YOLO11n fine-tuned on CPU (1,500 imgs, 10 ep). Test mAP50 0.828. Site alerts @0.25: recall 90.8 % / precision 87.8 % |
+| ✅ | 07 | PPE Safety Monitor | DONE: YOLO11n fine-tuned on CPU (1,500 imgs, 10 ep). Test mAP50 0.828. Site alerts @0.25: recall 90.8 % / precision 87.8 %. **2026-10-14:** Kaggle T4 retrain on all 13,782 imgs, 50 ep (1.7 h): test mAP50 0.939, alerts 97.6 % / 96.2 % (missed 38 → 10) |
 | ✅ | 05 | Sign Language | DONE 2026-10-14 (Kaggle CLI download, CC0). CNN from scratch: test 99.9 % (aug) / 100 % (no aug) vs pixel logreg ~70 %. Leakage audit (dataset = 1,704 photos × 50 variations; 1/3 of test is near-copy of train). Robustness: aug doubles accuracy at 30° / 6 px shift, but is worse under blur (not in the augmentation). MediaPipe webcam app (not measured: no labeled webcam data) |
 | ✅ | 18 | Video Q&A | DONE: SmolVLM2-500M on CPU. VQAv2 (300 q): 67.0 % with the standard prompt (58.3 % with my first prompt). Zero-shot "did the person fall?": sensitivity 3–13 % vs ~97–100 % for project 15 |
 | ✅ | 09 | Retail Shelf Monitor | DONE: YOLO11n on 219 SKU-110K images (CPU, 30 ep, 960 px, max_det 1000). Test (488 imgs, 76k products): mAP50 0.838 / mAP50-95 0.487; count MAE 22.1 (13.3 %), under-counts. Gap rule mostly flags missed products (documented) |

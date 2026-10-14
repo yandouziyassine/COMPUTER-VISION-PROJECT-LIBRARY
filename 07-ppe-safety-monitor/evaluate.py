@@ -6,9 +6,11 @@
    precision / recall a safety manager actually cares about.
 
 Usage:
-    python evaluate.py
+    python evaluate.py                       # the laptop model (1,500 training images, CPU)
+    python evaluate.py --model full          # the Kaggle GPU model (all 13,782 training images)
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -27,13 +29,17 @@ from ultralytics import YOLO  # noqa: E402
 DATA = data_dir("ppe")
 OUT = output_dir("ppe")
 DOCS = Path(__file__).resolve().parent / "docs"
-WEIGHTS = OUT / "runs" / "yolo11n_ppe" / "weights" / "best.pt"
+RUNS = {"subset": "yolo11n_ppe", "full": "yolo11n_ppe_full"}
 TEST = DATA / "yolo" / "test"
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model", choices=list(RUNS), default="subset")
+    args = ap.parse_args()
+    suffix = "" if args.model == "subset" else f"_{args.model}"
     DOCS.mkdir(exist_ok=True)
-    model = YOLO(str(WEIGHTS))
+    model = YOLO(str(OUT / "runs" / RUNS[args.model] / "weights" / "best.pt"))
     m = model.val(
         data=str(DATA / "ppe_test.yaml"),
         imgsz=640,
@@ -88,7 +94,7 @@ def main():
         )
     res["site_alerts"] = {"images": len(images), "images_with_violation": int(truth.sum()), "sweep": sweep}
     print(json.dumps(res, indent=1))
-    (DOCS / "results.json").write_text(json.dumps(res, indent=1))
+    (DOCS / f"results{suffix}.json").write_text(json.dumps(res, indent=1))
 
     # Demo: violation images first (where an alert should fire), then compliant ones
     viol = [p for p, t in zip(images, truth) if t][::15][:4]
@@ -110,7 +116,7 @@ def main():
         ax.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         ax.axis("off")
     fig.tight_layout()
-    fig.savefig(DOCS / "examples.jpg", dpi=70)
+    fig.savefig(DOCS / f"examples{suffix}.jpg", dpi=70)
     plt.close(fig)
 
 

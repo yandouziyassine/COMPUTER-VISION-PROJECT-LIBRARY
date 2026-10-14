@@ -42,7 +42,7 @@ pixels to foundation models, each pointing to the projects where the concept is 
 | 11 | [Polyp Segmentation](11-medical-segmentation/) | Dice 0.897 / IoU 0.833 | U-Net, Dice + BCE loss | ★★ |
 | 12 | [Satellite Land-Cover](12-satellite-land-cover/) | 98.1 % fine-tuned vs 47.4 % zero-shot | Remote sensing, domain shift | ★★ |
 | 13 | [Anomaly Detection (PatchCore)](13-anomaly-detection-patchcore/) | Image AUROC 1.000 / 0.999 / 0.977 | Paper reimplemented from scratch | ★★★ |
-| 14 | [Monocular Depth → 3D](14-monocular-depth-3d/) | One photo → point cloud → new viewpoints | Depth estimation, back-projection, z-buffer rendering | ★ |
+| 14 | [Monocular Depth: where 3D vision fails](14-monocular-depth-3d/) | AbsRel 0.058 on NYU; mirrors 7× worse than walls; distances from one photo ±10 % with one known length | 4-model benchmark, failure map by surface, poster illusion test, metric measurement app | ★★★ |
 | 15 | [Fall Detection](15-fall-detection/) | ~97 % of falls caught in ~0.7 s | Pose estimation, temporal features, grouped CV | ★★★ |
 | 16 | [Text-to-Image Search](16-text-to-image-search/) | Recall@10 75.2 % on COCO 5k | CLIP embeddings, FAISS, web UI | ★★ |
 | 17 | [Zero-Shot Auto-Labeling](17-auto-labeling/) | mAP 0.558 zero-shot vs 0.473 supervised | Grounding DINO, SAM, COCO evaluation | ★★★ |

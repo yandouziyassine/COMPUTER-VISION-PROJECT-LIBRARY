@@ -4,3 +4,7 @@ open3d
 numpy
 pillow
 matplotlib
+h5py            # NYU Depth V2 .mat (HDF5)
+scipy           # NYU official split file
+opencv-python   # poster homography, distance transform
+gradio          # measure_app.py

@@ -936,7 +936,11 @@ produced by a teacher model trained on precise synthetic data). Important proper
 - Errors concentrate where the cues lie: mirrors, glass, textureless walls, unusual viewpoints, optical
   illusions.
 
-Project 14 turns the predicted depth into a point cloud and new views (chapter 12) (**14**).
+Project 14 turns the predicted depth into a point cloud and new views (chapter 12), and measures where depth
+models fail on 654 real rooms with a depth sensor as reference. On ordinary surfaces the error is ~6 %; **mirrors**
+are 7× worse (and the sensor is fooled too: it measures the reflected room); a wall-sized trompe-l'œil fools the
+model while a framed poster does not; and a "metric" model's distances are ~27 % off until one known length in
+the photo fixes the scale (**14**).
 
 ## 46. Vision-language models (18)
 

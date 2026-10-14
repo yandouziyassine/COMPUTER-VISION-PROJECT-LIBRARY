@@ -1,79 +1,202 @@
-# 14 · Monocular Depth → 3D
+# 14 · Monocular Depth: Where Machine 3D Vision Fails
 
-One ordinary photo in, 3D out. **Depth Anything V2** predicts a depth map from a single RGB image;
-every pixel is back-projected through a pinhole camera model into a colored **3D point cloud**,
-which is then re-rendered from new camera angles, a "3D photo" effect created from a 2D image.
+Computers are often said to have trouble seeing in 3D. This project measures **exactly where**. Four depth
+models read one ordinary photo and guess how far away every pixel is; I compare their guesses with a depth
+sensor on 654 real rooms, break the error down by material (mirrors, screens, windows, walls…), test them on
+optical illusions with a known answer, and then use the best model to **measure real distances from a single
+photo**, with the accuracy of that measurement reported.
 
-![3D photo sweep](docs/demo.gif)
+## What you see vs what the computer sees
 
-*Generated from one still photo: the camera "moves" around a scene that was only seen from one viewpoint.*
+![what you see vs what the computer sees](docs/see_vs_infer.jpg)
+
+You see a room. The computer receives only a grid of brightness numbers (second column, the 8 × 8 pixels at
+the image centre): no depth, no objects. From those numbers alone, the model *infers* depth (third column),
+which can be checked against a Kinect depth sensor (fourth, red = error) and turned into 3D (fifth).
+Row by row:
+
+1. **An ordinary room**: inference and sensor agree almost perfectly.
+2. **A mirror**: the model and the sensor disagree, and *both* are wrong in their own way (see the failure map).
+3. **A flat poster** pasted onto a wall: modern models keep it flat, older ones see into it (the poster test).
+4. **The Ames room**: a trapezoid room built to look like a box. The model, like a human, sees a box.
 
 ## Results
 
-![depth maps](docs/depth_maps.jpg)
+### 1 · Benchmark: 654 NYU Depth V2 test images
 
-![new viewpoints](docs/000000000724_views.jpg)
+Relative models predict depth up to an unknown scale and shift; they are aligned to the sensor per image
+(least squares in inverse depth), the standard protocol. AbsRel = mean relative error, δ1 = share of pixels
+within 25 % of the truth.
 
-*Rotating the virtual camera ±15°: the stop sign shifts against the background (parallax).
-Dark regions are areas hidden behind foreground objects in the original photo, which one image can't reveal.*
+| Model | AbsRel ↓ | δ1 ↑ | CPU time / image |
+|---|---|---|---|
+| Depth Anything V2 **Base** (97 M) | **0.058** | **95.9 %** | 2.9 s |
+| Depth Anything V2 Small (25 M) | 0.062 | 95.6 % | 1.0 s |
+| DPT-Hybrid / MiDaS 3.0 (2021) | 0.098 | 90.4 % | 1.6 s |
+| Depth Anything V2 Metric-Indoor (meters, no alignment) | 0.219 | 66.8 % | 1.3 s |
+| ↳ same, after one scale factor per image | 0.091 | 91.0 % | |
 
-| Metric | Value |
+The metric model gives distances in meters, but on NYU it places every room **~27 % too far** (a consistent
+scale error, not noise). Monocular metric depth silently assumes a camera: trained on Hypersim's synthetic
+camera, it reads NYU's Kinect images at the wrong scale. Part 3 shows how one known length fixes this.
+
+### 2 · Failure map: which surfaces break 3D vision
+
+![depth error by surface](docs/failure_by_class.png)
+
+Error by object class, scored only on pixels the Kinect actually measured (percentages under each label):
+
+| Surface | AbsRel (DA2-Small) | vs walls | Sensor coverage |
+|---|---|---|---|
+| **Mirror** | **0.316** | **7.2×** | 63 % |
+| Computer monitor | 0.087 | 2.0× | 47 % |
+| Door | 0.068 | 1.5× | 80 % |
+| Ceiling | 0.067 | 1.5× | 92 % |
+| Chair | 0.066 | 1.5× | 79 % |
+| Window | 0.059 | 1.4× | 45 % |
+| Wall | 0.044 | 1.0× | 98 % |
+| Floor | 0.041 | 0.9× | 94 % |
+| Sofa | 0.039 | 0.9× | 92 % |
+
+- **Mirrors are the one dramatic failure**: the worst surface for all three models (7× the error of a wall for
+  Depth Anything V2, 3× for DPT-Hybrid). But the "truth"
+  is fooled too: the Kinect's infrared light bounces off the mirror and measures the **reflected room**, a room
+  that isn't there. On 87 % of mirror images the model places the mirror **nearer** than the sensor (median
+  −26 %), i.e. closer to the glass itself. Neither the sensor nor the model reports "a flat mirror on the wall".
+- **The sensor fails where the model doesn't get a chance to be scored.** The Kinect measured only 16 % of
+  glass pixels, 45 % of windows and about half of TVs and monitors: transparent and dark-reflective surfaces
+  defeat active depth sensors as well. Glass is left out of the chart (1,471 measured pixels in 654 images).
+- **Pictures and whiteboards are fine** (0.044 and 0.034: as good as a wall): a flat image hanging on a wall does
+  not fool these models. The poster test confirms it with a known answer.
+- **Distance and position matter less than material**: error is 0.048 at 2–4 m, 0.056 under 2 m, 0.070 beyond
+  4 m, and 14 % higher in the image border band than in the centre.
+- **Newer is better everywhere**: DPT-Hybrid has 1.5–2.5× the error of Depth Anything V2 on every class
+  except mirrors.
+
+### 3 · The poster test: an illusion with a known answer
+
+![poster test](docs/poster_test.jpg)
+
+48 test images with a large flat wall (plane fitted to the sensor depth, median residual < 2 cm). A COCO photo
+is pasted onto the wall as a framed poster, warped with the wall's real perspective. The true depth inside the
+poster is still exactly the wall plane; the model is aligned on everything *except* the poster, then its depth
+inside the poster is compared with the plane.
+
+| Model | Deviation from the wall, before | With the poster | Worse with the poster |
+|---|---|---|---|
+| DA2-Small | 2.9 % | 3.0 % | 52 % of images (chance) |
+| DA2-Base | 2.6 % | 2.4 % | 40 % |
+| **DPT-Hybrid** | 5.0 % | **7.2 %** (+43 %) | **73 %** |
+
+Modern models are **not fooled by a framed picture**: the poster stays on the wall. The 2021 model is: it sees
+into the photo and pulls the poster ~4 % toward the camera on average.
+
+### 4 · Real illusions
+
+![illusions](docs/illusions.jpg)
+
+Depth Anything V2 Small on six optical illusions (open-licensed photos, [credits](docs/illusion_credits.md)):
+
+| Illusion | Fooled? |
 |---|---|
-| Model | Depth Anything V2 Small (25 M parameters) |
-| Depth inference, CPU | ~650 ms per image (Intel Core Ultra 7 258V, ~640×480 input) |
-| Point cloud | up to 200k colored points per image, saved as `.ply` |
+| Ames room (a trapezoid room built to look rectangular) | **Yes**, like humans: it reconstructs an ordinary box and puts both people at the back wall |
+| Trompe-l'œil colonnade painted on a flat wall | **Yes**: a deep corridor opens in the wall |
+| 3D street art on the ground (parrots, giant shoes) | **No**: the ground stays a flat plane |
+| Painted film crew on a facade | Mostly no: the painted figures stay close to the facade |
+| Facing mirrors ("infinite corridor") | Confused: neither the corridor nor flat glass |
 
-More views: [living room](docs/000000000139_views.jpg) · [bedroom](docs/000000000632_views.jpg) · [skier](docs/000000000785_views.jpg)
+The pattern: models trust **strong learned priors** (rooms are boxes, a corridor drawn in perfect perspective is
+a corridor) and ignore weak painted cues on the ground. Small framed pictures read as pictures; a whole wall of
+paint reads as architecture.
+
+### 5 · Measuring the world from one photo
+
+![measurement error](docs/measure_error.png)
+
+25,506 random point pairs (0.3–3 m apart) on the 654 test images, true distance from the sensor, predicted
+distance from the metric model with the true camera intrinsics:
+
+| | Median error | 90 % of measurements within | 0.3–1 m | 1–2 m | 2–3 m |
+|---|---|---|---|---|---|
+| Metric model only | 17.2 % | 47.7 % | 20.1 % | 16.5 % | 15.5 % |
+| **+ one known length in the photo** | **10.4 %** | 42.0 % | 11.1 % | 9.7 % | 10.5 % |
+
+One reference length per photo (a door, an A4 sheet, a credit card) removes the camera scale error and cuts the
+typical error from 17 % to 10 %. The long tail (10 % of measurements off by > 40 %) comes from points on
+different objects at different depths, where any depth error adds up.
+
+**Try it:** `python measure_app.py`, upload a photo, click two points, get meters with that uncertainty.
 
 ## How it works
 
-1. **Depth estimation**: Depth Anything V2 (a ViT trained on a mix of labeled data and millions of
-   pseudo-labeled images) outputs *relative inverse depth* (disparity) for every pixel.
-2. **Disparity → depth**: normalized disparity `d ∈ [0, 1]` becomes depth `z = 1 / (0.15 + 0.85·d)`.
-   The offset keeps the sky and far background at a finite distance instead of infinity.
-3. **Back-projection**: with an assumed 60° horizontal field of view, focal length `f = (W/2) / tan(30°)`,
-   and each pixel `(u, v)` becomes the point `((u − W/2)·z/f, (v − H/2)·z/f, z)`.
-4. **Point cloud**: colored points are saved with Open3D (`.ply`), keeping up to 200k points and
-   dropping the farthest 2 % (background noise).
-5. **New views**: the cloud is rotated around the scene center and projected back into an image
-   with a **z-buffer** (far points drawn first, near points overwrite them) and 2×2 splats to close
-   small gaps.
+- **Alignment** ([`metrics.py`](metrics.py)): for relative models, fit `s · prediction + t ≈ 1 / depth` by least
+  squares on valid pixels (inverse depth, because that's what the networks predict), then compare in depth.
+  Evaluation follows the standard NYU protocol: Eigen crop, 0.001–10 m, the official 654-image test split.
+- **Per-class scoring** ([`failures.py`](failures.py)): NYU's per-pixel labels (894 classes) select surfaces; only
+  *raw* sensor pixels count, because the dataset's hole-filled depth is interpolation exactly where the sensor
+  fails.
+- **Poster composites** ([`poster_test.py`](poster_test.py)): back-project the wall pixels with the camera
+  intrinsics, fit a 3D plane (SVD), build a rectangle on that plane, project its corners (pinhole model) and
+  warp the poster in with that homography, so the perspective is physically correct.
+- **Measuring** ([`measure.py`](measure.py)): metric depth for both points, back-projection with the camera's
+  focal length (EXIF `FocalLengthIn35mmFilm` when present, else a 60° field of view), Euclidean distance.
+- **3D views** ([`depth3d.py`](depth3d.py)): back-projection to a colored point cloud and z-buffered re-rendering
+  from a rotated camera (the original demo of this project).
 
-## Data
+## Data and models
 
-- **Images:** 4 photos from [COCO](https://cocodataset.org) val2017 (shared with project 16), or any photo you pass in.
-- **Model:** [`depth-anything/Depth-Anything-V2-Small-hf`](https://huggingface.co/depth-anything/Depth-Anything-V2-Small-hf)
-  (Apache-2.0), downloaded automatically.
+| | Source | License |
+|---|---|---|
+| NYU Depth V2 labeled subset (1,449 RGB-D images, official split) | [NYU](https://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html), Silberman et al., ECCV 2012 | research use; evaluated locally, never redistributed |
+| Poster content | COCO val2017 (shared with project 16) | CC BY 4.0 |
+| Illusion photos | Wikimedia Commons, [credits](docs/illusion_credits.md) | CC BY / BY-SA / CC0 |
+| Depth Anything V2 Small | Hugging Face `depth-anything/Depth-Anything-V2-Small-hf` | Apache-2.0 |
+| Depth Anything V2 Metric-Indoor Small | Hugging Face `depth-anything/Depth-Anything-V2-Metric-Indoor-Small-hf` | not stated on the model card (the Small family is Apache-2.0) |
+| Depth Anything V2 Base | Hugging Face `depth-anything/Depth-Anything-V2-Base-hf` | CC BY-NC 4.0 |
+| DPT-Hybrid | Hugging Face `Intel/dpt-hybrid-midas` | Apache-2.0 |
+
+Data lives in `../../cv-data/depth/` (not committed); predictions are cached there as one `.npy` per model.
 
 ## Run it
 
 ```bash
-.venv\Scripts\activate            # shared environment, from the repo root
+.venv\Scripts\activate                         # shared environment, from the repo root
 cd 14-monocular-depth-3d
-python depth3d.py --demo                    # the 4 COCO examples
-python depth3d.py my_photo.jpg --fov 70     # your own photos (set your camera's field of view)
-python view.py ../../cv-data/depth/outputs/000000000139.ply   # interactive 3D viewer
+# NYU labeled subset (2.8 GB) + official split into ../../cv-data/depth/nyu/
+curl -L -o ../../cv-data/depth/nyu/nyu_depth_v2_labeled.mat http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v2/nyu_depth_v2_labeled.mat
+curl -L -o ../../cv-data/depth/nyu/splits.mat http://horatio.cs.nyu.edu/mit/silberman/indoor_seg_sup/splits.mat
+python benchmark.py        # ~70 min on CPU, resumable: all 4 models on 654 images, cached
+python failures.py         # ~10 min: error by surface, distance, region
+python measure_eval.py     # ~2 min: distance accuracy
+python poster_test.py      # ~15 min: poster illusion test
+python illusions.py        # downloads 6 Commons photos, gallery
+python see_vs_infer.py     # the "what you see" figure
+python measure_app.py      # click-to-measure web app
+python depth3d.py --demo   # point clouds and 3D views of any photo
 ```
 
-## What I learned / what didn't work
+## What I learned
 
-- **Monocular depth is relative, not metric.** The model knows the stop sign is in front of the
-  trees, not that it's 4.2 m away. Scale and shift are unknown, so the clouds have the right
-  *shape* but arbitrary size. Metric depth needs a metric-trained model, a known object size, or a second view.
-- **The field of view matters.** A wrong FOV stretches or squashes the scene in depth. COCO
-  photos don't come with camera parameters, so 60° is a guess.
-- **Matplotlib 3D scatter plots were unreadable** for 200k points (my first attempt). Re-rendering
-  from new camera angles with a z-buffer shows the 3D structure far more clearly.
-- **Disocclusions are unavoidable** from one image: rotating the camera exposes regions that were
-  never seen. Filling them would need inpainting (e.g. a diffusion model).
+- **"Computers can't see 3D" is too broad.** On ordinary indoor surfaces a 25 M-parameter model is within ~6 %
+  of a depth sensor, from one photo, in a second on a laptop CPU. The failures are specific and measurable:
+  mirrors, screens, strong architectural illusions, and absolute scale.
+- **Ground truth has blind spots too.** The depth sensor cannot see glass, half of the windows and screens, and
+  measures a fake room inside mirrors. Scoring a model where the sensor itself fails would have measured the
+  sensor, not the model; reporting coverage per class is part of the result.
+- **Scale is the hardest part of "metric".** The metric model's 27 % error is almost entirely one scale factor
+  per image. One known length in the scene is worth more than a bigger model.
+- **Illusions need a known answer to be measured.** Real illusion photos make a striking gallery but no number;
+  the synthetic poster test turns "is it fooled?" into a measurement, and showed that the 2021 model was fooled
+  where 2024 models are not.
 
 ## Next steps
 
-- Quantitative evaluation on NYU Depth V2 (AbsRel, δ<1.25) against ground-truth depth.
-- Metric depth (Depth Anything V2 Metric or Depth Pro) and a mesh instead of points.
-- Inpaint disoccluded regions for a full "3D photo" effect.
-- OpenVINO export (project 19) for real-time depth from a webcam.
+- A mirror detector (or a mirror-aware depth model) to flag the one surface that breaks everything.
+- Outdoor evaluation (KITTI LiDAR) for the outdoor metric model.
+- Correct the metric scale from EXIF focal length when the camera differs from the training camera.
+- OpenVINO export (project 19) for real-time depth on the NPU.
 
 ## Tech stack
 
-Python · Hugging Face Transformers (Depth Anything V2) · PyTorch · Open3D · NumPy · Matplotlib
+Python · PyTorch · Hugging Face Transformers (Depth Anything V2, DPT) · NumPy · h5py / SciPy (NYU) · OpenCV
+(homography) · Open3D · Matplotlib · Gradio

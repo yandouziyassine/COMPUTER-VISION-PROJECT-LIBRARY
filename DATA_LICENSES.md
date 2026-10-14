@@ -29,7 +29,8 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 | 18 | VQAv2 questions/answers (visualqa.org) | ✅ CC BY 4.0 | |
 | 20 | Football players & ball (Roboflow, HF `keremberke/football-object-detection`) | ✅ CC BY 4.0 | |
 | 20 | Football pitch keypoints (Kaggle `danielmachniak/football-pitch-keypoints-detection`) | ✅ MIT | 32-landmark layout as in Roboflow's open `sports` toolkit |
-| 14 | NYU Depth V2 labeled subset (Silberman et al., ECCV 2012) | ⚠️ research use | Planned upgrade; evaluated locally, never redistributed |
+| 14 | NYU Depth V2 labeled subset (Silberman et al., ECCV 2012) | ⚠️ research use | Evaluated locally, never redistributed; figures show a few frames |
+| 14 | Illusion photos (6, Wikimedia Commons) | ✅ CC BY 2.0 / CC BY-SA 4.0 / CC0 | Credits in `14-monocular-depth-3d/docs/illusion_credits.md` |
 
 ## Pretrained models
 
@@ -43,7 +44,9 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 | 10 | OpenCV zoo YuNet / SFace | ✅ MIT / Apache-2.0 | |
 | 11 | segmentation_models_pytorch + ResNet-18 ImageNet weights | ✅ MIT | |
 | 13 | torchvision WideResNet-50 ImageNet weights | ✅ BSD-3 (torchvision) | |
-| 14 | Depth Anything V2 Small | ✅ Apache-2.0 | The larger variants are non-commercial |
+| 14 | Depth Anything V2 Small / DPT-Hybrid | ✅ Apache-2.0 | |
+| 14 | Depth Anything V2 Base | ⚠️ CC BY-NC 4.0 | Non-commercial; benchmark only |
+| 14 | Depth Anything V2 Metric-Indoor Small | ❓ | No license on the model card |
 | 12, 16 | OpenCLIP ViT-B/32 (`laion2b_s34b_b79k`) | ✅ MIT | |
 | 17 | Grounding DINO tiny, SAM ViT-B | ✅ Apache-2.0 | |
 | 18 | SmolVLM2-500M-Video-Instruct | ✅ Apache-2.0 | |

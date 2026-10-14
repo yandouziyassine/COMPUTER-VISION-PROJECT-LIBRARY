@@ -1,0 +1,43 @@
+# Shared CPU environment for projects 02+ (deep learning).
+# Install with setup_env.ps1 — it pulls CPU-only PyTorch first.
+# Project 01 (Virtual Painter) keeps its own .venv because mediapipe 0.10.14 needs numpy<2.
+
+# Core
+numpy
+opencv-python
+matplotlib
+pandas
+scikit-learn
+tqdm
+pillow
+
+# Models
+timm
+ultralytics
+supervision
+transformers
+open_clip_torch
+grad-cam
+
+# Search / 3D / deployment
+faiss-cpu
+open3d
+onnx
+onnxruntime
+openvino==2026.4.1
+nncf            # OpenVINO INT8 quantization (project 19)
+onnxslim        # ONNX export simplification (project 19)
+# rapidocr-openvino (OCR, projects 03 and 06) is installed separately by setup_env.ps1 with --no-deps:
+# it pins openvino<=2024.0, which would downgrade OpenVINO and break the GPU INT8 path of project 19.
+# common/ov_compat.py lets it run on current OpenVINO. Its own dependencies:
+pyclipper
+shapely
+pyyaml
+six
+pyarrow
+segmentation-models-pytorch   # project 11
+pycocotools     # project 17
+num2words       # SmolVLM2 processor (project 18)
+
+# Demos
+gradio

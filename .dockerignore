@@ -1,0 +1,18 @@
+# Build context = repo root. Only send what the Dockerfiles copy (the shared .venv alone is several GB).
+*
+!common/
+!13-anomaly-detection-patchcore/
+!15-fall-detection/
+
+# ...and nothing heavy or generated inside those folders.
+**/__pycache__
+**/*.py[cod]
+**/docs
+**/Ultralytics
+**/.venv
+**/*.pt
+**/*.pth
+**/*.onnx
+**/*.mp4
+**/*.avi
+**/*.zip

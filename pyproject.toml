@@ -1,0 +1,43 @@
+# Tooling config only: the projects are plain scripts, not an installable package.
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+extend-exclude = [
+    ".venv",
+    "01-virtual-painter/.venv",
+    "_template",
+    "**/Ultralytics",   # Ultralytics settings folders created at runtime
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = [
+    "E501",   # line length: handled by `ruff format`; long strings/comments are allowed
+    "E702",   # `a; b` on one line: used deliberately for short matplotlib sequences
+    "E731",   # small lambdas assigned to names
+    "E741",   # `l`/`I` variable names in math-heavy code
+    "B905",   # zip() without strict=: Python 3.10 code, lengths are checked where it matters
+    "B008",   # function calls in argument defaults (argparse/gradio patterns)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Project scripts: import order is load-bearing, so it is not auto-sorted (I001) and imports may follow code (E402).
+#  - `sys.path.insert(...)` must run before `import common...`;
+#  - `common.paths` sets HF_HOME / TORCH_HOME / YOLO_CONFIG_DIR and must be imported before
+#    transformers / ultralytics (isort would move it after them as a first-party import);
+#  - `common.ov_compat` must be imported before `rapidocr_openvino`;
+#  - `matplotlib.use("Agg")` must run before `import matplotlib.pyplot`.
+"[0-9][0-9]-*/*.py" = ["E402", "I001"]
+"tests/*.py" = ["E402"]
+"common/ov_compat.py" = ["E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["common"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider"   # no .pytest_cache folder on the FAT32 key

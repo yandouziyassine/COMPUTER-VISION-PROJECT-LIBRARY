@@ -1,0 +1,9 @@
+# Minimal dependencies for the unit tests and lint (CI and local).
+# CPU-only torch/torchvision are installed separately from the PyTorch CPU index:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+# Tests whose packages are missing are skipped (pytest.importorskip), not failed.
+numpy>=1.26
+opencv-python-headless>=4.9
+scikit-learn>=1.4
+pytest>=8
+ruff==0.17.0

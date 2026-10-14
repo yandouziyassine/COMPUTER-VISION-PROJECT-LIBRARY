@@ -1,0 +1,26 @@
+{
+ "benchmark": {
+  "da2-small": {
+   "absrel": 0.0618,
+   "delta1": 0.9555,
+   "seconds_per_image_cpu": 1.01
+  },
+  "da2-base": {
+   "absrel": 0.0575,
+   "delta1": 0.9591,
+   "seconds_per_image_cpu": 2.88
+  },
+  "dpt-hybrid": {
+   "absrel": 0.0975,
+   "delta1": 0.9043,
+   "seconds_per_image_cpu": 1.61
+  },
+  "da2-metric-indoor": {
+   "absrel": 0.219,
+   "delta1": 0.6681,
+   "absrel_median_scaled": 0.0907,
+   "delta1_median_scaled": 0.9099,
+   "seconds_per_image_cpu": 1.31
+  }
+ }
+}

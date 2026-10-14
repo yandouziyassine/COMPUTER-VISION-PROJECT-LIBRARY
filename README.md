@@ -8,6 +8,9 @@ OpenVINO / ONNX / INT8.
 
 **Portfolio:** [yandouziyassine.github.io](https://yandouziyassine.github.io) (all my projects, including this library)
 
+**New to computer vision?** Read [THEORY.md](THEORY.md): a beginner-to-advanced course in 53 short chapters, from
+pixels to foundation models, each pointing to the projects where the concept is used.
+
 ## ⭐ Highlights
 
 | | Project | Why it's interesting |

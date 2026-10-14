@@ -1,0 +1,9 @@
+opencv-python
+numpy
+pandas
+pyarrow
+pillow
+matplotlib
+rapidocr-openvino
+openvino
+gradio

@@ -1,0 +1,47 @@
+{
+ "n_receipts": 100,
+ "scanner_ms_per_photo": 65.1,
+ "ocr_ms_per_image": 1043.2,
+ "clean_scan": {
+  "date_acc": 86.0,
+  "total_acc": 78.0
+ },
+ "table": {
+  "corner_success_pct": 68.0,
+  "corner_median_err_pct_diag": 0.6,
+  "raw_photo": {
+   "date_acc": 78.0,
+   "total_acc": 58.0
+  },
+  "scanned": {
+   "date_acc": 67.0,
+   "total_acc": 59.0
+  },
+  "when_corners_ok": {
+   "n": 68,
+   "raw_photo_total_acc": 57.4,
+   "scanned_total_acc": 64.7,
+   "raw_photo_date_acc": 76.5,
+   "scanned_date_acc": 72.1
+  }
+ },
+ "coco": {
+  "corner_success_pct": 20.0,
+  "corner_median_err_pct_diag": 10.79,
+  "raw_photo": {
+   "date_acc": 75.0,
+   "total_acc": 59.0
+  },
+  "scanned": {
+   "date_acc": 64.0,
+   "total_acc": 53.0
+  },
+  "when_corners_ok": {
+   "n": 20,
+   "raw_photo_total_acc": 70.0,
+   "scanned_total_acc": 75.0,
+   "raw_photo_date_acc": 90.0,
+   "scanned_date_acc": 95.0
+  }
+ }
+}

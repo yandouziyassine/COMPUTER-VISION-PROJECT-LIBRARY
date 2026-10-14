@@ -1,0 +1,39 @@
+{
+ "n_images": 200,
+ "classes": [
+  "person",
+  "bicycle",
+  "car",
+  "bus",
+  "dog",
+  "cat",
+  "horse",
+  "bird",
+  "bottle",
+  "chair"
+ ],
+ "grounding_dino_tiny_zero_shot": {
+  "mAP50-95": 0.5576,
+  "mAP50": 0.6985,
+  "AR100": 0.7153,
+  "s_per_image_cpu": 9.36
+ },
+ "yolo11n_supervised": {
+  "mAP50-95": 0.473,
+  "mAP50": 0.6277,
+  "AR100": 0.5799,
+  "s_per_image_cpu": 0.079
+ },
+ "grounding_dino_per_class_AP50": {
+  "person": 0.8541,
+  "bicycle": 0.592,
+  "car": 0.5642,
+  "bus": 0.7609,
+  "dog": 1.0,
+  "cat": 0.802,
+  "horse": 0.7706,
+  "bird": 0.6074,
+  "bottle": 0.5587,
+  "chair": 0.4748
+ }
+}

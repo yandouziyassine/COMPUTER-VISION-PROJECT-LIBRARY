@@ -3,20 +3,24 @@
 # ─────────────────────────────────────────────
 
 from dataclasses import dataclass
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 import cv2
 import numpy as np
 
 from config import (
-    PALETTE, DEFAULT_COLOR,
-    TOOLBAR_HEIGHT, SWATCH_SIZE, SWATCH_MARGIN,
-    BTN_WIDTH, BTN_MARGIN,
+    PALETTE,
+    DEFAULT_COLOR,
+    TOOLBAR_HEIGHT,
+    SWATCH_SIZE,
+    SWATCH_MARGIN,
+    BTN_WIDTH,
+    BTN_MARGIN,
 )
 
 
 @dataclass
 class HitResult:
-    kind: str                            # 'color' | 'clear' | 'eraser'
+    kind: str  # 'color' | 'clear' | 'eraser'
     value: Optional[Tuple[int, int, int]] = None  # BGR color if kind=='color'
 
 
@@ -35,17 +39,19 @@ class Toolbar:
         x = SWATCH_MARGIN
         y = (TOOLBAR_HEIGHT - SWATCH_SIZE) // 2
         for name, bgr in PALETTE:
-            self._swatches.append({
-                "name": name,
-                "bgr":  bgr,
-                "rect": (x, y, x + SWATCH_SIZE, y + SWATCH_SIZE),
-            })
+            self._swatches.append(
+                {
+                    "name": name,
+                    "bgr": bgr,
+                    "rect": (x, y, x + SWATCH_SIZE, y + SWATCH_SIZE),
+                }
+            )
             x += SWATCH_SIZE + SWATCH_MARGIN
 
         # Action buttons
-        btn_y  = (TOOLBAR_HEIGHT - SWATCH_SIZE) // 2
+        btn_y = (TOOLBAR_HEIGHT - SWATCH_SIZE) // 2
         btn_x1 = self._w - 2 * (BTN_WIDTH + BTN_MARGIN)
-        self._btn_clear  = (btn_x1, btn_y, btn_x1 + BTN_WIDTH, btn_y + SWATCH_SIZE)
+        self._btn_clear = (btn_x1, btn_y, btn_x1 + BTN_WIDTH, btn_y + SWATCH_SIZE)
         btn_x2 = btn_x1 + BTN_WIDTH + BTN_MARGIN
         self._btn_eraser = (btn_x2, btn_y, btn_x2 + BTN_WIDTH, btn_y + SWATCH_SIZE)
 
@@ -96,13 +102,13 @@ class Toolbar:
         # "Clear all" button
         x1, y1, x2, y2 = self._btn_clear
         cv2.rectangle(frame, (x1, y1), (x2, y2), (50, 50, 180), -1, cv2.LINE_AA)
-        cv2.putText(frame, "Clear all", (x1 + 8, y1 + 27),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.48, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.putText(
+            frame, "Clear all", (x1 + 8, y1 + 27), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (255, 255, 255), 1, cv2.LINE_AA
+        )
 
         # "Eraser" button
         x1, y1, x2, y2 = self._btn_eraser
         btn_col = (60, 140, 60) if self.eraser_mode else (70, 70, 70)
         cv2.rectangle(frame, (x1, y1), (x2, y2), btn_col, -1, cv2.LINE_AA)
         label = "Eraser: ON " if self.eraser_mode else "Eraser mode"
-        cv2.putText(frame, label, (x1 + 6, y1 + 27),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.44, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.putText(frame, label, (x1 + 6, y1 + 27), cv2.FONT_HERSHEY_SIMPLEX, 0.44, (255, 255, 255), 1, cv2.LINE_AA)

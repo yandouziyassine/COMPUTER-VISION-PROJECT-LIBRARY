@@ -8,9 +8,10 @@ import mediapipe as mp
 import cv2
 
 from config import SMOOTHING_WINDOW
+
 # MediaPipe landmark indices
-TIP_IDS  = [4, 8, 12, 16, 20]   # thumb, index, middle, ring, pinky tips
-PIP_IDS  = [3, 6, 10, 14, 18]   # corresponding PIP joints
+TIP_IDS = [4, 8, 12, 16, 20]  # thumb, index, middle, ring, pinky tips
+PIP_IDS = [3, 6, 10, 14, 18]  # corresponding PIP joints
 
 
 class HandTracker:
@@ -73,7 +74,7 @@ class HandTracker:
 
         # Thumb  —  compare tip X to IP joint X (handedness-aware)
         thumb_tip = landmarks[TIP_IDS[0]]
-        thumb_ip  = landmarks[TIP_IDS[0] - 1]
+        thumb_ip = landmarks[TIP_IDS[0] - 1]
         if handedness == "Right":
             if thumb_tip[0] < thumb_ip[0]:
                 count += 1

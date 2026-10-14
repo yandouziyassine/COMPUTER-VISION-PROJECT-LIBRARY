@@ -10,17 +10,17 @@ from config import DEBOUNCE_FRAMES
 
 
 class Mode(Enum):
-    IDLE  = auto()   # fist or no hand
-    DRAW  = auto()   # 1 finger
-    ERASE = auto()   # 2 fingers (not on toolbar)
+    IDLE = auto()  # fist or no hand
+    DRAW = auto()  # 1 finger
+    ERASE = auto()  # 2 fingers (not on toolbar)
 
 
 @dataclass
 class GestureState:
     mode: Mode
-    position: Optional[Tuple[int, int]]   # primary action point (index tip or 2-finger midpoint)
+    position: Optional[Tuple[int, int]]  # primary action point (index tip or 2-finger midpoint)
     index_tip: Optional[Tuple[int, int]]  # raw index fingertip
-    midpoint: Optional[Tuple[int, int]]   # midpoint between index & middle tips
+    midpoint: Optional[Tuple[int, int]]  # midpoint between index & middle tips
 
 
 class GestureDetector:
@@ -30,8 +30,8 @@ class GestureDetector:
     """
 
     def __init__(self):
-        self._current_mode  = Mode.IDLE
-        self._pending_mode  = Mode.IDLE
+        self._current_mode = Mode.IDLE
+        self._pending_mode = Mode.IDLE
         self._pending_count = 0
 
     # ── public ────────────────────────────────────────────────────────────
@@ -46,15 +46,15 @@ class GestureDetector:
         if candidate == self._pending_mode:
             self._pending_count += 1
         else:
-            self._pending_mode  = candidate
+            self._pending_mode = candidate
             self._pending_count = 1
 
         if self._pending_count >= DEBOUNCE_FRAMES:
             self._current_mode = self._pending_mode
 
         # Build position data
-        index_tip = landmarks[8]  if landmarks else None
-        mid_tip   = landmarks[12] if landmarks else None
+        index_tip = landmarks[8] if landmarks else None
+        mid_tip = landmarks[12] if landmarks else None
 
         midpoint = None
         if index_tip and mid_tip:
@@ -78,8 +78,8 @@ class GestureDetector:
         )
 
     def reset(self):
-        self._current_mode  = Mode.IDLE
-        self._pending_mode  = Mode.IDLE
+        self._current_mode = Mode.IDLE
+        self._pending_mode = Mode.IDLE
         self._pending_count = 0
 
     # ── private ───────────────────────────────────────────────────────────

@@ -2,7 +2,7 @@
 #  canvas.py  —  NumPy BGRA drawing overlay
 # ─────────────────────────────────────────────
 
-from typing import Optional, Tuple
+from typing import Tuple
 import numpy as np
 import cv2
 
@@ -59,8 +59,8 @@ class Canvas:
         """
         alpha = self._layer[:, :, 3:4].astype(np.float32) / 255.0
         canvas_bgr = self._layer[:, :, :3].astype(np.float32)
-        frame_f    = frame_bgr.astype(np.float32)
-        blended    = frame_f * (1 - alpha) + canvas_bgr * alpha
+        frame_f = frame_bgr.astype(np.float32)
+        blended = frame_f * (1 - alpha) + canvas_bgr * alpha
         frame_bgr[:] = blended.astype(np.uint8)
         return frame_bgr
 

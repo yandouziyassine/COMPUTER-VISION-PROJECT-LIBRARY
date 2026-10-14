@@ -16,7 +16,7 @@ from benchmark import DOCS, OUT
 from depth3d import backproject as bp_render
 from depth3d import render_view, save_sweep_gif
 from illusions import DIR as ILLUSIONS
-from metrics import align_disparity, eval_mask
+from metrics import EIGEN_CROP, align_disparity
 from nyu import NYU
 
 matplotlib.use("Agg")
@@ -39,9 +39,10 @@ def main():
     best = idx[int(np.argmin(absrel))]
     most_mirror = max(idx, key=lambda i: int((data.labels(i) == mirror).sum()))
     est = M.load("da2-small")
-    rows = [("A scene the model gets right", data.rgb(best), data.depth(best)),
-            ("A mirror: the room inside it is not real", data.rgb(most_mirror), data.depth(most_mirror)),
-            ("A flat poster on a wall (Part A test)", np.load(DOCS / "_poster_best.npy"), None),
+    crop = EIGEN_CROP                                   # NYU frames have a white border outside this region
+    rows = [("A scene the model gets right", data.rgb(best)[crop], data.depth(best)[crop]),
+            ("A mirror: the room inside it is not real", data.rgb(most_mirror)[crop], data.depth(most_mirror)[crop]),
+            ("A flat poster on a wall (Part A test)", np.load(DOCS / "_poster_best.npy")[crop], None),
             ("The Ames room illusion", np.asarray(Image.open(ILLUSIONS / "ames_room.jpg").convert("RGB")), None)]
     titles = ["What you see", "What the computer receives", "What it infers (bright = near)",
               "The truth (Kinect) / error", "Its 3D, seen from the side"]
@@ -54,7 +55,7 @@ def main():
         pixel_panel(axes[r, 1], rgb, h // 2, w // 2)
         axes[r, 2].imshow(disp, cmap="inferno")
         if gt is not None:
-            mask = eval_mask(gt)
+            mask = (gt > 1e-3) & (gt < 10)
             depth = align_disparity(disp, gt, mask)
             err = np.where(mask, np.abs(depth - gt) / np.maximum(gt, 1e-3), np.nan)
             axes[r, 3].imshow(gt, cmap="inferno_r")

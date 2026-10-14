@@ -88,7 +88,9 @@ def plot(out):
         ax.bar(x + (j - 1) * 0.27, [out[n]["absrel_by_class"][c] for c in classes], 0.27, label=n)
     split = sum(c in REFLECTIVE for c in classes) - 0.5
     ax.axvline(split, color="k", lw=0.8, ls="--")
-    ax.set_xticks(x, [f"{c}\n{out[names[0]]['sensor_coverage_by_class'][c]:.0%} measured" for c in classes], fontsize=8)
+    cov = out[names[0]]["sensor_coverage_by_class"]
+    ax.set_xticks(x, [f"{c} ({cov[c]:.0%})" for c in classes], fontsize=8, rotation=35, ha="right")
+    ax.set_xlabel("surface (share of its pixels the Kinect could measure)")
     ax.set_ylabel("AbsRel (lower is better)")
     ax.set_title("Depth error by surface: reflective / transparent / pictures (left) vs ordinary surfaces (right)")
     ax.legend()
@@ -98,4 +100,9 @@ def plot(out):
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+
+    if "--plot-only" in sys.argv:                    # redraw the figure from docs/results.json
+        plot(json.loads((DOCS / "results.json").read_text())["failures"])
+    else:
+        main()

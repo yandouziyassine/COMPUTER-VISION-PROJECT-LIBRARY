@@ -22,5 +22,270 @@
    "delta1_median_scaled": 0.9099,
    "seconds_per_image_cpu": 1.31
   }
+ },
+ "failures": {
+  "da2-small": {
+   "absrel_by_class": {
+    "mirror": 0.3164,
+    "window": 0.0593,
+    "glass": 0.0491,
+    "television": 0.0479,
+    "monitor": 0.0874,
+    "picture": 0.0442,
+    "whiteboard": 0.0335,
+    "blinds": 0.0431,
+    "curtain": 0.0444,
+    "wall": 0.0439,
+    "floor": 0.0411,
+    "ceiling": 0.0668,
+    "table": 0.0548,
+    "door": 0.0676,
+    "cabinet": 0.0437,
+    "bed": 0.0464,
+    "chair": 0.0664,
+    "sofa": 0.0391
+   },
+   "sensor_coverage_by_class": {
+    "mirror": 0.634,
+    "window": 0.446,
+    "glass": 0.165,
+    "television": 0.522,
+    "monitor": 0.472,
+    "picture": 0.927,
+    "whiteboard": 0.993,
+    "blinds": 0.874,
+    "curtain": 0.977,
+    "wall": 0.977,
+    "floor": 0.944,
+    "ceiling": 0.915,
+    "table": 0.756,
+    "door": 0.805,
+    "cabinet": 0.935,
+    "bed": 0.957,
+    "chair": 0.791,
+    "sofa": 0.921
+   },
+   "pixels_by_class": {
+    "mirror": 860889,
+    "window": 1360438,
+    "glass": 1471,
+    "television": 382362,
+    "monitor": 195593,
+    "picture": 3066128,
+    "whiteboard": 645857,
+    "blinds": 2381539,
+    "curtain": 1813987,
+    "wall": 31288406,
+    "floor": 15010175,
+    "ceiling": 1023761,
+    "table": 3147948,
+    "door": 2912565,
+    "cabinet": 8937553,
+    "bed": 7119545,
+    "chair": 4799023,
+    "sofa": 5161226
+   },
+   "absrel_by_distance_m": {
+    "0-2": 0.0557,
+    "2-4": 0.0481,
+    "4-10": 0.0698
+   },
+   "absrel_by_region": {
+    "border": 0.0581,
+    "centre": 0.0511
+   }
+  },
+  "da2-base": {
+   "absrel_by_class": {
+    "mirror": 0.3287,
+    "window": 0.0543,
+    "glass": 0.0535,
+    "television": 0.0428,
+    "monitor": 0.0832,
+    "picture": 0.0406,
+    "whiteboard": 0.0291,
+    "blinds": 0.0396,
+    "curtain": 0.0398,
+    "wall": 0.0407,
+    "floor": 0.0366,
+    "ceiling": 0.0606,
+    "table": 0.0474,
+    "door": 0.0648,
+    "cabinet": 0.04,
+    "bed": 0.0423,
+    "chair": 0.0581,
+    "sofa": 0.0359
+   },
+   "sensor_coverage_by_class": {
+    "mirror": 0.634,
+    "window": 0.446,
+    "glass": 0.165,
+    "television": 0.522,
+    "monitor": 0.472,
+    "picture": 0.927,
+    "whiteboard": 0.993,
+    "blinds": 0.874,
+    "curtain": 0.977,
+    "wall": 0.977,
+    "floor": 0.944,
+    "ceiling": 0.915,
+    "table": 0.756,
+    "door": 0.805,
+    "cabinet": 0.935,
+    "bed": 0.957,
+    "chair": 0.791,
+    "sofa": 0.921
+   },
+   "pixels_by_class": {
+    "mirror": 860889,
+    "window": 1360438,
+    "glass": 1471,
+    "television": 382362,
+    "monitor": 195593,
+    "picture": 3066128,
+    "whiteboard": 645857,
+    "blinds": 2381539,
+    "curtain": 1813987,
+    "wall": 31288406,
+    "floor": 15010175,
+    "ceiling": 1023761,
+    "table": 3147948,
+    "door": 2912565,
+    "cabinet": 8937553,
+    "bed": 7119545,
+    "chair": 4799023,
+    "sofa": 5161226
+   },
+   "absrel_by_distance_m": {
+    "0-2": 0.0507,
+    "2-4": 0.0439,
+    "4-10": 0.0642
+   },
+   "absrel_by_region": {
+    "border": 0.0526,
+    "centre": 0.0469
+   }
+  },
+  "dpt-hybrid": {
+   "absrel_by_class": {
+    "mirror": 0.2388,
+    "window": 0.109,
+    "glass": 0.0779,
+    "television": 0.0797,
+    "monitor": 0.1055,
+    "picture": 0.088,
+    "whiteboard": 0.0691,
+    "blinds": 0.0762,
+    "curtain": 0.0943,
+    "wall": 0.0824,
+    "floor": 0.0693,
+    "ceiling": 0.1203,
+    "table": 0.1017,
+    "door": 0.1085,
+    "cabinet": 0.0837,
+    "bed": 0.068,
+    "chair": 0.1151,
+    "sofa": 0.0738
+   },
+   "sensor_coverage_by_class": {
+    "mirror": 0.634,
+    "window": 0.446,
+    "glass": 0.165,
+    "television": 0.522,
+    "monitor": 0.472,
+    "picture": 0.927,
+    "whiteboard": 0.993,
+    "blinds": 0.874,
+    "curtain": 0.977,
+    "wall": 0.977,
+    "floor": 0.944,
+    "ceiling": 0.915,
+    "table": 0.756,
+    "door": 0.805,
+    "cabinet": 0.935,
+    "bed": 0.957,
+    "chair": 0.791,
+    "sofa": 0.921
+   },
+   "pixels_by_class": {
+    "mirror": 860889,
+    "window": 1360438,
+    "glass": 1471,
+    "television": 382362,
+    "monitor": 195593,
+    "picture": 3066128,
+    "whiteboard": 645857,
+    "blinds": 2381539,
+    "curtain": 1813987,
+    "wall": 31288406,
+    "floor": 15010175,
+    "ceiling": 1023761,
+    "table": 3147948,
+    "door": 2912565,
+    "cabinet": 8937553,
+    "bed": 7119545,
+    "chair": 4799023,
+    "sofa": 5161226
+   },
+   "absrel_by_distance_m": {
+    "0-2": 0.0914,
+    "2-4": 0.0828,
+    "4-10": 0.1174
+   },
+   "absrel_by_region": {
+    "border": 0.1034,
+    "centre": 0.084
+   }
+  }
+ },
+ "measure": {
+  "pairs": 25506,
+  "images": 654,
+  "model": "da2-metric-indoor",
+  "intrinsics": "true NYU",
+  "metric_model_only": {
+   "median_rel_error": 0.172,
+   "p90_rel_error": 0.477,
+   "by_distance_m": {
+    "0.3-1.0": 0.201,
+    "1.0-2.0": 0.165,
+    "2.0-3.0": 0.155
+   }
+  },
+  "with_one_known_length": {
+   "median_rel_error": 0.104,
+   "p90_rel_error": 0.42,
+   "by_distance_m": {
+    "0.3-1.0": 0.111,
+    "1.0-2.0": 0.097,
+    "2.0-3.0": 0.105
+   }
+  }
+ },
+ "poster_test": {
+  "da2-small": {
+   "images": 48,
+   "deviation_before": 0.0289,
+   "deviation_with_poster": 0.0296,
+   "illusion_score": 0.0007,
+   "share_worse_with_poster": 0.521,
+   "mean_signed_deviation": -0.0023
+  },
+  "da2-base": {
+   "images": 48,
+   "deviation_before": 0.0258,
+   "deviation_with_poster": 0.024,
+   "illusion_score": -0.0018,
+   "share_worse_with_poster": 0.396,
+   "mean_signed_deviation": 0.0072
+  },
+  "dpt-hybrid": {
+   "images": 48,
+   "deviation_before": 0.0499,
+   "deviation_with_poster": 0.0715,
+   "illusion_score": 0.0216,
+   "share_worse_with_poster": 0.729,
+   "mean_signed_deviation": -0.0406
+  }
  }
 }

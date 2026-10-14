@@ -6,6 +6,7 @@ Usage:
 
 import json
 import re
+import textwrap
 import urllib.parse
 import urllib.request
 
@@ -64,11 +65,11 @@ def main():
         disp = M.predict(est, np.asarray(img))
         pts, cols, f = backproject(img, disp)
         axes[row, 0].imshow(img)
-        axes[row, 0].set_title(caption, fontsize=9, loc="left")
+        axes[row, 0].set_title(textwrap.fill(caption, 42), fontsize=9)
         axes[row, 1].imshow(disp, cmap="inferno")
-        axes[row, 1].set_title("what the model infers (bright = near)", fontsize=9, loc="left")
+        axes[row, 1].set_title("what the model infers\n(bright = near)", fontsize=9)
         axes[row, 2].imshow(render_view(pts, cols, f, img.size, 35))
-        axes[row, 2].set_title("its 3D, seen from the side", fontsize=9, loc="left")
+        axes[row, 2].set_title("its 3D,\nseen from the side", fontsize=9)
         for ax in axes[row]:
             ax.axis("off")
     fig.tight_layout()

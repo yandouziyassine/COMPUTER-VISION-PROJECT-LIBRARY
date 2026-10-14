@@ -1,0 +1,36 @@
+{
+ "n_test": 5400,
+ "resnet18_finetuned": {
+  "accuracy": 0.9807,
+  "macro_f1": 0.9805,
+  "ms_per_tile": 15.52
+ },
+ "clip_zero_shot": {
+  "accuracy": 0.4744,
+  "ms_per_tile": 62.81
+ },
+ "per_class_f1": {
+  "AnnualCrop": 0.972,
+  "Forest": 0.986,
+  "HerbaceousVegetation": 0.966,
+  "Highway": 0.985,
+  "Industrial": 0.989,
+  "Pasture": 0.973,
+  "PermanentCrop": 0.964,
+  "Residential": 0.993,
+  "River": 0.983,
+  "SeaLake": 0.995
+ },
+ "clip_per_class_acc": {
+  "AnnualCrop": 0.285,
+  "Forest": 0.178,
+  "HerbaceousVegetation": 0.007,
+  "Highway": 0.593,
+  "Industrial": 0.86,
+  "Pasture": 0.46,
+  "PermanentCrop": 0.721,
+  "Residential": 0.939,
+  "River": 0.346,
+  "SeaLake": 0.463
+ }
+}

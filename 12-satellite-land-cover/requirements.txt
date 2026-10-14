@@ -1,0 +1,10 @@
+torch
+torchvision
+timm
+open_clip_torch
+faiss-cpu       # imported via ../16-text-to-image-search/clip_search.py (CLIP zero-shot baseline)
+pyarrow
+numpy
+pillow
+scikit-learn
+matplotlib

@@ -1,0 +1,24 @@
+{
+ "pairs": 6000,
+ "unique_images": 7701,
+ "fp32": {
+  "accuracy_10fold": 0.9935,
+  "std": 0.0037,
+  "mean_threshold": 0.313,
+  "roc_auc": 0.9988,
+  "TAR@FAR=1%": 0.9927,
+  "TAR@FAR=0.1%": 0.988,
+  "no_face_detected": 0,
+  "ms_per_image_detect+embed": 33.0
+ },
+ "int8": {
+  "accuracy_10fold": 0.9922,
+  "std": 0.0055,
+  "mean_threshold": 0.338,
+  "roc_auc": 0.9988,
+  "TAR@FAR=1%": 0.991,
+  "TAR@FAR=0.1%": 0.9867,
+  "no_face_detected": 0,
+  "ms_per_image_detect+embed": 54.6
+ }
+}

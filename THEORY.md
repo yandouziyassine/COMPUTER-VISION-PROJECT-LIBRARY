@@ -26,7 +26,7 @@ Everything else is explained here. Formulas are kept short and always come with 
 
 **Part 2 · Geometry: images and the 3D world**
 9. [Coordinates and transformations](#9-coordinates-and-transformations-03-08)
-10. [Homography: undoing perspective](#10-homography-undoing-perspective-03-08)
+10. [Homography: undoing perspective](#10-homography-undoing-perspective-03-08-20)
 11. [The pinhole camera model](#11-the-pinhole-camera-model-14-08)
 12. [Depth, point clouds and novel views](#12-depth-point-clouds-and-novel-views-14)
 
@@ -258,7 +258,7 @@ They are written as matrices acting on **homogeneous coordinates** `(x, y, 1)`: 
 multiplication express shifts as well as rotations. Face alignment uses a similarity transform from 5 facial
 landmarks (**10**); the scanner and the traffic project use full homographies (**03**, **08**).
 
-## 10. Homography: undoing perspective (03, 08)
+## 10. Homography: undoing perspective (03, 08, 20)
 
 Photograph a flat sheet of paper at an angle and its rectangle becomes a general quadrilateral. A **homography**
 is the 3×3 matrix `H` that maps one plane to another:
@@ -280,6 +280,11 @@ repo:
 
 The key assumption is **flatness**: a homography is exact only for points on that plane. That is why the traffic
 project tracks each car's **bottom-center** point (where it touches the road), not its roof.
+
+A fixed camera needs those 4 points once. A **moving** camera (football broadcasts pan and zoom) needs them in
+every frame, so the football project trains a keypoint model to find 32 pitch landmarks per frame and fits the
+homography with **RANSAC**, which ignores landmarks that disagree with the others. Players' feet then land on a
+top-down tactical map, with a median error of 2.5 m (**20**).
 
 ## 11. The pinhole camera model (14, 08)
 
@@ -1087,7 +1092,7 @@ Computer vision watches people, so it carries real risks:
 | 17 Zero-shot auto-labeling | 25, 27, 29, 42, 44, 47 |
 | 18 Image & video Q&A | 34, 42, 46 |
 | 19 Edge deployment benchmark | 28, 29, 48–52 |
-| 20 Football analytics | 19, 27–30, 35, 36 |
+| 20 Football analytics | 10, 19, 27–30, 33, 35, 36 |
 
 ## Glossary
 

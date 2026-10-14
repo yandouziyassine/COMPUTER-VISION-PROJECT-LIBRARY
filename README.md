@@ -8,6 +8,8 @@ OpenVINO / ONNX / INT8.
 
 **Portfolio:** [yandouziyassine.github.io](https://yandouziyassine.github.io) (all my projects, including this library)
 
+**Browse & try:** [Hugging Face hub](https://huggingface.co/spaces/yandyassine/cv-project-library) (filter the projects, open the live demos).
+
 **New to computer vision?** Read [THEORY.md](THEORY.md): a beginner-to-advanced course in 53 short chapters, from
 pixels to foundation models, each pointing to the projects where the concept is used.
 
@@ -46,7 +48,7 @@ pixels to foundation models, each pointing to the projects where the concept is 
 | 17 | [Zero-Shot Auto-Labeling](17-auto-labeling/) | mAP 0.558 zero-shot vs 0.473 supervised | Grounding DINO, SAM, COCO evaluation | ★★★ |
 | 18 | [Image & Video Q&A](18-video-qa-assistant/) | VQAv2 67 % offline on CPU; prompt wording worth +9 points | Local vision-language model, limits vs specialized models | ★★★ |
 | 19 | [Edge Deployment Benchmark](19-edge-deployment-benchmark/) | 17× faster on iGPU/NPU; INT8 −0.1 mAP (held-out) | ONNX, OpenVINO, INT8 quantization, profiling | ★★★ |
-| 20 | [Football Analytics](20-football-analytics/) | Players AP50 0.98, ball 0.44; teams split by jersey color (silhouette 0.80) | YOLO fine-tuning, unsupervised clustering, possession | ★★ |
+| 20 | [Football Analytics](20-football-analytics/) | Players AP50 0.98, ball 0.44; tactical map with 2.5 m median position error | YOLO fine-tuning, pitch-landmark pose model + homography, unsupervised team split | ★★★ |
 
 ## Skills covered
 

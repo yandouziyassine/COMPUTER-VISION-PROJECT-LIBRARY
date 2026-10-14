@@ -24,5 +24,23 @@
  "possession": {
   "frames_with_ball_and_owner": 41,
   "frames": 130
+ },
+ "pitch": {
+  "test_frames": 24,
+  "homography_found": 24,
+  "landmark_error_px": {
+   "median": 21.3,
+   "p90": 49.5,
+   "n": 317
+  },
+  "pitch_error_m": {
+   "median": 2.5,
+   "p90": 6.15,
+   "n": 370
+  },
+  "pitch_error_m_from_labeled_landmarks": {
+   "median": 0.8,
+   "p90": 1.77
+  }
  }
 }

@@ -1,0 +1,5 @@
+{
+ "model": "depth-anything/Depth-Anything-V2-Small-hf",
+ "images": 4,
+ "mean_ms_per_image_cpu": 652.2
+}

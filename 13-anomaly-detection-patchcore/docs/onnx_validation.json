@@ -1,0 +1,20 @@
+{
+ "bottle": {
+  "n": 83,
+  "auroc": 1.0,
+  "f1_at_threshold": 1.0,
+  "f1_pytorch": 1.0
+ },
+ "metal_nut": {
+  "n": 115,
+  "auroc": 0.999,
+  "f1_at_threshold": 0.9947,
+  "f1_pytorch": 0.9947
+ },
+ "grid": {
+  "n": 78,
+  "auroc": 0.9766,
+  "f1_at_threshold": 0.9735,
+  "f1_pytorch": 0.9735
+ }
+}

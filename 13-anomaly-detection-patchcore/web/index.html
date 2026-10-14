@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PatchCore Defect Detection</title>
+<meta name="description" content="Find manufacturing defects without ever seeing one. PatchCore (CVPR 2022) reimplemented from scratch, running entirely in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0e10; --bg-2: #141518; --panel: #17191d; --line: #262930; --line-2: #33373f;
+  --ink: #ecebe6; --ink-2: #a9a8a2; --ink-3: #6f6e6a;
+  --signal: #ff5b1f; --signal-soft: rgba(255, 91, 31, 0.12); --ok: #7fd18b; --ok-soft: rgba(127, 209, 139, 0.12);
+  --serif: "Instrument Serif", Georgia, serif; --sans: "Geist", ui-sans-serif, sans-serif;
+  --mono: "Geist Mono", ui-monospace, monospace; --radius: 4px; color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f2ec; --bg-2: #ece9e1; --panel: #fbfaf6; --line: #dcd8cd; --line-2: #c9c4b6;
+    --ink: #17181a; --ink-2: #4c4b47; --ink-3: #85837c; --signal: #e0480f;
+    --signal-soft: rgba(224, 72, 15, 0.10); --ok: #2f8a3e; --ok-soft: rgba(47, 138, 62, 0.10); color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--signal); }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.mono { font-family: var(--mono); }
+header { border-bottom: 1px solid var(--line); }
+header .wrap { display: flex; justify-content: space-between; align-items: center; height: 52px; font: 500 13px var(--mono); color: var(--ink-2); }
+header .tag { color: var(--signal); }
+.hero { padding: 56px 0 28px; }
+.kicker { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+h1 { font: 400 clamp(40px, 6vw, 68px)/1.02 var(--serif); margin: 14px 0 16px; letter-spacing: -0.01em; }
+h1 em { color: var(--signal); }
+.lede { max-width: 680px; color: var(--ink-2); font-size: 17px; margin: 0; }
+.stats { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 28px; }
+.stat b { display: block; font: 400 30px/1 var(--serif); }
+.stat span { font: 12px var(--mono); color: var(--ink-3); }
+
+.lab { display: grid; grid-template-columns: 330px 1fr; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); margin: 24px 0 40px; }
+.controls { border-right: 1px solid var(--line); padding: 20px; display: flex; flex-direction: column; gap: 22px; }
+.label { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; }
+.seg button { all: unset; cursor: pointer; text-align: center; padding: 9px 4px; font: 500 13px var(--sans); color: var(--ink-2); border-right: 1px solid var(--line-2); }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg button:focus-visible { outline: 2px solid var(--signal); outline-offset: -2px; }
+.drop { border: 1px dashed var(--line-2); border-radius: var(--radius); padding: 18px; text-align: center; cursor: pointer; color: var(--ink-2); font-size: 14px; transition: border-color .15s, background .15s; }
+.drop:hover, .drop.over { border-color: var(--signal); background: var(--signal-soft); }
+.drop b { color: var(--ink); font-weight: 500; }
+.examples { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ex { all: unset; cursor: pointer; position: relative; aspect-ratio: 1; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.ex img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ex span { position: absolute; left: 0; right: 0; bottom: 0; padding: 3px 5px; font: 10px var(--mono); background: color-mix(in srgb, var(--bg) 82%, transparent); color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ex:hover, .ex:focus-visible { border-color: var(--signal); outline: none; }
+.note { font-size: 13px; color: var(--ink-3); margin: 0; }
+
+.stage { padding: 20px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.views { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.view { position: relative; aspect-ratio: 1; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.view canvas { width: 100%; height: 100%; display: block; }
+.view .cap { position: absolute; top: 8px; left: 8px; font: 500 11px var(--mono); padding: 2px 6px; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; color: var(--ink-2); }
+.view .empty[hidden] { display: none; }
+.view .empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink-3); font: 13px var(--mono); text-align: center; padding: 20px; }
+.verdict { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; min-height: 44px; }
+.verdict .word { font: 400 38px/1 var(--serif); }
+.verdict.bad .word { color: var(--signal); }
+.verdict.good .word { color: var(--ok); }
+.verdict .detail { font: 13px var(--mono); color: var(--ink-2); }
+.gauge { position: relative; height: 34px; }
+.gauge .track { position: absolute; left: 0; right: 0; top: 12px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--ok-soft), var(--ok-soft) 50%, var(--signal-soft) 50%); border: 1px solid var(--line); }
+.gauge .thr { position: absolute; left: 50%; top: 4px; bottom: 0; width: 1px; background: var(--ink-3); }
+.gauge .thr::after { content: "threshold"; position: absolute; top: 24px; left: 4px; font: 10px var(--mono); color: var(--ink-3); }
+.gauge .needle { position: absolute; top: 6px; width: 3px; height: 20px; margin-left: -1px; background: var(--ink); border-radius: 2px; transition: left .5s cubic-bezier(.2,.8,.2,1); left: 0; opacity: 0; }
+.status { font: 12px var(--mono); color: var(--ink-3); display: flex; gap: 10px; align-items: center; min-height: 18px; }
+.bar { flex: 1; max-width: 220px; height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; display: none; }
+.bar i { display: block; height: 100%; width: 0; background: var(--signal); transition: width .1s; }
+.scale { display: flex; align-items: center; gap: 8px; font: 11px var(--mono); color: var(--ink-3); }
+.scale i { flex: 0 0 120px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, #00007f, #0000ff, #00ffff, #7fff7f, #ffff00, #ff0000, #7f0000); }
+
+.how { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; border-top: 1px solid var(--line); padding: 36px 0; }
+.how h3 { font: 400 24px/1.1 var(--serif); margin: 6px 0 8px; }
+.how p { margin: 0; color: var(--ink-2); font-size: 15px; }
+.how .n { font: 12px var(--mono); color: var(--signal); }
+footer { border-top: 1px solid var(--line); padding: 22px 0 40px; font-size: 13px; color: var(--ink-3); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+@media (max-width: 860px) {
+  .lab { grid-template-columns: 1fr; }
+  .controls { border-right: 0; border-bottom: 1px solid var(--line); }
+  .how { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .wrap { padding: 0 16px; }
+  .views { grid-template-columns: 1fr; }
+  .examples { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+<header><div class="wrap"><span>yandyassine / <span class="tag">patchcore</span></span><span>runs in your browser · no server</span></div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">Unsupervised anomaly detection · MVTec AD</div>
+    <h1>Find defects it has <em>never seen.</em></h1>
+    <p class="lede">The model was fitted on photos of <b>good parts only</b>. It flags any patch of an image that looks unlike
+      every patch it has seen before. A from-scratch reimplementation of PatchCore (CVPR 2022), exported to ONNX and running
+      here on your own device. Your image never leaves the browser.</p>
+    <div class="stats">
+      <div class="stat"><b>1.000</b><span>image AUROC · bottle</span></div>
+      <div class="stat"><b>0.999</b><span>image AUROC · metal nut</span></div>
+      <div class="stat"><b>0.977</b><span>image AUROC · grid</span></div>
+      <div class="stat"><b>0</b><span>defect images used to fit</span></div>
+    </div>
+  </section>
+
+  <section class="lab" aria-label="Demo">
+    <div class="controls">
+      <div>
+        <div class="label">1 · Product</div>
+        <div class="seg" role="group" aria-label="Product category">
+          <button data-cat="bottle" aria-pressed="true">Bottle</button>
+          <button data-cat="metal_nut" aria-pressed="false">Metal nut</button>
+          <button data-cat="grid" aria-pressed="false">Grid</button>
+        </div>
+      </div>
+      <div>
+        <div class="label">2 · Image</div>
+        <label class="drop" id="drop"><input type="file" id="file" accept="image/*" hidden>
+          <b>Drop a photo</b> or click to upload</label>
+      </div>
+      <div>
+        <div class="label">or try an MVTec test image</div>
+        <div class="examples" id="examples"></div>
+      </div>
+      <p class="note">One model per product: each was fitted on that product's good parts. A photo of something else will
+        (correctly) look anomalous everywhere.</p>
+    </div>
+
+    <div class="stage">
+      <div class="views">
+        <div class="view"><canvas id="cIn" width="224" height="224"></canvas><span class="cap">input · 224 px crop</span>
+          <div class="empty" id="emptyIn">pick an example →</div></div>
+        <div class="view"><canvas id="cOut" width="224" height="224"></canvas><span class="cap">anomaly heatmap</span>
+          <div class="empty" id="emptyOut">red = unlike any good patch</div></div>
+      </div>
+      <div class="verdict" id="verdict"><span class="word" style="color:var(--ink-3)">Waiting</span>
+        <span class="detail">for an image</span></div>
+      <div class="gauge" aria-hidden="true"><div class="track"></div><div class="thr"></div><div class="needle" id="needle"></div></div>
+      <div class="scale"><span>normal</span><i></i><span>anomalous</span></div>
+      <div class="status"><span id="status">Models load on first use (~50 MB each, cached afterwards).</span><div class="bar" id="bar"><i></i></div></div>
+    </div>
+  </section>
+
+  <section class="how">
+    <div><div class="n">01</div><h3>Describe every patch</h3><p>A WideResNet-50 pretrained on ImageNet turns each image into 28 × 28 patch descriptors (mid-level layers 2 + 3, averaged over a 3 × 3 neighborhood).</p></div>
+    <div><div class="n">02</div><h3>Remember the good ones</h3><p>Descriptors from defect-free training images go into a memory bank, shrunk to 10 % by greedy coreset sampling so it still covers every normal pattern.</p></div>
+    <div><div class="n">03</div><h3>Score by distance</h3><p>Each test patch is scored by its distance to the nearest remembered patch. The image score is the worst patch; the threshold maximizes F1 on the MVTec test set.</p></div>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <span>Code &amp; write-up: <a href="https://github.com/yandouziyassine/COMPUTER-VISION-PROJECT-LIBRARY/tree/main/13-anomaly-detection-patchcore">COMPUTER-VISION-PROJECT-LIBRARY / 13</a> · <a href="https://yandouziyassine.github.io">yandouziyassine.github.io</a></span>
+  <span>Data: MVTec AD (CC BY-NC-SA 4.0, non-commercial) · Roth et al., CVPR 2022</span>
+</div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.webgpu.min.js"></script>
+<script>
+// Weights live in a Hugging Face model repo; a local copy is used when testing on localhost.
+const LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+const BASE = LOCAL ? "models/" : "https://huggingface.co/yandyassine/patchcore-mvtec-ad/resolve/main/";
+const EXAMPLES = ["bottle_good", "bottle_broken_large", "metal_nut_good", "metal_nut_bent", "grid_good", "grid_bent"];
+const NAMES = { bottle: "Bottle", metal_nut: "Metal nut", grid: "Grid" };
+const MEAN = [0.485, 0.456, 0.406], STD = [0.229, 0.224, 0.225];
+const $ = (id) => document.getElementById(id);
+
+let category = "bottle", thresholds = null, backbone = null, provider = null, current = null, busy = false;
+const knn = {};
+
+ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 1) : 1;
+
+function status(text, progress) {
+  $("status").textContent = text;
+  $("bar").style.display = progress == null ? "none" : "block";
+  if (progress != null) $("bar").firstElementChild.style.width = `${Math.round(progress * 100)}%`;
+}
+
+async function download(file, label) {
+  const res = await fetch(BASE + file);
+  if (!res.ok) throw new Error(`${file}: HTTP ${res.status}`);
+  const total = +res.headers.get("content-length") || 0;
+  const reader = res.body.getReader();
+  const chunks = [];
+  let got = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    got += value.length;
+    status(`Downloading ${label}… ${(got / 1e6).toFixed(0)}${total ? ` / ${(total / 1e6).toFixed(0)}` : ""} MB`, total ? got / total : null);
+  }
+  const buf = new Uint8Array(got);
+  let off = 0;
+  for (const c of chunks) { buf.set(c, off); off += c.length; }
+  return buf;
+}
+
+async function session(bytes) {
+  for (const ep of navigator.gpu ? ["webgpu", "wasm"] : ["wasm"]) {
+    try {
+      const s = await ort.InferenceSession.create(bytes, { executionProviders: [ep] });
+      provider = provider || ep;
+      return s;
+    } catch (e) { console.warn(`${ep} failed, trying next`, e); }
+  }
+  throw new Error("Could not start ONNX Runtime in this browser.");
+}
+
+async function ensureModels(cat) {
+  if (!thresholds) thresholds = await (await fetch(BASE + "thresholds.json")).json();
+  if (!backbone) backbone = await session(await download("backbone.onnx", "feature extractor"));
+  if (!knn[cat]) knn[cat] = await session(await download(`knn_${cat}.onnx`, `${NAMES[cat]} memory bank`));
+}
+
+// Same preprocessing as torchvision: resize shorter side to 256, center-crop 224, ImageNet normalization.
+async function preprocess(source) {
+  const w = source.naturalWidth || source.width, h = source.naturalHeight || source.height;
+  const s = 256 / Math.min(w, h);
+  const rw = Math.round(w * s), rh = Math.round(h * s);
+  const bmp = await createImageBitmap(source, { resizeWidth: rw, resizeHeight: rh, resizeQuality: "high" });
+  const ctx = $("cIn").getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(bmp, -Math.floor((rw - 224) / 2), -Math.floor((rh - 224) / 2));
+  $("emptyIn").hidden = true;
+  const px = ctx.getImageData(0, 0, 224, 224).data;
+  const x = new Float32Array(3 * 224 * 224);
+  for (let i = 0; i < 224 * 224; i++)
+    for (let c = 0; c < 3; c++) x[c * 50176 + i] = (px[i * 4 + c] / 255 - MEAN[c]) / STD[c];
+  return { tensor: new ort.Tensor("float32", x, [1, 3, 224, 224]), pixels: px };
+}
+
+function jet(v) {  // matplotlib "jet"
+  const r = Math.min(Math.max(1.5 - Math.abs(4 * v - 3), 0), 1);
+  const g = Math.min(Math.max(1.5 - Math.abs(4 * v - 2), 0), 1);
+  const b = Math.min(Math.max(1.5 - Math.abs(4 * v - 1), 0), 1);
+  return [r * 255, g * 255, b * 255];
+}
+
+function render(pixels, map, score, thr) {
+  const ctx = $("cOut").getContext("2d");
+  const img = ctx.createImageData(224, 224);
+  for (let i = 0; i < 224 * 224; i++) {
+    const [r, g, b] = jet(Math.min(Math.max(map[i] / (2 * thr), 0), 1));  // threshold sits mid-scale
+    img.data[i * 4] = 0.55 * pixels[i * 4] + 0.45 * r;
+    img.data[i * 4 + 1] = 0.55 * pixels[i * 4 + 1] + 0.45 * g;
+    img.data[i * 4 + 2] = 0.55 * pixels[i * 4 + 2] + 0.45 * b;
+    img.data[i * 4 + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  $("emptyOut").hidden = true;
+  const bad = score > thr;
+  const v = $("verdict");
+  v.className = `verdict ${bad ? "bad" : "good"}`;
+  v.innerHTML = `<span class="word">${bad ? "Defect" : "No defect"}</span>` +
+    `<span class="detail">score ${score.toFixed(2)} · threshold ${thr.toFixed(2)} (${NAMES[category]})</span>`;
+  const needle = $("needle");
+  needle.style.opacity = 1;
+  needle.style.left = `${Math.min(Math.max(score / (2 * thr), 0.01), 0.99) * 100}%`;
+}
+
+async function run(source) {
+  if (busy) return;
+  busy = true;
+  current = source;
+  try {
+    const { tensor, pixels } = await preprocess(source);
+    await ensureModels(category);
+    status(`Running on ${provider}…`);
+    const t0 = performance.now();
+    const feats = (await backbone.run({ image: tensor })).features;
+    const t1 = performance.now();
+    const out = await knn[category].run({ features: feats });
+    const t2 = performance.now();
+    render(pixels, out.map.data, out.score.data[0], thresholds[category].threshold);
+    status(`${provider} · features ${Math.round(t1 - t0)} ms · nearest-neighbor search ${Math.round(t2 - t1)} ms`);
+  } catch (e) {
+    console.error(e);
+    status(`Error: ${e.message}`);
+  } finally {
+    busy = false;
+  }
+}
+
+function setCategory(cat) {
+  category = cat;
+  document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.cat === cat));
+}
+
+document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
+  setCategory(b.dataset.cat);
+  if (current) run(current);
+}));
+
+for (const name of EXAMPLES) {
+  const cat = Object.keys(NAMES).find((c) => name.startsWith(c + "_"));
+  const btn = document.createElement("button");
+  btn.className = "ex";
+  btn.title = name.replace(`${cat}_`, `${NAMES[cat]}: `).replace(/_/g, " ");
+  // crossorigin: on the Hub, image files redirect to a CDN; without it the canvas refuses to read their pixels.
+  btn.innerHTML = `<img src="examples/${name}.png" alt="${btn.title}" loading="lazy" crossorigin="anonymous"><span>${name.slice(cat.length + 1).replace(/_/g, " ")}</span>`;
+  btn.addEventListener("click", () => { setCategory(cat); run(btn.querySelector("img")); });
+  $("examples").appendChild(btn);
+}
+
+async function fromFile(file) {
+  if (!file || !file.type.startsWith("image/")) return;
+  run(await createImageBitmap(file));
+}
+$("file").addEventListener("change", (e) => fromFile(e.target.files[0]));
+const drop = $("drop");
+drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); fromFile(e.dataTransfer.files[0]); });
+</script>
+</body>
+</html>

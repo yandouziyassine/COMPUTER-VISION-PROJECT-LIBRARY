@@ -5,6 +5,9 @@ A from-scratch PyTorch implementation of **PatchCore** (Roth et al., *Towards To
 Industrial Anomaly Detection*, CVPR 2022), about 150 lines with no anomaly-detection library,
 evaluated on the MVTec AD benchmark on a laptop CPU.
 
+**▶ Try it live:** [Hugging Face demo](https://huggingface.co/spaces/yandyassine/patchcore-defect-detection), running entirely in your browser (ONNX Runtime Web, WebGPU or WebAssembly; no server).
+Model files and card: [yandyassine/patchcore-mvtec-ad](https://huggingface.co/yandyassine/patchcore-mvtec-ad).
+
 ![metal_nut results](docs/metal_nut_examples.png)
 
 *Top: defective test parts. Middle: ground-truth defect masks. Bottom: PatchCore anomaly heatmap.
@@ -72,6 +75,25 @@ Get the data (≈ 400 MB for these three categories):
 python -c "from huggingface_hub import snapshot_download as d; d('foersben/mvtec-ad', repo_type='dataset', local_dir='../../cv-data/mvtec', allow_patterns=['bottle/**','metal_nut/**','grid/**','license.txt'])"
 ```
 
+## Browser demo (no server)
+
+The [live demo](https://huggingface.co/spaces/yandyassine/patchcore-defect-detection) runs the model on the
+visitor's own device with ONNX Runtime Web (WebGPU when available, WebAssembly otherwise), so it is free to host
+and uploaded photos never leave the browser.
+
+- [`web/build.py`](web/build.py) exports two ONNX graphs: the backbone (image → 784 patch features), and one
+  nearest-neighbor graph per category with the memory bank baked in, written as one matrix multiplication
+  (`|q|² + |b|² − 2 q·b`). Weights are stored as float16 and cast back to float32 inside the graph: ~50 MB per
+  file instead of ~100 MB, with float32 math. It also picks each category's threshold (best F1 on the test set).
+- [`web/validate.py`](web/validate.py) re-runs the full test set through the ONNX files: **image AUROC and F1
+  are identical to PyTorch** (1.000 / 0.999 / 0.977; [`docs/onnx_validation.json`](docs/onnx_validation.json)).
+- [`web/index.html`](web/index.html) is the whole demo page. In the browser, one image takes ~0.3 s with WebGPU
+  and ~2 s with WebAssembly on one thread (laptop measurements).
+
+```bash
+python web/build.py && python web/validate.py     # writes to ../../cv-data/mvtec/web/
+```
+
 ## What I learned / what didn't work
 
 - **Grid is the hardest** (0.977): it's a repeating texture, so a defect patch can look locally
@@ -86,7 +108,8 @@ python -c "from huggingface_hub import snapshot_download as d; d('foersben/mvtec
 
 - Choose an operating threshold per category (e.g. for 99 % defect recall) and report the false-alarm rate.
 - Run all 15 MVTec categories.
-- Export the backbone to OpenVINO (see project 19) to bring inference from ~500 ms to real time.
+- Export the backbone to OpenVINO (see project 19) to bring desktop inference from ~500 ms to real time
+  (the browser demo already does it in ~0.3 s with WebGPU).
 
 ## Tech stack
 

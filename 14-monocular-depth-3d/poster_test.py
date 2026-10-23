@@ -61,8 +61,10 @@ def poster_quad(wall, depth, K, fill=0.7):
         return np.array([fx * p[0] / p[2] + cx, fy * p[1] / p[2] + cy])
 
     half = 2.0
-    for _ in range(60):                                  # shrink until all corners are well inside the mask
-        corners = [centre + sx * half * right + sy * half * 0.75 * upw for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+    for _ in range(60):  # shrink until all corners are well inside the mask
+        corners = [
+            centre + sx * half * right + sy * half * 0.75 * upw for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))
+        ]
         quad = np.array([project(c) for c in corners], np.float32)
         if np.all(np.linalg.norm(quad - [ux, vy], axis=1) <= fill * r):
             return quad
@@ -137,18 +139,21 @@ def main():
             signed.append(s)
             if name == "da2-small":
                 examples.append((a - b, comp, pa, poster))
-        res[name] = {"images": len(cands), "deviation_before": round(float(np.mean(before)), 4),
-                     "deviation_with_poster": round(float(np.mean(after)), 4),
-                     "illusion_score": round(float(np.mean(np.array(after) - np.array(before))), 4),
-                     "share_worse_with_poster": round(float(np.mean(np.array(after) > np.array(before))), 3),
-                     "mean_signed_deviation": round(float(np.mean(signed)), 4)}
+        res[name] = {
+            "images": len(cands),
+            "deviation_before": round(float(np.mean(before)), 4),
+            "deviation_with_poster": round(float(np.mean(after)), 4),
+            "illusion_score": round(float(np.mean(np.array(after) - np.array(before))), 4),
+            "share_worse_with_poster": round(float(np.mean(np.array(after) > np.array(before))), 3),
+            "mean_signed_deviation": round(float(np.mean(signed)), 4),
+        }
         print(name, res[name], flush=True)
     results_path = DOCS / "results.json"
     results = json.loads(results_path.read_text())
     results["poster_test"] = res
     results_path.write_text(json.dumps(results, indent=1))
     examples.sort(key=lambda e: -e[0])
-    np.save(DOCS / "_poster_best.npy", examples[0][1])          # used by see_vs_infer.py
+    np.save(DOCS / "_poster_best.npy", examples[0][1])  # used by see_vs_infer.py
     fig, axes = plt.subplots(2, 4, figsize=(14, 5.6))
     for col, (_, comp, pa, poster) in enumerate(examples[:4]):
         axes[0, col].imshow(comp)

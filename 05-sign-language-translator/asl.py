@@ -35,10 +35,12 @@ def to_tensor(images):
 
 
 # Hand photos from a real camera are never perfectly centered, upright or evenly lit.
-train_aug = v2.Compose([
-    v2.RandomAffine(degrees=12, translate=(0.1, 0.1), scale=(0.9, 1.1)),
-    v2.ColorJitter(brightness=0.3, contrast=0.3),
-])
+train_aug = v2.Compose(
+    [
+        v2.RandomAffine(degrees=12, translate=(0.1, 0.1), scale=(0.9, 1.1)),
+        v2.ColorJitter(brightness=0.3, contrast=0.3),
+    ]
+)
 
 
 class SignDataset(Dataset):
@@ -51,7 +53,7 @@ class SignDataset(Dataset):
         return len(self.labels)
 
     def __getitem__(self, i):
-        x = self.images[i][None]                      # (1, 28, 28) uint8
+        x = self.images[i][None]  # (1, 28, 28) uint8
         if self.aug is not None:
             x = self.aug(x)
         return (x.float() / 255 - MEAN) / STD, self.labels[i]
@@ -64,13 +66,25 @@ class SignCNN(nn.Module):
         super().__init__()
 
         def block(c_in, c_out):
-            return nn.Sequential(nn.Conv2d(c_in, c_out, 3, padding=1), nn.BatchNorm2d(c_out), nn.ReLU(),
-                                 nn.Conv2d(c_out, c_out, 3, padding=1), nn.BatchNorm2d(c_out), nn.ReLU(),
-                                 nn.MaxPool2d(2))
+            return nn.Sequential(
+                nn.Conv2d(c_in, c_out, 3, padding=1),
+                nn.BatchNorm2d(c_out),
+                nn.ReLU(),
+                nn.Conv2d(c_out, c_out, 3, padding=1),
+                nn.BatchNorm2d(c_out),
+                nn.ReLU(),
+                nn.MaxPool2d(2),
+            )
 
         self.features = nn.Sequential(block(1, 32), block(32, 64), block(64, 128))
-        self.head = nn.Sequential(nn.Flatten(), nn.Dropout(0.3), nn.Linear(128 * 3 * 3, 128), nn.ReLU(),
-                                  nn.Dropout(0.3), nn.Linear(128, n_classes))
+        self.head = nn.Sequential(
+            nn.Flatten(),
+            nn.Dropout(0.3),
+            nn.Linear(128 * 3 * 3, 128),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(128, n_classes),
+        )
 
     def forward(self, x):
         return self.head(self.features(x))
@@ -81,7 +95,7 @@ def predict_proba(model, images, batch=1024):
     """uint8 images (N, 28, 28) -> class probabilities (N, 24)."""
     model.eval()
     x = to_tensor(images)
-    return torch.cat([model(x[i:i + batch]).softmax(1) for i in range(0, len(x), batch)]).numpy()
+    return torch.cat([model(x[i : i + batch]).softmax(1) for i in range(0, len(x), batch)]).numpy()
 
 
 def load_model(name="cnn_aug"):
@@ -96,6 +110,6 @@ def hand_crop_to_input(gray_crop):
 
     h, w = gray_crop.shape
     side = max(h, w)
-    canvas = np.full((side, side), int(np.median(gray_crop)), np.uint8)   # pad with the background tone
-    canvas[(side - h) // 2:(side - h) // 2 + h, (side - w) // 2:(side - w) // 2 + w] = gray_crop
+    canvas = np.full((side, side), int(np.median(gray_crop)), np.uint8)  # pad with the background tone
+    canvas[(side - h) // 2 : (side - h) // 2 + h, (side - w) // 2 : (side - w) // 2 + w] = gray_crop
     return cv2.resize(canvas, (28, 28), interpolation=cv2.INTER_AREA)

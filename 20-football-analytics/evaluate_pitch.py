@@ -63,17 +63,25 @@ def main():
             continue
         n_ok += 1
         pitch_err += (np.linalg.norm(project(H, gt[vis, :2]) - PITCH_POINTS[vis], axis=1) / 100).tolist()  # cm → m
-        if len(panels) < 3 and i % 8 == 0:   # three frames spread over the test set
+        if len(panels) < 3 and i % 8 == 0:  # three frames spread over the test set
             panels.append(draw_panel(img, kp, H, players))
     res = {
         "test_frames": len(images),
         "homography_found": n_ok,
-        "landmark_error_px": {"median": round(float(np.median(px_err)), 1), "p90": round(float(np.percentile(px_err, 90)), 1),
-                              "n": len(px_err)},
-        "pitch_error_m": {"median": round(float(np.median(pitch_err)), 2), "p90": round(float(np.percentile(pitch_err, 90)), 2),
-                          "n": len(pitch_err)},
-        "pitch_error_m_from_labeled_landmarks": {"median": round(float(np.median(oracle_err)), 2),
-                                                  "p90": round(float(np.percentile(oracle_err, 90)), 2)},
+        "landmark_error_px": {
+            "median": round(float(np.median(px_err)), 1),
+            "p90": round(float(np.percentile(px_err, 90)), 1),
+            "n": len(px_err),
+        },
+        "pitch_error_m": {
+            "median": round(float(np.median(pitch_err)), 2),
+            "p90": round(float(np.percentile(pitch_err, 90)), 2),
+            "n": len(pitch_err),
+        },
+        "pitch_error_m_from_labeled_landmarks": {
+            "median": round(float(np.median(oracle_err)), 2),
+            "p90": round(float(np.percentile(oracle_err, 90)), 2),
+        },
     }
     print(json.dumps(res, indent=1))
     results = json.loads((DOCS / "results.json").read_text()) if (DOCS / "results.json").exists() else {}

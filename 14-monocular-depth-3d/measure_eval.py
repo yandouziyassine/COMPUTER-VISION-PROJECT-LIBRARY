@@ -42,7 +42,7 @@ def main():
         gt = data.depth(i)
         pred = preds[k].astype(np.float32)
         ps = pairs(gt, rng)
-        q1, q2, ref = ps[0]                                          # the "known object" in this photo
+        q1, q2, ref = ps[0]  # the "known object" in this photo
         scale = ref / distance(q1, q2, pred, K)
         for p1, p2, d in ps[1:]:
             pd = distance(p1, p2, pred, K)
@@ -52,10 +52,13 @@ def main():
     plain, calibrated, truth = map(np.array, (plain, calibrated, truth))
     res = {"pairs": int(len(truth)), "images": len(idx), "model": "da2-metric-indoor", "intrinsics": "true NYU"}
     for name, err in (("metric_model_only", plain), ("with_one_known_length", calibrated)):
-        res[name] = {"median_rel_error": round(float(np.median(err)), 3),
-                     "p90_rel_error": round(float(np.percentile(err, 90)), 3),
-                     "by_distance_m": {f"{lo}-{hi}": round(float(np.median(err[(truth >= lo) & (truth < hi)])), 3)
-                                       for lo, hi in BINS}}
+        res[name] = {
+            "median_rel_error": round(float(np.median(err)), 3),
+            "p90_rel_error": round(float(np.percentile(err, 90)), 3),
+            "by_distance_m": {
+                f"{lo}-{hi}": round(float(np.median(err[(truth >= lo) & (truth < hi)])), 3) for lo, hi in BINS
+            },
+        }
     print(json.dumps(res, indent=1))
     results_path = DOCS / "results.json"
     results = json.loads(results_path.read_text())

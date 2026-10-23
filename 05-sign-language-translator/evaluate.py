@@ -27,15 +27,19 @@ from asl import DOCS, LETTERS, load_model, load_split, predict_proba
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-NEAR, FAR = 0.95, 0.90   # correlation with the nearest training image
+NEAR, FAR = 0.95, 0.90  # correlation with the nearest training image
 
 
 def metrics(pred, y):
-    return {"accuracy": round(float((pred == y).mean()), 4), "macro_f1": round(float(f1_score(y, pred, average="macro")), 4)}
+    return {
+        "accuracy": round(float((pred == y).mean()), 4),
+        "macro_f1": round(float(f1_score(y, pred, average="macro")), 4),
+    }
 
 
 def nearest_train_correlation(train, test, chunk=512):
     """Pearson correlation between each test image and its most similar training image (pixel space)."""
+
     def unit(a):
         v = a.reshape(len(a), -1).astype(np.float32)
         v -= v.mean(1, keepdims=True)
@@ -44,7 +48,7 @@ def nearest_train_correlation(train, test, chunk=512):
     tr, te = unit(train), unit(test)
     best, idx = [], []
     for i in range(0, len(te), chunk):
-        sims = te[i:i + chunk] @ tr.T
+        sims = te[i : i + chunk] @ tr.T
         v, j = sims.max(1)
         best.append(v)
         idx.append(j)
@@ -62,10 +66,14 @@ PERTURBATIONS = {
     "rotation (°)": ([0, 5, 10, 15, 20, 25, 30], lambda x, v: warp(x, angle=v)),
     "shift (px)": ([0, 1, 2, 3, 4, 5, 6], lambda x, v: warp(x, shift=v)),
     "scale (×)": ([0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3], lambda x, v: warp(x, scale=v)),
-    "brightness (×)": ([0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6],
-                       lambda x, v: np.clip(x.astype(np.float32) * v, 0, 255).astype(np.uint8)),
-    "blur (σ px)": ([0, 0.5, 1.0, 1.5, 2.0],
-                    lambda x, v: x if v == 0 else np.stack([cv2.GaussianBlur(im, (0, 0), v) for im in x])),
+    "brightness (×)": (
+        [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6],
+        lambda x, v: np.clip(x.astype(np.float32) * v, 0, 255).astype(np.uint8),
+    ),
+    "blur (σ px)": (
+        [0, 0.5, 1.0, 1.5, 2.0],
+        lambda x, v: x if v == 0 else np.stack([cv2.GaussianBlur(im, (0, 0), v) for im in x]),
+    ),
 }
 
 
@@ -93,19 +101,28 @@ def main():
     cm = confusion_matrix(te_y, preds["cnn_aug"], labels=range(len(LETTERS)))
     off = cm.copy()
     np.fill_diagonal(off, 0)
-    pairs = sorted(((off[i, j], LETTERS[i], LETTERS[j]) for i in range(len(LETTERS)) for j in range(len(LETTERS))),
-                   reverse=True)[:6]
+    pairs = sorted(
+        ((off[i, j], LETTERS[i], LETTERS[j]) for i in range(len(LETTERS)) for j in range(len(LETTERS))), reverse=True
+    )[:6]
     results["top_confusions_cnn_aug"] = [{"true": a, "pred": b, "count": int(c)} for c, a, b in pairs if c > 0]
 
     # 2. Leakage audit
     corr, nn_idx = nearest_train_correlation(tr_x, te_x)
-    bins = {"near-duplicate (r ≥ 0.95)": corr >= NEAR, "similar (0.90–0.95)": (corr >= FAR) & (corr < NEAR),
-            "new (r < 0.90)": corr < FAR}
-    results["leakage"] = {"median_nearest_r": round(float(np.median(corr)), 4),
-                          "bins": {b: {"share": round(float(m.mean()), 4),
-                                       **{k: round(float((p[m] == te_y[m]).mean()), 4) if m.any() else None
-                                          for k, p in preds.items()}}
-                                   for b, m in bins.items()}}
+    bins = {
+        "near-duplicate (r ≥ 0.95)": corr >= NEAR,
+        "similar (0.90–0.95)": (corr >= FAR) & (corr < NEAR),
+        "new (r < 0.90)": corr < FAR,
+    }
+    results["leakage"] = {
+        "median_nearest_r": round(float(np.median(corr)), 4),
+        "bins": {
+            b: {
+                "share": round(float(m.mean()), 4),
+                **{k: round(float((p[m] == te_y[m]).mean()), 4) if m.any() else None for k, p in preds.items()},
+            }
+            for b, m in bins.items()
+        },
+    }
     print(json.dumps(results["leakage"], indent=1, ensure_ascii=False), flush=True)
 
     # 3. Robustness
@@ -113,8 +130,9 @@ def main():
     for name, (levels, fn) in PERTURBATIONS.items():
         results["robustness"][name] = {"levels": levels}
         for k in ("cnn_aug", "cnn_noaug"):
-            results["robustness"][name][k] = [round(float((predict_proba(models[k], fn(te_x, v)).argmax(1) == te_y).mean()), 4)
-                                              for v in levels]
+            results["robustness"][name][k] = [
+                round(float((predict_proba(models[k], fn(te_x, v)).argmax(1) == te_y).mean()), 4) for v in levels
+            ]
         print(name, results["robustness"][name], flush=True)
 
     DOCS.mkdir(exist_ok=True)
@@ -185,8 +203,11 @@ def plot_examples(x, y, pred, conf):
     for ax, i in zip(axes.flat, np.concatenate([right, wrong])):
         ax.imshow(x[i], cmap="gray")
         ok = pred[i] == y[i]
-        ax.set_title(f"{LETTERS[pred[i]]} ({conf[i]:.0%})" + ("" if ok else f" ≠ {LETTERS[y[i]]}"),
-                     fontsize=8, color="black" if ok else "crimson")
+        ax.set_title(
+            f"{LETTERS[pred[i]]} ({conf[i]:.0%})" + ("" if ok else f" ≠ {LETTERS[y[i]]}"),
+            fontsize=8,
+            color="black" if ok else "crimson",
+        )
         ax.axis("off")
     fig.suptitle("Test images: prediction (confidence); red = error, true letter after ≠", fontsize=9)
     fig.tight_layout()

@@ -25,7 +25,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 PX_PER_M = 20
-LANE_M, PERIOD_M = 3.75, 18.0   # common European motorway standards (assumed, not known for this road)
+LANE_M, PERIOD_M = 3.75, 18.0  # common European motorway standards (assumed, not known for this road)
 
 
 def background(video, n=25):
@@ -51,17 +51,16 @@ def marking_mask(top):
     hsv = cv2.cvtColor(top, cv2.COLOR_BGR2HSV)
     v, s = hsv[..., 2].astype(np.int16), hsv[..., 1]
     local = cv2.blur(v, (41, 41))
-    return ((v > local + 35) & (s < 60)).astype(np.uint8)   # brighter than the asphalt around it, and colorless
+    return ((v > local + 35) & (s < 60)).astype(np.uint8)  # brighter than the asphalt around it, and colorless
 
 
 def line_positions(mask, min_frac=0.08):
     """x positions (m) of longitudinal markings: columns where enough of the road length is white."""
     prof = mask.mean(axis=0)
     prof = np.convolve(prof, np.ones(5) / 5, mode="same")
-    peaks = [x for x in range(2, len(prof) - 2)
-             if prof[x] >= min_frac and prof[x] == prof[x - 2:x + 3].max()]
+    peaks = [x for x in range(2, len(prof) - 2) if prof[x] >= min_frac and prof[x] == prof[x - 2 : x + 3].max()]
     merged = []
-    for x in peaks:                        # one peak per marking (they are ~0.15–0.25 m wide)
+    for x in peaks:  # one peak per marking (they are ~0.15–0.25 m wide)
         if merged and x - merged[-1][-1] <= 0.5 * PX_PER_M:
             merged[-1].append(x)
         else:
@@ -72,11 +71,11 @@ def line_positions(mask, min_frac=0.08):
 def dash_runs(mask, x_m, half_width=0.25):
     """Lengths (m) of white runs and gaps along one dashed line."""
     x = int(x_m * PX_PER_M)
-    col = mask[:, max(0, x - int(half_width * PX_PER_M)):x + int(half_width * PX_PER_M) + 1].max(axis=1)
+    col = mask[:, max(0, x - int(half_width * PX_PER_M)) : x + int(half_width * PX_PER_M) + 1].max(axis=1)
     col = cv2.morphologyEx(col.reshape(-1, 1), cv2.MORPH_CLOSE, np.ones((9, 1), np.uint8)).ravel()
     edges = np.flatnonzero(np.diff(col.astype(np.int8))) + 1
     runs = np.split(col, edges)
-    lens = [(int(r[0]), len(r) / PX_PER_M) for r in runs[1:-1]]     # drop the truncated first/last runs
+    lens = [(int(r[0]), len(r) / PX_PER_M) for r in runs[1:-1]]  # drop the truncated first/last runs
     dashes = [length for white, length in lens if white and length >= 1.0]
     gaps = [length for white, length in lens if not white and length >= 1.0]
     return dashes, gaps
@@ -93,14 +92,25 @@ def main():
     for x in lines:
         d, g = dash_runs(mask, x)
         if len(d) >= 3 and len(g) >= 3:
-            dashed.append({"x_m": round(x, 2), "dash_m": round(float(np.median(d)), 2), "gap_m": round(float(np.median(g)), 2),
-                           "period_m": round(float(np.median(d) + np.median(g)), 2), "n_dashes": len(d)})
-    lanes = [w for w in widths if 2.8 <= w <= 4.2]                        # lane-to-lane spacings only
+            dashed.append(
+                {
+                    "x_m": round(x, 2),
+                    "dash_m": round(float(np.median(d)), 2),
+                    "gap_m": round(float(np.median(g)), 2),
+                    "period_m": round(float(np.median(d) + np.median(g)), 2),
+                    "n_dashes": len(d),
+                }
+            )
+    lanes = [w for w in widths if 2.8 <= w <= 4.2]  # lane-to-lane spacings only
     periods = [d["period_m"] for d in dashed if 10 <= d["period_m"] <= 25]  # motorway lane dashes, not barrier posts
-    res = {"assumed_patch_m": [TARGET_W, TARGET_H], "marking_x_m": [round(x, 2) for x in lines],
-           "spacing_between_markings_m": widths, "dashed_lines": dashed,
-           "lane_width_m": round(float(np.mean(lanes)), 2) if lanes else None,
-           "dash_period_m": round(float(np.median(periods)), 2) if periods else None}
+    res = {
+        "assumed_patch_m": [TARGET_W, TARGET_H],
+        "marking_x_m": [round(x, 2) for x in lines],
+        "spacing_between_markings_m": widths,
+        "dashed_lines": dashed,
+        "lane_width_m": round(float(np.mean(lanes)), 2) if lanes else None,
+        "dash_period_m": round(float(np.median(periods)), 2) if periods else None,
+    }
     # If the road follows common European motorway standards (3.75 m lanes, 6 m dash + 12 m gap), how far off is
     # the calibration? Speed scales with the along-road factor.
     if lanes:

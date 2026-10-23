@@ -31,7 +31,7 @@ def main():
 
     images, labels = load_split("train")
     perm = np.random.default_rng(0).permutation(len(labels))
-    va, tr = perm[: len(perm) // 10], perm[len(perm) // 10:]
+    va, tr = perm[: len(perm) // 10], perm[len(perm) // 10 :]
     dl = DataLoader(SignDataset(images[tr], labels[tr], train_aug if args.aug else None), batch_size=128, shuffle=True)
     print(f"{name}: train {len(tr)} | val {len(va)}", flush=True)
 

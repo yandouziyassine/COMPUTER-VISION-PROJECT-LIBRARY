@@ -19,11 +19,11 @@ def test_24_static_letters_without_j_and_z():
 
 
 def test_crop_becomes_square_28x28_and_keeps_aspect_ratio():
-    crop = np.full((60, 20), 50, np.uint8)       # tall, narrow hand on a dark background
-    crop[:, 8:12] = 250                            # bright vertical finger in the middle
+    crop = np.full((60, 20), 50, np.uint8)  # tall, narrow hand on a dark background
+    crop[:, 8:12] = 250  # bright vertical finger in the middle
     out = asl.hand_crop_to_input(crop)
     assert out.shape == (28, 28) and out.dtype == np.uint8
-    assert out[14, 14] > 200                       # finger stays centered
+    assert out[14, 14] > 200  # finger stays centered
     assert out[14, 2] < 100 and out[14, 25] < 100  # padding uses the background tone, not white
 
 

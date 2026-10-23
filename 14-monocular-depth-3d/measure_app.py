@@ -38,14 +38,18 @@ def on_click(state_img, points, depth, evt: gr.SelectData):
         return np.asarray(canvas), points, depth, "Click a second point."
     draw.line([points[0], points[1]], fill=(255, 91, 31), width=3)
     d, source = measurer.measure(img, points[0], points[1], depth=depth)
-    msg = (f"**{d:.2f} m** (±{P90 * 100:.0f} % for 9 measurements out of 10 on NYU indoor scenes).  \n"
-           f"Camera: {source}. Indoor model: outdoor scenes will be less accurate.")
+    msg = (
+        f"**{d:.2f} m** (±{P90 * 100:.0f} % for 9 measurements out of 10 on NYU indoor scenes).  \n"
+        f"Camera: {source}. Indoor model: outdoor scenes will be less accurate."
+    )
     return np.asarray(canvas), points, depth, msg
 
 
 with gr.Blocks(title="Measure from one photo") as demo:
-    gr.Markdown("# Measure from one photo\nUpload an indoor photo, click two points. Metric depth from Depth Anything V2 "
-                f"(indoor); with one known length in the photo the 90th-percentile error drops to ±{P90_REF * 100:.0f} %.")
+    gr.Markdown(
+        "# Measure from one photo\nUpload an indoor photo, click two points. Metric depth from Depth Anything V2 "
+        f"(indoor); with one known length in the photo the 90th-percentile error drops to ±{P90_REF * 100:.0f} %."
+    )
     img_state, pts_state, depth_state = gr.State(), gr.State([]), gr.State()
     with gr.Row():
         inp = gr.Image(type="numpy", label="Photo (click two points)")

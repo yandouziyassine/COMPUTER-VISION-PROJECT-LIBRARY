@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 REFLECTIVE = ["mirror", "window", "glass", "television", "monitor", "picture", "whiteboard", "blinds", "curtain"]
 ORDINARY = ["wall", "floor", "ceiling", "table", "door", "cabinet", "bed", "chair", "sofa"]
 DIST_BINS = [(0, 2), (2, 4), (4, 10)]
-BORDER = 40   # px band inside the Eigen crop
+BORDER = 40  # px band inside the Eigen crop
 
 
 def main():
@@ -38,7 +38,7 @@ def main():
     region = np.zeros((480, 640), bool)
     region[EIGEN_CROP] = True
     inner = np.zeros_like(region)
-    inner[45 + BORDER:471 - BORDER, 41 + BORDER:601 - BORDER] = True
+    inner[45 + BORDER : 471 - BORDER, 41 + BORDER : 601 - BORDER] = True
     border = region & ~inner
     for name in M.RELATIVE:
         preds = cached(name, len(idx))
@@ -102,7 +102,7 @@ def plot(out):
 if __name__ == "__main__":
     import sys
 
-    if "--plot-only" in sys.argv:                    # redraw the figure from docs/results.json
+    if "--plot-only" in sys.argv:  # redraw the figure from docs/results.json
         plot(json.loads((DOCS / "results.json").read_text())["failures"])
     else:
         main()

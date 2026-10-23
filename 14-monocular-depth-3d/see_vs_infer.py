@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 def pixel_panel(ax, rgb, y, x, size=8):
     """The numbers a computer actually receives: an 8x8 block of brightness values."""
-    gray = np.asarray(Image.fromarray(rgb).convert("L"))[y:y + size, x:x + size]
+    gray = np.asarray(Image.fromarray(rgb).convert("L"))[y : y + size, x : x + size]
     ax.imshow(gray, cmap="gray", vmin=0, vmax=255)
     for (r, c), val in np.ndenumerate(gray):
         ax.text(c, r, str(val), ha="center", va="center", fontsize=6, color="red" if val > 127 else "yellow")
@@ -39,13 +39,20 @@ def main():
     best = idx[int(np.argmin(absrel))]
     most_mirror = max(idx, key=lambda i: int((data.labels(i) == mirror).sum()))
     est = M.load("da2-small")
-    crop = EIGEN_CROP                                   # NYU frames have a white border outside this region
-    rows = [("A scene the model gets right", data.rgb(best)[crop], data.depth(best)[crop]),
-            ("A mirror: the room inside it is not real", data.rgb(most_mirror)[crop], data.depth(most_mirror)[crop]),
-            ("A flat poster on a wall (Part A test)", np.load(DOCS / "_poster_best.npy")[crop], None),
-            ("The Ames room illusion", np.asarray(Image.open(ILLUSIONS / "ames_room.jpg").convert("RGB")), None)]
-    titles = ["What you see", "What the computer receives", "What it infers (bright = near)",
-              "The truth (Kinect) / error", "Its 3D, seen from the side"]
+    crop = EIGEN_CROP  # NYU frames have a white border outside this region
+    rows = [
+        ("A scene the model gets right", data.rgb(best)[crop], data.depth(best)[crop]),
+        ("A mirror: the room inside it is not real", data.rgb(most_mirror)[crop], data.depth(most_mirror)[crop]),
+        ("A flat poster on a wall (Part A test)", np.load(DOCS / "_poster_best.npy")[crop], None),
+        ("The Ames room illusion", np.asarray(Image.open(ILLUSIONS / "ames_room.jpg").convert("RGB")), None),
+    ]
+    titles = [
+        "What you see",
+        "What the computer receives",
+        "What it infers (bright = near)",
+        "The truth (Kinect) / error",
+        "Its 3D, seen from the side",
+    ]
     fig, axes = plt.subplots(len(rows), 5, figsize=(19, 3.6 * len(rows)))
     for r, (label, rgb, gt) in enumerate(rows):
         disp = M.predict(est, rgb)

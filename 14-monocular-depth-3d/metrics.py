@@ -2,7 +2,7 @@
 
 import numpy as np
 
-EIGEN_CROP = (slice(45, 471), slice(41, 601))   # standard NYU evaluation crop (480 x 640 images)
+EIGEN_CROP = (slice(45, 471), slice(41, 601))  # standard NYU evaluation crop (480 x 640 images)
 MIN_DEPTH, MAX_DEPTH = 1e-3, 10.0
 
 

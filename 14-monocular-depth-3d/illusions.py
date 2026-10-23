@@ -25,20 +25,37 @@ import matplotlib.pyplot as plt  # noqa: E402
 DIR = ROOT.parent / "illusions"
 UA = {"User-Agent": "cv-portfolio-research/1.0 (github.com/yandouziyassine)"}
 TITLES = {
-    "ames_room": ("File:Ames room forced perspective.jpg", "Two people the same height look giant and tiny: the room is not a box"),
+    "ames_room": (
+        "File:Ames room forced perspective.jpg",
+        "Two people the same height look giant and tiny: the room is not a box",
+    ),
     "street_art": ("File:3D street painting.jpg", "A flat painting on the ground that looks like a hole"),
-    "den_helder": ("File:Den Helder - Julianaplein, 3D street art 2020.jpg", "3D street art seen from its intended viewpoint"),
+    "den_helder": (
+        "File:Den Helder - Julianaplein, 3D street art 2020.jpg",
+        "3D street art seen from its intended viewpoint",
+    ),
     "colonnade": ("File:Colonnade, trompe l'oeil mural by John Pugh.jpg", "A flat wall painted as a colonnade"),
-    "cinema_vox": ("File:Film crew in trompe l'oeil mural, Cinéma Vox, Chamonix-Mont-Blanc, 2007.jpg", "Painted film crew on a flat facade"),
-    "mirrors": ("File:Man photographing himself in hotel bathroom with mirrors all around to generate illusion (cropped twice).jpg",
-                "Facing mirrors: an endless corridor that does not exist"),
+    "cinema_vox": (
+        "File:Film crew in trompe l'oeil mural, Cinéma Vox, Chamonix-Mont-Blanc, 2007.jpg",
+        "Painted film crew on a flat facade",
+    ),
+    "mirrors": (
+        "File:Man photographing himself in hotel bathroom with mirrors all around to generate illusion (cropped twice).jpg",
+        "Facing mirrors: an endless corridor that does not exist",
+    ),
 }
 
 
 def fetch():
     DIR.mkdir(parents=True, exist_ok=True)
-    q = {"action": "query", "prop": "imageinfo", "iiprop": "url|extmetadata", "iiurlwidth": 1280,
-         "titles": "|".join(t for t, _ in TITLES.values()), "format": "json"}
+    q = {
+        "action": "query",
+        "prop": "imageinfo",
+        "iiprop": "url|extmetadata",
+        "iiurlwidth": 1280,
+        "titles": "|".join(t for t, _ in TITLES.values()),
+        "format": "json",
+    }
     url = "https://commons.wikimedia.org/w/api.php?" + urllib.parse.urlencode(q)
     pages = json.load(urllib.request.urlopen(urllib.request.Request(url, headers=UA)))["query"]["pages"].values()
     by_title = {p["title"]: p["imageinfo"][0] for p in pages}
@@ -50,9 +67,13 @@ def fetch():
             path.write_bytes(urllib.request.urlopen(urllib.request.Request(info["thumburl"], headers=UA)).read())
         md = info["extmetadata"]
         artist = re.sub(r"<[^>]+>", "", md.get("Artist", {}).get("value", "unknown")).strip()
-        credits.append(f"- **{key}**: [{title}]({info['descriptionurl']}), {md.get('LicenseShortName', {}).get('value')}, "
-                       f"by {artist}")
-    (DOCS / "illusion_credits.md").write_text("# Illusion photo credits\n\n" + "\n".join(credits) + "\n", encoding="utf-8")
+        credits.append(
+            f"- **{key}**: [{title}]({info['descriptionurl']}), {md.get('LicenseShortName', {}).get('value')}, "
+            f"by {artist}"
+        )
+    (DOCS / "illusion_credits.md").write_text(
+        "# Illusion photo credits\n\n" + "\n".join(credits) + "\n", encoding="utf-8"
+    )
 
 
 def main():

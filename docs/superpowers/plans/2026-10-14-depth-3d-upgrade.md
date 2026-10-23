@@ -65,18 +65,18 @@ K = (500.0, 500.0, 320.0, 240.0)
 def test_alignment_recovers_scale_and_shift_in_disparity():
     rng = np.random.default_rng(0)
     gt = rng.uniform(1, 8, (48, 64)).astype(np.float32)
-    pred_disp = (1 / gt - 0.05) / 3.0                  # model output = disparity with unknown scale/shift
+    pred_disp = (1 / gt - 0.05) / 3.0  # model output = disparity with unknown scale/shift
     aligned = m.align_disparity(pred_disp, gt, np.ones_like(gt, bool))
     assert np.allclose(aligned, gt, rtol=1e-4)
 
 
 def test_absrel_and_delta1_match_hand_computation():
     gt = np.array([[1.0, 2.0], [4.0, 5.0]])
-    pred = np.array([[1.1, 2.0], [3.6, 5.0]])           # ratios 1.1, 1, 1.11, 1: all within 1.25
+    pred = np.array([[1.1, 2.0], [3.6, 5.0]])  # ratios 1.1, 1, 1.11, 1: all within 1.25
     mask = np.ones_like(gt, bool)
     assert m.abs_rel(pred, gt, mask) == pytest.approx((0.1 + 0 + 0.1 + 0) / 4)
     assert m.delta1(pred, gt, mask) == pytest.approx(1.0)
-    pred[1, 0] = 5.5                                      # 5.5 / 4 = 1.375 > 1.25
+    pred[1, 0] = 5.5  # 5.5 / 4 = 1.375 > 1.25
     assert m.delta1(pred, gt, mask) == pytest.approx(0.75)
 
 
@@ -89,7 +89,7 @@ def test_distance_between_backprojected_pixels():
 def test_plane_fit_and_plane_depth():
     fx, fy, cx, cy = K
     v, u = np.mgrid[100:200, 200:300]
-    z = 1.0 / (1 / 3.0 + 0.0002 * (u - cx))            # tilted wall: for a plane, 1/depth is linear in pixels
+    z = 1.0 / (1 / 3.0 + 0.0002 * (u - cx))  # tilted wall: for a plane, 1/depth is linear in pixels
     pts = m.backproject(u.ravel(), v.ravel(), z.ravel(), K)
     n, d = m.fit_plane(pts)
     assert np.allclose(m.plane_depth(u, v, n, d, K), z, atol=1e-6)
@@ -115,7 +115,7 @@ Expected: errors, `metrics.py` not found.
 
 import numpy as np
 
-EIGEN_CROP = (slice(45, 471), slice(41, 601))   # standard NYU evaluation crop (480 x 640 images)
+EIGEN_CROP = (slice(45, 471), slice(41, 601))  # standard NYU evaluation crop (480 x 640 images)
 MIN_DEPTH, MAX_DEPTH = 1e-3, 10.0
 
 
@@ -212,7 +212,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from common.paths import data_dir  # noqa: E402
 
 ROOT = data_dir("depth") / "nyu"
-K = (518.8579, 519.4696, 325.5824, 253.7362)   # RGB camera intrinsics (official NYU toolbox)
+K = (518.8579, 519.4696, 325.5824, 253.7362)  # RGB camera intrinsics (official NYU toolbox)
 
 
 class NYU:
@@ -226,16 +226,16 @@ class NYU:
         return [int(i) - 1 for i in loadmat(ROOT / "splits.mat")["testNdxs"].ravel()]
 
     def rgb(self, i):
-        return np.ascontiguousarray(self.f["images"][i].transpose(2, 1, 0))       # (480, 640, 3) uint8
+        return np.ascontiguousarray(self.f["images"][i].transpose(2, 1, 0))  # (480, 640, 3) uint8
 
     def depth(self, i):
-        return np.ascontiguousarray(self.f["depths"][i].T)                        # hole-filled, meters
+        return np.ascontiguousarray(self.f["depths"][i].T)  # hole-filled, meters
 
     def raw(self, i):
-        return np.ascontiguousarray(self.f["rawDepths"][i].T)                     # sensor only, 0 = no data
+        return np.ascontiguousarray(self.f["rawDepths"][i].T)  # sensor only, 0 = no data
 
     def labels(self, i):
-        return np.ascontiguousarray(self.f["labels"][i].T)                        # 0 = unlabeled
+        return np.ascontiguousarray(self.f["labels"][i].T)  # 0 = unlabeled
 
     def class_id(self, name):
         return self.names.index(name) + 1
@@ -478,7 +478,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 REFLECTIVE = ["mirror", "window", "glass", "television", "monitor", "picture", "whiteboard", "blinds", "curtain"]
 ORDINARY = ["wall", "floor", "ceiling", "table", "door", "cabinet", "bed", "chair", "sofa"]
 DIST_BINS = [(0, 2), (2, 4), (4, 10)]
-BORDER = 40   # px band inside the Eigen crop
+BORDER = 40  # px band inside the Eigen crop
 
 
 def main():
@@ -492,7 +492,7 @@ def main():
     region = np.zeros((480, 640), bool)
     region[EIGEN_CROP] = True
     inner = np.zeros_like(region)
-    inner[45 + BORDER:471 - BORDER, 41 + BORDER:601 - BORDER] = True
+    inner[45 + BORDER : 471 - BORDER, 41 + BORDER : 601 - BORDER] = True
     border = region & ~inner
     for name in M.RELATIVE:
         preds = cached(name, len(idx))
@@ -582,7 +582,7 @@ def test_poster_quad_lies_inside_the_wall():
     poster = load_module("14", "poster_test.py")
     fx, fy, cx, cy = K
     v, u = np.mgrid[0:480, 0:640]
-    z = np.full((480, 640), 3.0)                       # fronto-parallel wall 3 m away
+    z = np.full((480, 640), 3.0)  # fronto-parallel wall 3 m away
     wall = np.zeros((480, 640), bool)
     wall[100:400, 150:550] = True
     quad = poster.poster_quad(wall, z, K)
@@ -662,8 +662,10 @@ def poster_quad(wall, depth, K, fill=0.7):
         return np.array([fx * p[0] / p[2] + cx, fy * p[1] / p[2] + cy])
 
     half = 2.0
-    for _ in range(60):                                  # shrink until all corners are well inside the mask
-        corners = [centre + sx * half * right + sy * half * 0.75 * upw for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+    for _ in range(60):  # shrink until all corners are well inside the mask
+        corners = [
+            centre + sx * half * right + sy * half * 0.75 * upw for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))
+        ]
         quad = np.array([project(c) for c in corners], np.float32)
         if np.all(np.linalg.norm(quad - [ux, vy], axis=1) <= fill * r):
             return quad
@@ -735,11 +737,14 @@ def main():
             signed.append(s)
             if name == "da2-small":
                 examples.append((a - b, comp, pa, poster))
-        res[name] = {"images": len(cands), "deviation_before": round(float(np.mean(before)), 4),
-                     "deviation_with_poster": round(float(np.mean(after)), 4),
-                     "illusion_score": round(float(np.mean(np.array(after) - np.array(before))), 4),
-                     "share_worse_with_poster": round(float(np.mean(np.array(after) > np.array(before))), 3),
-                     "mean_signed_deviation": round(float(np.mean(signed)), 4)}
+        res[name] = {
+            "images": len(cands),
+            "deviation_before": round(float(np.mean(before)), 4),
+            "deviation_with_poster": round(float(np.mean(after)), 4),
+            "illusion_score": round(float(np.mean(np.array(after) - np.array(before))), 4),
+            "share_worse_with_poster": round(float(np.mean(np.array(after) > np.array(before))), 3),
+            "mean_signed_deviation": round(float(np.mean(signed)), 4),
+        }
         print(name, res[name], flush=True)
     results_path = DOCS / "results.json"
     results = json.loads(results_path.read_text())
@@ -818,19 +823,37 @@ import matplotlib.pyplot as plt  # noqa: E402
 DIR = ROOT.parent / "illusions"
 UA = {"User-Agent": "cv-portfolio-research/1.0 (github.com/yandouziyassine)"}
 TITLES = {
-    "ames_room": ("File:Ames room forced perspective.jpg", "Two people the same height look giant and tiny: the room is not a box"),
+    "ames_room": (
+        "File:Ames room forced perspective.jpg",
+        "Two people the same height look giant and tiny: the room is not a box",
+    ),
     "street_art": ("File:3D street painting.jpg", "A flat painting on the ground that looks like a hole"),
-    "den_helder": ("File:Den Helder - Julianaplein, 3D street art 2020.jpg", "3D street art seen from its intended viewpoint"),
+    "den_helder": (
+        "File:Den Helder - Julianaplein, 3D street art 2020.jpg",
+        "3D street art seen from its intended viewpoint",
+    ),
     "colonnade": ("File:Colonnade, trompe l'oeil mural by John Pugh.jpg", "A flat wall painted as a colonnade"),
-    "cinema_vox": ("File:Film crew in trompe l'oeil mural, Cinéma Vox, Chamonix-Mont-Blanc, 2007.jpg", "Painted film crew on a flat facade"),
-    "mirrors": ("File:Man photographing himself in hotel bathroom with mirrors all around to generate illusion (cropped twice).jpg", "Facing mirrors: an endless corridor that does not exist"),
+    "cinema_vox": (
+        "File:Film crew in trompe l'oeil mural, Cinéma Vox, Chamonix-Mont-Blanc, 2007.jpg",
+        "Painted film crew on a flat facade",
+    ),
+    "mirrors": (
+        "File:Man photographing himself in hotel bathroom with mirrors all around to generate illusion (cropped twice).jpg",
+        "Facing mirrors: an endless corridor that does not exist",
+    ),
 }
 
 
 def fetch():
     DIR.mkdir(parents=True, exist_ok=True)
-    q = {"action": "query", "prop": "imageinfo", "iiprop": "url|extmetadata", "iiurlwidth": 1280,
-         "titles": "|".join(t for t, _ in TITLES.values()), "format": "json"}
+    q = {
+        "action": "query",
+        "prop": "imageinfo",
+        "iiprop": "url|extmetadata",
+        "iiurlwidth": 1280,
+        "titles": "|".join(t for t, _ in TITLES.values()),
+        "format": "json",
+    }
     url = "https://commons.wikimedia.org/w/api.php?" + urllib.parse.urlencode(q)
     pages = json.load(urllib.request.urlopen(urllib.request.Request(url, headers=UA)))["query"]["pages"].values()
     by_title = {p["title"]: p["imageinfo"][0] for p in pages}
@@ -843,9 +866,13 @@ def fetch():
             path.write_bytes(urllib.request.urlopen(req).read())
         md = info["extmetadata"]
         artist = md.get("Artist", {}).get("value", "unknown")
-        credits.append(f"- **{key}**: [{title}]({info['descriptionurl']}), {md.get('LicenseShortName', {}).get('value')}, "
-                       f"by {artist}")
-    (DOCS / "illusion_credits.md").write_text("# Illusion photo credits\n\n" + "\n".join(credits) + "\n", encoding="utf-8")
+        credits.append(
+            f"- **{key}**: [{title}]({info['descriptionurl']}), {md.get('LicenseShortName', {}).get('value')}, "
+            f"by {artist}"
+        )
+    (DOCS / "illusion_credits.md").write_text(
+        "# Illusion photo credits\n\n" + "\n".join(credits) + "\n", encoding="utf-8"
+    )
 
 
 def main():
@@ -925,7 +952,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 def pixel_panel(ax, rgb, y, x, size=8):
     """The numbers a computer actually receives: an 8x8 block of brightness values."""
-    gray = np.asarray(Image.fromarray(rgb).convert("L"))[y:y + size, x:x + size]
+    gray = np.asarray(Image.fromarray(rgb).convert("L"))[y : y + size, x : x + size]
     ax.imshow(gray, cmap="gray", vmin=0, vmax=255)
     for (r, c), val in np.ndenumerate(gray):
         ax.text(c, r, str(val), ha="center", va="center", fontsize=6, color="red" if val > 127 else "yellow")
@@ -941,12 +968,19 @@ def main():
     best = idx[int(np.argmin(absrel))]
     most_mirror = max(idx, key=lambda i: int((data.labels(i) == mirror).sum()))
     est = M.load("da2-small")
-    rows = [("A scene the model gets right", data.rgb(best), data.depth(best)),
-            ("A mirror: the room inside it is not real", data.rgb(most_mirror), data.depth(most_mirror)),
-            ("A flat poster on a wall (Part A test)", np.load(DOCS / "_poster_best.npy"), None),
-            ("The Ames room illusion", np.asarray(Image.open(ILLUSIONS / "ames_room.jpg").convert("RGB")), None)]
-    titles = ["What you see", "What the computer receives", "What it infers (bright = near)",
-              "The truth (Kinect) / error", "Its 3D, seen from the side"]
+    rows = [
+        ("A scene the model gets right", data.rgb(best), data.depth(best)),
+        ("A mirror: the room inside it is not real", data.rgb(most_mirror), data.depth(most_mirror)),
+        ("A flat poster on a wall (Part A test)", np.load(DOCS / "_poster_best.npy"), None),
+        ("The Ames room illusion", np.asarray(Image.open(ILLUSIONS / "ames_room.jpg").convert("RGB")), None),
+    ]
+    titles = [
+        "What you see",
+        "What the computer receives",
+        "What it infers (bright = near)",
+        "The truth (Kinect) / error",
+        "Its 3D, seen from the side",
+    ]
     fig, axes = plt.subplots(len(rows), 5, figsize=(19, 3.6 * len(rows)))
     for r, (label, rgb, gt) in enumerate(rows):
         disp = M.predict(est, rgb)
@@ -1009,7 +1043,7 @@ def test_intrinsics_from_fov_and_from_35mm_focal():
     meas = load_module("14", "measure.py")
     fx, fy, cx, cy = meas.intrinsics_from_fov(640, 480, 90.0)
     assert fx == pytest.approx(320.0) and (cx, cy) == (320.0, 240.0)
-    fx, *_ = meas.intrinsics_from_35mm(4000, 3000, 36.0)          # 36 mm equivalent = sensor width
+    fx, *_ = meas.intrinsics_from_35mm(4000, 3000, 36.0)  # 36 mm equivalent = sensor width
     assert fx == pytest.approx(4000.0)
 ```
 
@@ -1040,7 +1074,7 @@ def intrinsics_from_35mm(w, h, focal_35mm):
 
 def intrinsics(img):
     """From EXIF when the photo has it, else the default field of view. Returns (K, source)."""
-    focal = img.getexif().get_ifd(0x8769).get(0xA405)            # FocalLengthIn35mmFilm
+    focal = img.getexif().get_ifd(0x8769).get(0xA405)  # FocalLengthIn35mmFilm
     if focal:
         return intrinsics_from_35mm(*img.size, float(focal)), f"EXIF ({focal} mm equivalent)"
     return intrinsics_from_fov(*img.size), f"assumed {DEFAULT_FOV:.0f}° field of view"
@@ -1112,7 +1146,7 @@ def main():
         gt = data.depth(i)
         pred = preds[k].astype(np.float32)
         ps = pairs(gt, rng)
-        q1, q2, ref = ps[0]                                          # the "known object" in this photo
+        q1, q2, ref = ps[0]  # the "known object" in this photo
         scale = ref / distance(q1, q2, pred, K)
         for p1, p2, d in ps[1:]:
             pd = distance(p1, p2, pred, K)
@@ -1122,10 +1156,13 @@ def main():
     plain, calibrated, truth = map(np.array, (plain, calibrated, truth))
     res = {"pairs": int(len(truth)), "images": len(idx), "model": "da2-metric-indoor", "intrinsics": "true NYU"}
     for name, err in (("metric_model_only", plain), ("with_one_known_length", calibrated)):
-        res[name] = {"median_rel_error": round(float(np.median(err)), 3),
-                     "p90_rel_error": round(float(np.percentile(err, 90)), 3),
-                     "by_distance_m": {f"{lo}-{hi}": round(float(np.median(err[(truth >= lo) & (truth < hi)])), 3)
-                                       for lo, hi in BINS}}
+        res[name] = {
+            "median_rel_error": round(float(np.median(err)), 3),
+            "p90_rel_error": round(float(np.percentile(err, 90)), 3),
+            "by_distance_m": {
+                f"{lo}-{hi}": round(float(np.median(err[(truth >= lo) & (truth < hi)])), 3) for lo, hi in BINS
+            },
+        }
     print(json.dumps(res, indent=1))
     results_path = DOCS / "results.json"
     results = json.loads(results_path.read_text())
@@ -1212,14 +1249,18 @@ def on_click(state_img, points, depth, evt: gr.SelectData):
         return np.asarray(canvas), points, depth, "Click a second point."
     draw.line([points[0], points[1]], fill=(255, 91, 31), width=3)
     d, source = measurer.measure(img, points[0], points[1], depth=depth)
-    msg = (f"**{d:.2f} m** (±{P90 * 100:.0f} % for 9 measurements out of 10 on NYU indoor scenes).  \n"
-           f"Camera: {source}. Indoor model: outdoor scenes will be less accurate.")
+    msg = (
+        f"**{d:.2f} m** (±{P90 * 100:.0f} % for 9 measurements out of 10 on NYU indoor scenes).  \n"
+        f"Camera: {source}. Indoor model: outdoor scenes will be less accurate."
+    )
     return np.asarray(canvas), points, depth, msg
 
 
 with gr.Blocks(title="Measure from one photo") as demo:
-    gr.Markdown("# Measure from one photo\nUpload an indoor photo, click two points. Metric depth from Depth Anything V2 "
-                f"(indoor); with one known length in the photo the 90th-percentile error drops to ±{P90_REF * 100:.0f} %.")
+    gr.Markdown(
+        "# Measure from one photo\nUpload an indoor photo, click two points. Metric depth from Depth Anything V2 "
+        f"(indoor); with one known length in the photo the 90th-percentile error drops to ±{P90_REF * 100:.0f} %."
+    )
     img_state, pts_state, depth_state = gr.State(), gr.State([]), gr.State()
     with gr.Row():
         inp = gr.Image(type="numpy", label="Photo (click two points)")

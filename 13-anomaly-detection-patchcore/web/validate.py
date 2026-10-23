@@ -31,7 +31,11 @@ for cat in THR:
     s, y = np.array(scores), np.array(labels)
     pred = s > THR[cat]["threshold"]
     f1 = 2 * int((pred & (y == 1)).sum()) / max(int(pred.sum() + y.sum()), 1)
-    results[cat] = {"n": len(y), "auroc": round(float(roc_auc_score(y, s)), 4), "f1_at_threshold": round(f1, 4),
-                    "f1_pytorch": THR[cat]["f1"]}
+    results[cat] = {
+        "n": len(y),
+        "auroc": round(float(roc_auc_score(y, s)), 4),
+        "f1_at_threshold": round(f1, 4),
+        "f1_pytorch": THR[cat]["f1"],
+    }
     print(cat, results[cat], flush=True)
 (HERE.parent / "docs" / "onnx_validation.json").write_text(json.dumps(results, indent=1))

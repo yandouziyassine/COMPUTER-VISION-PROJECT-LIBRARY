@@ -109,8 +109,9 @@ bright it is.
 
 ```python
 import cv2
-img = cv2.imread("photo.jpg")   # numpy array, shape (H, W, 3), dtype uint8
-print(img.shape, img[0, 0])      # e.g. (1080, 1920, 3) [ 34  51  60 ]  ← top-left pixel
+
+img = cv2.imread("photo.jpg")  # numpy array, shape (H, W, 3), dtype uint8
+print(img.shape, img[0, 0])  # e.g. (1080, 1920, 3) [ 34  51  60 ]  ← top-left pixel
 ```
 
 Two conventions trip up every beginner:

@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from common.paths import data_dir  # noqa: E402
 
 ROOT = data_dir("depth") / "nyu"
-K = (518.8579, 519.4696, 325.5824, 253.7362)   # RGB camera intrinsics (official NYU toolbox)
+K = (518.8579, 519.4696, 325.5824, 253.7362)  # RGB camera intrinsics (official NYU toolbox)
 
 
 class NYU:
@@ -27,16 +27,16 @@ class NYU:
         return [int(i) - 1 for i in loadmat(ROOT / "splits.mat")["testNdxs"].ravel()]
 
     def rgb(self, i):
-        return np.ascontiguousarray(self.f["images"][i].transpose(2, 1, 0))       # (480, 640, 3) uint8
+        return np.ascontiguousarray(self.f["images"][i].transpose(2, 1, 0))  # (480, 640, 3) uint8
 
     def depth(self, i):
-        return np.ascontiguousarray(self.f["depths"][i].T)                        # hole-filled, meters
+        return np.ascontiguousarray(self.f["depths"][i].T)  # hole-filled, meters
 
     def raw(self, i):
-        return np.ascontiguousarray(self.f["rawDepths"][i].T)                     # sensor only, 0 = no data
+        return np.ascontiguousarray(self.f["rawDepths"][i].T)  # sensor only, 0 = no data
 
     def labels(self, i):
-        return np.ascontiguousarray(self.f["labels"][i].T)                        # 0 = unlabeled
+        return np.ascontiguousarray(self.f["labels"][i].T)  # 0 = unlabeled
 
     def class_id(self, name):
         return self.names.index(name) + 1

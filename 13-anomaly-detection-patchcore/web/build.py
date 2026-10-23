@@ -94,8 +94,9 @@ def store_fp16(path):
 
 
 def export(module, args, path, names_in, names_out):
-    torch.onnx.export(module, args, str(path), input_names=names_in, output_names=names_out,
-                      opset_version=17, dynamo=False)
+    torch.onnx.export(
+        module, args, str(path), input_names=names_in, output_names=names_out, opset_version=17, dynamo=False
+    )
     store_fp16(path)
     print(f"{path.name}: {path.stat().st_size / 1e6:.1f} MB", flush=True)
 
@@ -109,26 +110,40 @@ def best_f1_threshold(model, cat):
     p, r, t = precision_recall_curve(labels, scores)
     f1 = 2 * p * r / np.maximum(p + r, 1e-9)
     k = int(np.argmax(f1[:-1]))
-    return {"threshold": round(float(t[k]), 4), "f1": round(float(f1[k]), 4),
-            "precision": round(float(p[k]), 4), "recall": round(float(r[k]), 4)}
+    return {
+        "threshold": round(float(t[k]), 4),
+        "f1": round(float(f1[k]), 4),
+        "precision": round(float(p[k]), 4),
+        "recall": round(float(r[k]), 4),
+    }
 
 
 def main():
     (OUT / "models").mkdir(parents=True, exist_ok=True)
     (OUT / "examples").mkdir(exist_ok=True)
     model = PatchCore()
-    export(Backbone(model.backbone).eval(), (torch.zeros(1, 3, SIZE, SIZE),), OUT / "models" / "backbone.onnx",
-           ["image"], ["features"])
+    export(
+        Backbone(model.backbone).eval(),
+        (torch.zeros(1, 3, SIZE, SIZE),),
+        OUT / "models" / "backbone.onnx",
+        ["image"],
+        ["features"],
+    )
     sess_bb = ort.InferenceSession(str(OUT / "models" / "backbone.onnx"))
 
     thresholds = {}
     for cat in CATS:
         bank = torch.load(BANKS / f"{cat}_memory_bank.pt", map_location="cpu")["memory_bank"].half()
-        model.memory_bank = bank.float()                     # score with exactly what the demo ships
+        model.memory_bank = bank.float()  # score with exactly what the demo ships
         thresholds[cat] = best_f1_threshold(model, cat)
         print(cat, thresholds[cat], flush=True)
-        export(Knn(bank).eval(), (torch.zeros(784, 1536),), OUT / "models" / f"knn_{cat}.onnx",
-               ["features"], ["map", "score"])
+        export(
+            Knn(bank).eval(),
+            (torch.zeros(784, 1536),),
+            OUT / "models" / f"knn_{cat}.onnx",
+            ["features"],
+            ["map", "score"],
+        )
         sess = ort.InferenceSession(str(OUT / "models" / f"knn_{cat}.onnx"))
 
         good = sorted((MVTEC / cat / "test" / "good").glob("*.png"))[0]
@@ -141,8 +156,11 @@ def main():
             x = ds[paths.index(src)][0][None]
             s_ref, m_ref = model.predict(x, SIZE)
             m, s = sess.run(None, {"features": sess_bb.run(None, {"image": x.numpy()})[0]})
-            print(f"  {name:24s} torch {float(s_ref[0]):.4f}  onnx {float(s):.4f}  "
-                  f"map max|diff| {np.abs(m - m_ref[0].numpy()).max():.4f}", flush=True)
+            print(
+                f"  {name:24s} torch {float(s_ref[0]):.4f}  onnx {float(s):.4f}  "
+                f"map max|diff| {np.abs(m - m_ref[0].numpy()).max():.4f}",
+                flush=True,
+            )
     (OUT / "models" / "thresholds.json").write_text(json.dumps(thresholds, indent=1))
 
 

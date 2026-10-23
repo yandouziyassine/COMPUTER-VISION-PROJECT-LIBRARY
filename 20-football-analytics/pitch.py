@@ -11,23 +11,43 @@ import numpy as np
 LENGTH, WIDTH = 12000, 7000
 PEN_W, PEN_L, GOAL_W, GOAL_L, CIRCLE_R, SPOT = 4100, 2015, 1832, 550, 915, 1100
 
-PITCH_POINTS = np.array([
-    (0, 0), (0, (WIDTH - PEN_W) / 2), (0, (WIDTH - GOAL_W) / 2), (0, (WIDTH + GOAL_W) / 2),
-    (0, (WIDTH + PEN_W) / 2), (0, WIDTH),                                                     # 0-5 left goal line
-    (GOAL_L, (WIDTH - GOAL_W) / 2), (GOAL_L, (WIDTH + GOAL_W) / 2),                           # 6-7 left goal box
-    (SPOT, WIDTH / 2),                                                                        # 8 left penalty spot
-    (PEN_L, (WIDTH - PEN_W) / 2), (PEN_L, (WIDTH - GOAL_W) / 2), (PEN_L, (WIDTH + GOAL_W) / 2),
-    (PEN_L, (WIDTH + PEN_W) / 2),                                                             # 9-12 left penalty box
-    (LENGTH / 2, 0), (LENGTH / 2, WIDTH / 2 - CIRCLE_R), (LENGTH / 2, WIDTH / 2 + CIRCLE_R),
-    (LENGTH / 2, WIDTH),                                                                      # 13-16 halfway line
-    (LENGTH - PEN_L, (WIDTH - PEN_W) / 2), (LENGTH - PEN_L, (WIDTH - GOAL_W) / 2),
-    (LENGTH - PEN_L, (WIDTH + GOAL_W) / 2), (LENGTH - PEN_L, (WIDTH + PEN_W) / 2),            # 17-20 right penalty box
-    (LENGTH - SPOT, WIDTH / 2),                                                               # 21 right penalty spot
-    (LENGTH - GOAL_L, (WIDTH - GOAL_W) / 2), (LENGTH - GOAL_L, (WIDTH + GOAL_W) / 2),         # 22-23 right goal box
-    (LENGTH, 0), (LENGTH, (WIDTH - PEN_W) / 2), (LENGTH, (WIDTH - GOAL_W) / 2), (LENGTH, (WIDTH + GOAL_W) / 2),
-    (LENGTH, (WIDTH + PEN_W) / 2), (LENGTH, WIDTH),                                           # 24-29 right goal line
-    (LENGTH / 2 - CIRCLE_R, WIDTH / 2), (LENGTH / 2 + CIRCLE_R, WIDTH / 2),                   # 30-31 centre circle
-], dtype=np.float32)
+PITCH_POINTS = np.array(
+    [
+        (0, 0),
+        (0, (WIDTH - PEN_W) / 2),
+        (0, (WIDTH - GOAL_W) / 2),
+        (0, (WIDTH + GOAL_W) / 2),
+        (0, (WIDTH + PEN_W) / 2),
+        (0, WIDTH),  # 0-5 left goal line
+        (GOAL_L, (WIDTH - GOAL_W) / 2),
+        (GOAL_L, (WIDTH + GOAL_W) / 2),  # 6-7 left goal box
+        (SPOT, WIDTH / 2),  # 8 left penalty spot
+        (PEN_L, (WIDTH - PEN_W) / 2),
+        (PEN_L, (WIDTH - GOAL_W) / 2),
+        (PEN_L, (WIDTH + GOAL_W) / 2),
+        (PEN_L, (WIDTH + PEN_W) / 2),  # 9-12 left penalty box
+        (LENGTH / 2, 0),
+        (LENGTH / 2, WIDTH / 2 - CIRCLE_R),
+        (LENGTH / 2, WIDTH / 2 + CIRCLE_R),
+        (LENGTH / 2, WIDTH),  # 13-16 halfway line
+        (LENGTH - PEN_L, (WIDTH - PEN_W) / 2),
+        (LENGTH - PEN_L, (WIDTH - GOAL_W) / 2),
+        (LENGTH - PEN_L, (WIDTH + GOAL_W) / 2),
+        (LENGTH - PEN_L, (WIDTH + PEN_W) / 2),  # 17-20 right penalty box
+        (LENGTH - SPOT, WIDTH / 2),  # 21 right penalty spot
+        (LENGTH - GOAL_L, (WIDTH - GOAL_W) / 2),
+        (LENGTH - GOAL_L, (WIDTH + GOAL_W) / 2),  # 22-23 right goal box
+        (LENGTH, 0),
+        (LENGTH, (WIDTH - PEN_W) / 2),
+        (LENGTH, (WIDTH - GOAL_W) / 2),
+        (LENGTH, (WIDTH + GOAL_W) / 2),
+        (LENGTH, (WIDTH + PEN_W) / 2),
+        (LENGTH, WIDTH),  # 24-29 right goal line
+        (LENGTH / 2 - CIRCLE_R, WIDTH / 2),
+        (LENGTH / 2 + CIRCLE_R, WIDTH / 2),  # 30-31 centre circle
+    ],
+    dtype=np.float32,
+)
 
 
 def image_to_pitch(keypoints, min_conf=0.3, min_points=4, ransac_cm=150.0):
@@ -78,7 +98,7 @@ def tactical_map(pitch_xy, teams, ball_xy=None, colors=None, scale=0.08):
     colors = colors or {0: (255, 80, 0), 1: (0, 80, 255), -1: (200, 200, 200)}
     img, pt = draw_pitch(scale)
     for (x, y), t in zip(pitch_xy, teams):
-        if -500 <= x <= LENGTH + 500 and -500 <= y <= WIDTH + 500:   # ignore wild projections
+        if -500 <= x <= LENGTH + 500 and -500 <= y <= WIDTH + 500:  # ignore wild projections
             cv2.circle(img, pt(x, y), 9, colors.get(int(t), colors[-1]), -1)
             cv2.circle(img, pt(x, y), 9, (20, 20, 20), 1)
     if ball_xy is not None:

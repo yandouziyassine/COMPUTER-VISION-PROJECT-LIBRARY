@@ -1,10 +1,12 @@
 """Kaggle GPU job for project 07: YOLO11n on the FULL Hard Hat Workers train/valid splits.
 Same class mapping by name as prepare.py in the repo; evaluation on the test split happens locally."""
+
 import json
 import subprocess
 import sys
 import zipfile
 from pathlib import Path
+
 subprocess.run([sys.executable, "-m", "pip", "install", "-q", "ultralytics==8.4.175", "huggingface_hub"], check=True)
 from huggingface_hub import hf_hub_download
 from ultralytics import YOLO
@@ -27,13 +29,30 @@ def export(split_zip, out_split):
     for k, (im, anns) in enumerate(sorted(items.values(), key=lambda t: t[0]["file_name"])):
         w, h = im["width"], im["height"]
         (img_dir / f"{k:05d}.jpg").write_bytes(z.read(im["file_name"]))
-        (lab_dir / f"{k:05d}.txt").write_text("\n".join(
-            f"{c} {(x + bw / 2) / w:.6f} {(y + bh / 2) / h:.6f} {bw / w:.6f} {bh / h:.6f}" for c, (x, y, bw, bh) in anns))
+        (lab_dir / f"{k:05d}.txt").write_text(
+            "\n".join(
+                f"{c} {(x + bw / 2) / w:.6f} {(y + bh / 2) / h:.6f} {bw / w:.6f} {bh / h:.6f}"
+                for c, (x, y, bw, bh) in anns
+            )
+        )
     return len(items)
 
 
 n_tr, n_va = export("train.zip", "train"), export("valid.zip", "val")
 print("train", n_tr, "val", n_va, flush=True)
-(ROOT / "ppe.yaml").write_text(f"path: {ROOT}\ntrain: train/images\nval: val/images\nnames:\n  0: hardhat\n  1: no-hardhat\n")
-YOLO("yolo11n.pt").train(data=str(ROOT / "ppe.yaml"), epochs=50, imgsz=640, batch=32, device=0, workers=4,
-                         project="/kaggle/working/runs", name="yolo11n_ppe_full", exist_ok=True, seed=0, plots=False)
+(ROOT / "ppe.yaml").write_text(
+    f"path: {ROOT}\ntrain: train/images\nval: val/images\nnames:\n  0: hardhat\n  1: no-hardhat\n"
+)
+YOLO("yolo11n.pt").train(
+    data=str(ROOT / "ppe.yaml"),
+    epochs=50,
+    imgsz=640,
+    batch=32,
+    device=0,
+    workers=4,
+    project="/kaggle/working/runs",
+    name="yolo11n_ppe_full",
+    exist_ok=True,
+    seed=0,
+    plots=False,
+)

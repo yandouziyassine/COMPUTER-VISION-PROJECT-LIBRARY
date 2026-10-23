@@ -22,7 +22,7 @@ def intrinsics_from_35mm(w, h, focal_35mm):
 
 def intrinsics(img):
     """From EXIF when the photo has it, else the default field of view. Returns (K, source)."""
-    focal = img.getexif().get_ifd(0x8769).get(0xA405)            # FocalLengthIn35mmFilm
+    focal = img.getexif().get_ifd(0x8769).get(0xA405)  # FocalLengthIn35mmFilm
     if focal:
         return intrinsics_from_35mm(*img.size, float(focal)), f"EXIF ({focal} mm equivalent)"
     return intrinsics_from_fov(*img.size), f"assumed {DEFAULT_FOV:.0f}° field of view"

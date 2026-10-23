@@ -28,8 +28,9 @@ def hand_landmarker():
     if not path.exists():
         print("downloading the MediaPipe hand model (7 MB)…", flush=True)
         urllib.request.urlretrieve(MODEL_URL, path)
-    opts = vision.HandLandmarkerOptions(base_options=BaseOptions(model_asset_path=str(path)),
-                                        running_mode=vision.RunningMode.VIDEO, num_hands=1)
+    opts = vision.HandLandmarkerOptions(
+        base_options=BaseOptions(model_asset_path=str(path)), running_mode=vision.RunningMode.VIDEO, num_hands=1
+    )
     return vision.HandLandmarker.create_from_options(opts)
 
 
@@ -68,7 +69,7 @@ def main():
                 label = f"{LETTERS[k]} {probs[k]:.0%}"
                 streak = streak + 1 if (k == last_letter and probs[k] >= MIN_CONF) else 0
                 last_letter = k
-                if streak == HOLD:                    # typed once per hold
+                if streak == HOLD:  # typed once per hold
                     text += LETTERS[k]
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (31, 91, 255), 2)
                 cv2.rectangle(frame, (x1, y1 - int(6 + 22 * min(streak, HOLD) / HOLD)), (x1 + 8, y1), (31, 91, 255), -1)

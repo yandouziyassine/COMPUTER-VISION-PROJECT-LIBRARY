@@ -7,9 +7,11 @@
    widths between neighbors in a row is flagged as a possible empty facing.
 
 Usage:
-    python evaluate.py
+    python evaluate.py                # laptop model (219 training images)
+    python evaluate.py --model full   # the Kaggle GPU model (full SKU-110K train split)
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -28,7 +30,7 @@ from ultralytics import YOLO  # noqa: E402
 DATA = data_dir("shelf")
 OUT = output_dir("shelf")
 DOCS = Path(__file__).resolve().parent / "docs"
-WEIGHTS = OUT / "runs" / "yolo11n_shelf" / "weights" / "best.pt"
+RUNS = {"subset": "yolo11n_shelf", "full": "yolo11n_shelf_full"}
 TEST = DATA / "yolo" / "test"
 
 
@@ -60,8 +62,12 @@ def find_gaps(boxes, gap_factor=1.5):
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model", choices=list(RUNS), default="subset")
+    args = ap.parse_args()
+    suffix = "" if args.model == "subset" else f"_{args.model}"
     DOCS.mkdir(exist_ok=True)
-    model = YOLO(str(WEIGHTS))
+    model = YOLO(str(OUT / "runs" / RUNS[args.model] / "weights" / "best.pt"))
     m = model.val(
         data=str(DATA / "shelf_test.yaml"),
         imgsz=960,
@@ -107,7 +113,7 @@ def main():
         "note": "rule-based, no ground truth in SKU-110K",
     }
     print(json.dumps(res, indent=1))
-    (DOCS / "results.json").write_text(json.dumps(res, indent=1))
+    (DOCS / f"results{suffix}.json").write_text(json.dumps(res, indent=1))
 
     fig, ax = plt.subplots(figsize=(5.5, 5))
     ax.scatter(true_n, pred_n, s=10, alpha=0.6)
@@ -118,7 +124,7 @@ def main():
     ax.legend()
     ax.set_title(f"Counting on {len(images)} test shelves (MAE {res['counting']['MAE']})")
     fig.tight_layout()
-    fig.savefig(DOCS / "counting.png", dpi=100)
+    fig.savefig(DOCS / f"counting{suffix}.png", dpi=100)
     plt.close(fig)
 
     # Examples: the image with the most flagged gaps + two typical ones
@@ -139,7 +145,7 @@ def main():
         ax.set_title(f"{len(b)} detected / {true} true products", fontsize=11)
     fig.suptitle("Green: detected products · Red: possible empty facings (rule-based)")
     fig.tight_layout()
-    fig.savefig(DOCS / "examples.jpg", dpi=60)
+    fig.savefig(DOCS / f"examples{suffix}.jpg", dpi=60)
     plt.close(fig)
 
 

@@ -37,7 +37,7 @@ pixels to foundation models, each pointing to the projects where the concept is 
 | 06 | [License Plate Recognition](06-license-plate-recognition/) | Detection mAP50 0.983; 80–90 % of plates read exactly | YOLO11n fine-tuned on CPU, OCR, plate-format correction | ★★★ |
 | 07 | [PPE Safety Monitor](07-ppe-safety-monitor/) | mAP50 0.939; 97.6 % of violations flagged at 96 % precision (full-data GPU retrain) | YOLO fine-tuning, alert-level metrics, threshold choice, CPU-subset vs full-data comparison | ★★ |
 | 08 | [Traffic Analytics](08-traffic-analytics/) | 19 vehicles tracked, speeds in km/h, 3.4 FPS at 4K | ByteTrack tracking, line counting, homography | ★★ |
-| 09 | [Retail Shelf Monitor](09-retail-shelf-monitor/) | mAP50 0.838 on shelves of 100–700 products; count error 13 % | Dense small-object detection, counting | ★★ |
+| 09 | [Retail Shelf Monitor](09-retail-shelf-monitor/) | mAP50 0.927 on shelves of 100–700 products; count error 10 % (full-data GPU retrain) | Dense small-object detection, counting, CPU-subset vs full-data comparison | ★★ |
 | 10 | [Face Recognition](10-face-recognition/) | 99.35 % on LFW (official 10-fold protocol) | Face alignment, embeddings, TAR@FAR, ethics & limits | ★★★ |
 | 11 | [Polyp Segmentation](11-medical-segmentation/) | Dice 0.897 / IoU 0.833 | U-Net, Dice + BCE loss | ★★ |
 | 12 | [Satellite Land-Cover](12-satellite-land-cover/) | 98.1 % fine-tuned vs 47.4 % zero-shot | Remote sensing, domain shift | ★★ |

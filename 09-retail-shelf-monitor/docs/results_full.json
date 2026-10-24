@@ -1,0 +1,22 @@
+{
+ "detection": {
+  "mAP50": 0.9273,
+  "mAP50-95": 0.5804,
+  "precision": 0.9066,
+  "recall": 0.8647,
+  "ms_per_image": 140.9
+ },
+ "counting": {
+  "images": 488,
+  "mean_true_count": 155.9,
+  "max_true_count": 718,
+  "MAE": 17.0,
+  "mean_relative_error_pct": 10.3,
+  "bias_mean_pred_minus_true": -10.2,
+  "conf_threshold": 0.35
+ },
+ "gap_demo": {
+  "images_with_flagged_gaps": 376,
+  "note": "rule-based, no ground truth in SKU-110K"
+ }
+}

@@ -37,6 +37,29 @@ Image sizes and protocol differ, so it's a sanity check, not a head-to-head comp
 
 ![counting](docs/counting.png)
 
+### Retrained on all the data (Kaggle GPU)
+
+The model above was trained on a laptop CPU with **219** images (30 epochs). The same YOLO11n, same 960 px and
+`max_det=1000`, was retrained on the **full official SKU-110K train split (8,185 images) for 40 epochs** on a free
+Kaggle GPU (~3.6 h; [`kaggle_train_full.py`](kaggle_train_full.py)). Model selection used 499 images of the
+official *test* split, so the 488 local test images (official *validation* split) were never seen. Evaluated here
+on the **same 488 test images** (`python evaluate.py --model full`):
+
+| | Laptop CPU, 219 images | Kaggle GPU, 8,185 images |
+|---|---|---|
+| mAP50 / mAP50-95 | 0.838 / 0.487 | **0.927 / 0.580** |
+| Precision / recall | 0.842 / 0.766 | **0.907 / 0.865** |
+| Count MAE / relative error | 22.1 / 13.3 % | **17.0 / 10.3 %** |
+| Bias (predicted − true) | −12.7 | −10.2 (still under-counts) |
+| Images with flagged "gaps" | 401 / 488 | 376 / 488 |
+| CPU inference (960 px) | 128 ms / image | 141 ms / image (same network) |
+
+![examples, full-data model](docs/examples_full.jpg)
+
+More data mostly bought recall (+10 points), which is what the counting and gap rule needed. The model
+still under-counts on the most crowded shelves, and the gap rule still fires on most images, so most
+"gaps" remain missed products rather than real empty facings.
+
 ## How it works
 
 1. **Data prep** ([`prepare.py`](prepare.py)): SKU-110K parquet shards (COCO `xywh` boxes) are exported to

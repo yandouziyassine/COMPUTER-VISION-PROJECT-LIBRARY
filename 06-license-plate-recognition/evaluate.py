@@ -9,8 +9,12 @@
 
 Usage:
     python evaluate.py
+    python evaluate.py --model full   # the Kaggle GPU detector (all 6,176 training images): detection
+                                      # mAP + end-to-end figure into results_full.json (OCR does not
+                                      # depend on the detector, so it is not re-run)
 """
 
+import argparse
 import io
 import json
 import sys
@@ -35,7 +39,8 @@ from ultralytics import YOLO  # noqa: E402
 DATA = data_dir("plates")
 OUT = output_dir("plates")
 DOCS = Path(__file__).resolve().parent / "docs"
-FINETUNED = OUT / "runs" / "yolo11n_plates" / "weights" / "best.pt"
+RUNS = {"subset": "yolo11n_plates", "full": "yolo11n_plates_full"}
+FINETUNED = OUT / "runs" / RUNS["subset"] / "weights" / "best.pt"
 PRETRAINED = OUT / "pretrained_plate_v1n.pt"
 
 ocr = RapidOCR()
@@ -139,8 +144,8 @@ def ocr_metrics(n=300):
     return res, examples
 
 
-def end_to_end_demo(n=6):
-    model = YOLO(str(FINETUNED))
+def end_to_end_demo(weights=FINETUNED, out_name="end_to_end.jpg", n=6):
+    model = YOLO(str(weights))
     imgs = sorted((DATA / "yolo" / "test" / "images").glob("*.jpg"))[::97][:n]
     fig, axes = plt.subplots(2, (n + 1) // 2, figsize=(5 * ((n + 1) // 2), 7.5))
     for ax, p in zip(axes.ravel(), imgs):
@@ -156,14 +161,34 @@ def end_to_end_demo(n=6):
         ax.axis("off")
     fig.suptitle("End to end on test photos: fine-tuned YOLO11n → crop → RapidOCR (no ground-truth text)")
     fig.tight_layout()
-    fig.savefig(DOCS / "end_to_end.jpg", dpi=70)
+    fig.savefig(DOCS / out_name, dpi=70)
     plt.close(fig)
 
 
+def main_full():
+    weights = OUT / "runs" / RUNS["full"] / "weights" / "best.pt"
+    res = {
+        "detection_test_882_images": {
+            "yolo11n_full_6176_imgs_kaggle_t4": detection_metrics(weights),
+            "pretrained_morsetechlab_v1n": detection_metrics(PRETRAINED),
+        }
+    }
+    print(json.dumps(res, indent=1), flush=True)
+    (DOCS / "results_full.json").write_text(json.dumps(res, indent=1))
+    end_to_end_demo(weights, "end_to_end_full.jpg")
+
+
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model", choices=list(RUNS), default="subset")
+    ap.add_argument("--ocr-only", action="store_true")
+    args = ap.parse_args()
     DOCS.mkdir(exist_ok=True)
+    if args.model == "full":
+        main_full()
+        return
     prev = DOCS / "results.json"
-    if "--ocr-only" in sys.argv and prev.exists():  # reuse detection numbers, redo OCR + figures
+    if args.ocr_only and prev.exists():  # reuse detection numbers, redo OCR + figures
         res = {"detection_test_882_images": json.loads(prev.read_text())["detection_test_882_images"]}
     else:
         res = {

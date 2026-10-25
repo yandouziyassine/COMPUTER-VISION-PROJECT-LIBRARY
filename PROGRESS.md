@@ -51,7 +51,7 @@ planned (login, dataset size, GPU or API key).
 | 11 | Medical Segmentation (Kvasir-SEG) | ✅ | U-Net ResNet-18 on CPU: test Dice 0.897 / IoU 0.833. Training job was killed in epoch 20 (best ckpt from epoch 14 kept; history rebuilt from log; train.py now saves history every epoch) |
 | 15 | Fall Detection | ✅ | UR Fall (30 falls / 40 ADL). Rules: sens 80 % / spec 95 %. Learned (grouped 5-fold CV): sens 100 % / spec 80 % at thr 0.5; 96.7 % / 100 % at thr 0.9 (post-hoc, flagged as optimistic). Latency ~0.6–0.7 s |
 | 17 | Auto-Labeling Tool | ✅ | 200 COCO images, 10 classes: Grounding DINO-T zero-shot mAP 0.558 vs YOLO11n supervised 0.473, but 9.4 s vs 0.08 s per image. Open-vocab demo with SAM masks |
-| 06 | License Plate Recognition | ✅ | YOLO11n fine-tuned on CPU (1,500 imgs, 12 ep, 2.4 h): test mAP50 0.983 vs public model 0.993. OCR on 300 synthetic UK plates: exact 89.7 % clean / 80.3 % augmented (after padding fix + UK format rules; was 0 % before the padding fix) |
+| 06 | License Plate Recognition | ✅ | YOLO11n fine-tuned on CPU (1,500 imgs, 12 ep, 2.4 h): test mAP50 0.983 vs public model 0.993. OCR on 300 synthetic UK plates: exact 89.7 % clean / 80.3 % augmented (after padding fix + UK format rules; was 0 % before the padding fix). **2026-10-24:** weights lost with the USB key; Kaggle T4 retrain on all 6,176 imgs, 50 ep (41 min): test mAP50 0.990 / mAP50-95 0.717 (public model 0.993 / 0.717); ONNX exported for the website Lambda demo |
 
 ## Next queue (after 06), with login-free data found
 

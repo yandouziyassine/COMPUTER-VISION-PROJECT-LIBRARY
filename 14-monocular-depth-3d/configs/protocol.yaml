@@ -1,0 +1,75 @@
+# Project 14 v2 evaluation protocol (W1). Read by protocol.py; every reported number follows this file.
+# Conventions follow the public Marigold / Depth Anything evaluation code so published numbers can be
+# reproduced (see the reproduction gate in README "v2 (in progress)").
+version: 1
+
+datasets:
+  nyu:
+    split: official 654-image test split (splits.mat testNdxs)
+    gt: hole-filled depth of the labeled .mat (meters)
+    min_depth: 0.001
+    max_depth: 10.0
+    crop: eigen_nyu          # rows 45:471, cols 41:601 of the 480 x 640 image
+    downsample: 1
+  kitti:
+    split: Eigen test, 652 frames with projected LiDAR ground truth (Marigold file list)
+    gt: sparse LiDAR depth png / 256 (meters)
+    min_depth: 0.00001
+    max_depth: 80.0
+    kb_crop: true            # KITTI benchmark crop to 352 x 1216 before inference
+    crop: eigen_kitti        # Eigen (NIPS 2014) fractional crop, as in Marigold
+    downsample: 1
+  eth3d:
+    split: 454 DSLR images of the high-resolution multi-view training set
+    gt: laser-scan depth (meters), inf = no data
+    min_depth: 0.00001
+    max_depth: null          # no upper cap
+    crop: none
+    downsample: 4            # GT is subsampled (nearest, every 4th pixel); predictions resized to match
+  diode:
+    split: official validation set, indoor + outdoor (771 images)
+    gt: laser-scan depth (meters) with the provided validity mask
+    min_depth: 0.6
+    max_depth: 350.0
+    crop: none
+    downsample: 1
+  ibims:
+    split: core set, 100 images
+    gt: laser-scan depth (meters); pixels with mask_invalid == 0 dropped
+    min_depth: 0.001
+    max_depth: null          # no cap (scans reach ~52 m down corridors)
+    crop: none
+    downsample: 1
+  booster:
+    split: labeled training set (the monocular test split's ground truth is withheld for the online benchmark)
+    gt: dense depth from disparity (meters)
+    min_depth: 0.001
+    max_depth: null
+    crop: none
+    downsample: 4
+
+# How each kind of model output is turned into depth before scoring. The first entry is the headline number.
+alignment:
+  disparity: [lsq_disparity]           # affine-invariant inverse depth (Depth Anything, DPT): MiDaS protocol
+  affine_depth: [lsq_depth]            # affine-invariant depth (Marigold): Marigold protocol
+  metric: [none, median, lsq_depth]    # meters (Depth Pro, MoGe-2, DA-V2 Metric): raw, then one scale, then affine
+
+# lsq_disparity: least squares s * pred + t ~ 1 / gt on valid pixels, aligned disparity truncated at
+#                1 / max_depth (or 1e-3 if no cap) before inversion.
+# lsq_depth:     least squares s * pred + t ~ gt on valid pixels.
+# median:        pred * median(gt) / median(pred).
+# After alignment every prediction is clipped to [min_depth, max_depth] (when a cap exists) for scoring.
+clip_after_alignment: true
+
+metrics: [absrel, delta1]
+averaging: per_image                   # metric per image, then the mean over images
+
+bootstrap:
+  resamples: 1000
+  confidence: 0.95
+  unit: image                          # resample images with replacement
+  seed: 0
+
+cache:
+  dtype: float16                       # cached predictions, one .npz per model x dataset chunk
+  manifest: preds_manifest.json        # sha256 of every cache file + model revision + protocol version

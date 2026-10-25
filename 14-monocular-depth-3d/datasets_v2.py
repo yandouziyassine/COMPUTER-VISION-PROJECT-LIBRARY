@@ -63,13 +63,13 @@ def _paired(stream, wanted_rgb, wanted_gt, decode_rgb, decode_gt):
 
 
 def nyu(ds, root):
-    """Official 654 test images from the labeled .mat (same loader as v1)."""
+    """Official 654 test images from the labeled .mat; GT = raw sensor depth (0 = no data), as in Marigold's eval."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from nyu import NYU
 
     d = NYU()
     for i in d.test_indices():
-        yield f"nyu_{i:04d}", d.rgb(i), d.depth(i).astype(np.float32), None
+        yield f"nyu_{i:04d}", d.rgb(i), d.raw(i).astype(np.float32), None
 
 
 def kitti(ds, root):

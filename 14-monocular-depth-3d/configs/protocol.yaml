@@ -6,7 +6,8 @@ version: 1
 datasets:
   nyu:
     split: official 654-image test split (splits.mat testNdxs)
-    gt: hole-filled depth of the labeled .mat (meters)
+    gt: raw Kinect depth (rawDepths of the labeled .mat, meters): Marigold's eval scores on raw depth;
+        # v1 used the hole-filled `depths`, which is interpolation exactly where the sensor failed
     min_depth: 0.001
     max_depth: 10.0
     crop: eigen_nyu          # rows 45:471, cols 41:601 of the 480 x 640 image

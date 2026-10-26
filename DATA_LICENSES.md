@@ -29,6 +29,8 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 | 18 | VQAv2 questions/answers (visualqa.org) | ✅ CC BY 4.0 | |
 | 20 | Football players & ball (Roboflow, HF `keremberke/football-object-detection`) | ✅ CC BY 4.0 | |
 | 20 | Football pitch keypoints (Kaggle `danielmachniak/football-pitch-keypoints-detection`) | ✅ MIT | 32-landmark layout as in Roboflow's open `sports` toolkit |
+| 20 | Metrica Sports sample data, games 1–2 (github.com/metrica-sports/sample-data) | ❓ no formal licence | README asks for responsible use and acknowledgement of Metrica Sports; validation only, not redistributed |
+| 20 | StatsBomb open data (github.com/statsbomb/open-data), shots of 597 men's matches | ⚠️ StatsBomb Public Data User Agreement | Research/analysis use, no redistribution, no commercial use; published analysis must credit StatsBomb with its logo |
 | 14 | NYU Depth V2 labeled subset (Silberman et al., ECCV 2012) | ⚠️ research use | Evaluated locally, never redistributed; figures show a few frames |
 | 14 | Illusion photos (6, Wikimedia Commons) | ✅ CC BY 2.0 / CC BY-SA 4.0 / CC0 | Credits in `14-monocular-depth-3d/docs/illusion_credits.md` |
 

@@ -65,6 +65,135 @@ The position error is measured by building the homography from the *predicted* l
 (keep landmarks with confidence ≥ 0.3, RANSAC tolerance 1.5 m) were chosen on the 30 validation frames; picking
 them on the test frames would have reported a slightly better, dishonest number.
 
+## v2 · Stage S4 statistics engine
+
+v2 turns this project into a match-analytics system in six stages (design:
+[`docs/superpowers/specs/2026-10-24-football-v2-match-analytics-design.md`](../docs/superpowers/specs/2026-10-24-football-v2-match-analytics-design.md)).
+Stage S4 is the **statistics engine** ([`stats/`](stats/)): pure Python on pitch coordinates, independent of the
+tracking provider. Input = per-frame player positions in metres + team per player + ball position. It is built and
+validated *before* the video pipeline (S1–S3) exists, on public data with ground truth, so that we know in advance
+which statistics our tracking errors will break.
+
+| Statistic | Method ([`stats/`](stats/)) |
+|---|---|
+| Distance, speed, sprints | Savitzky–Golay derivative (1 s window, NumPy only), speed capped at 12 m/s, sprint = > 7 m/s for ≥ 1 s |
+| Possession % | nearest player within a control radius; the team changes only after 5 control frames in a row (hysteresis) |
+| Passes, pass network | control by A → (ball in flight) → control by team-mate B; control runs shorter than N frames ignored; `networkx` graph |
+| Formation | average outfield positions in the attacking direction, standardised, Hungarian match to 4-4-2, 4-3-3, 4-2-3-1, 3-5-2, 5-3-2 |
+| Compactness, defensive line | convex-hull area of the 10 outfield players; depth of the deepest outfield player |
+| PPDA-style pressing | opponent passes in their own 60 % per possession regain in that zone (also computed from event data, for comparison) |
+
+### Validation on Metrica Sports tracking (2 matches, 25 Hz, with event data)
+
+**Pass detection** against the Metrica PASS events (start within 1 s, same passer *and* receiver). Control radius
+and minimum control time were tuned on game 1 only; game 2 is held out.
+
+| Match | Precision | Recall | **F1** |
+|---|---|---|---|
+| Game 1 (tuning) | 0.946 | 0.905 | 0.925 |
+| **Game 2 (held out)** | **0.959** | **0.900** | **0.929** (team-level only: 0.937) |
+
+Target was F1 ≥ 0.7 on clean tracks: met. Tuned setting: 0.5 m control radius, 2 frames of control (the edge of
+the searched grid; Metrica's ball positions sit very close to the player's feet, which broadcast tracking won't).
+
+Clean full-match values (sanity check): 8,980–9,550 m per player per 90 min, possession 52.8 % / 52.5 % for the
+home sides, 764 / 905 passes detected vs 799 / 964 in the events. PPDA-style pressing from tracking vs from events,
+per team and half: 3.9 vs 4.1, 4.1 vs 3.7, 7.2 vs 5.6, 8.7 vs 7.9, 5.7 vs 5.9, 6.6 vs 7.5, 8.9 vs 5.2, 5.2 vs 8.0:
+same scale, but single halves can be off by up to 4 because a half has only 11–31 regains. Formations found per half
+are 4-2-3-1, 3-5-2, 4-4-2, 4-3-3, 5-3-2 (Metrica gives no formation labels, so these are not scored). A few
+Metrica frames contain glitches (single-frame jumps of 100+ m/s); the 12 m/s cap is what keeps them out of the
+distances.
+
+### What our tracking errors will do to the statistics (noise-injection ablation)
+
+![noise ablation](docs/stats_noise_ablation.png)
+
+*Each 10-minute window of the two matches (20 windows, 2 noise draws each) is corrupted, then every statistic is
+compared with the same window's clean value. Bars: mean bias; whiskers: 95 % bootstrap CI over windows.*
+
+The errors injected are the ones measured in v1: **position error median 2.5 m / p90 6.2 m** (log-normal-scaled
+2-D Gaussian fitted to those two numbers), changing every frame or smoothly (1 s), either **independent per object**
+(pessimistic) or **shared by everything in the frame** (one camera model, + 0.5 m independent; closer to a
+homography error); plus missing frames (10 %, 30 %, in ~1 s gaps) and ID swaps between neighbouring players
+(1 or 5 per minute).
+
+| Statistic | Camera-level noise only | 10 % missing | 1 ID swap / min | **Combined** (all three) |
+|---|---|---|---|---|
+| Distance per 90 min | **+83 %** [78, 88] | +0.0 % | +0.4 % | **+81 %** [77, 85] |
+| Sprints | +2,400 % | −7 % | 0 % | +1,900 % |
+| Mean top speed | +4.6 m/s | 0.0 | +1.6 m/s | +4.6 m/s |
+| Possession (home) | −2.8 pp [−5.2, −0.5] | 0.0 pp | −1.3 pp | **+0.2 pp** [−3.2, 3.9] |
+| Pass F1 (detector re-tuned for noise) | 0.68 | 0.62 | 0.40 | **0.31** [0.27, 0.34] |
+| Formation same as clean | 100 % | 96 % | 49 % | 39 % |
+| Compactness | +0.2 % | −6 % | +4 % | −3 % |
+| Defensive line | −0.1 m | +0.2 m | −1.4 m | −0.8 m |
+| PPDA-style | −63 % | −22 % | −68 % | −84 % |
+
+What this says, before any video is processed:
+
+- **Robust:** possession % (within ±3 pp in every condition), compactness and defensive-line height (a few % /
+  about 1 m), and formation under position noise alone (91–100 % agreement).
+- **Broken by v1-level position error:** distance, speed and sprints. A 2.5 m error that moves within a second
+  *is* 2–3 m/s of fake running. The sweep in `results_stats.json` (`camera_noise_sweep`) gives S3 its target:
+  with the error varying over **10 s** instead of 1 s, the distance bias drops from +87 % to **+2.8 %** (2.5 m
+  error) and to +0.9 % at 1.25 m; at 3 s it is +20 % / +5.8 %. So S3's homography smoothing matters more than
+  the raw accuracy.
+- **Broken by identity errors:** formation (a swap moves a player's average position), passes with the right
+  passer/receiver, PPDA (needs regains *and* passes). ID swaps also accumulate: over a full match (no re-ID
+  correction), pass F1 under the combined errors falls to **0.09** (0.32 at team level). S1–S2 re-identification
+  is a precondition for player-level pass statistics.
+- Missing frames mostly cost *recall* (passes −28 % at 10 % missing), not bias in the per-player physical stats,
+  because gaps under 1 s are interpolated.
+
+![pass network](docs/stats_pass_network.png)
+
+*Left: pass network of the home team (game 1, first half) from clean tracks; arrows = ≥ 3 passes, node size = passes
+made, node = average position while in possession. Right: the same half after injecting the combined errors: ID
+swaps scramble average positions and most links disappear.*
+
+### Expected goals (xG) on StatsBomb open data
+
+<img src="https://raw.githubusercontent.com/statsbomb/open-data/master/img/SB%20-%20Icon%20Lockup%20-%20Colour%20positive.png" alt="StatsBomb" height="40">
+
+**15,308 shots** from 597 matches (14 men's competition-seasons, 2018–2024, incl. World Cups 2018/2022, Euros
+2020/2024, Bundesliga 2023/24, La Liga, Ligue 1, MLS, ISL, AFCON, Copa América). Split **by match**: 3,080 test
+shots from 120 matches never seen in training. Features: distance and angle to goal, body part / header, shot type
+(open play, free kick, penalty, corner), play pattern, first-time, under pressure, and from the shot's freeze frame
+(available for 97 % of shots): defenders in the shooting cone, goalkeeper in the cone, goalkeeper distance, nearest
+defender distance.
+
+| Model (held-out test) | Log-loss ↓ | Brier ↓ | ROC AUC |
+|---|---|---|---|
+| Base rate (11.7 % goals) | 0.354 | 0.101 | 0.500 |
+| **Logistic regression** | **0.271** | **0.0773** | 0.819 |
+| Gradient boosting | 0.273 | 0.0778 | 0.817 |
+| StatsBomb's own xG | 0.270 | 0.0773 | 0.823 |
+
+5-fold grouped cross-validation: logistic regression 0.278 ± 0.007 vs StatsBomb 0.276. Without penalties: 0.263
+vs 0.259. Total xG on the test shots: 364 (ours) vs 357 (StatsBomb) for 350 goals.
+
+![xG calibration](docs/stats_xg_calibration.png)
+
+A simple, well-calibrated logistic regression on geometry + freeze-frame features lands within 0.001–0.002
+log-loss of StatsBomb's commercial model; gradient boosting doesn't beat it on 12 k training shots. StatsBomb's
+model sees things we don't (e.g. the ball's height), and it may have been trained on some of these matches, so the
+comparison flatters it if anything.
+
+### Run stage S4
+
+```bash
+cd 20-football-analytics
+python -m stats.download_data      # Metrica games 1–2 (~160 MB) + StatsBomb shots (a few minutes, keeps only shots.csv)
+python -m stats.validate_metrica   # pass F1, clean stats, noise ablation, figures (~6 min on CPU)
+python -m stats.xg                 # xG models + calibration figure (~30 s)
+```
+
+All numbers are in [`docs/results_stats.json`](docs/results_stats.json). Unit tests: `tests/test_20_stats.py`
+(speed/sprints, possession hysteresis, passes on synthetic plays, formation matching, the noise model).
+
+**Remaining v2 stages:** S1 tracking (SoccerNet-Tracking HOTA), S2 team/jersey identity, S3 calibration
+smoothing + ball (→ GS-HOTA), S5 action spotting + replays, S6 OpenVINO, demo video and match report.
+
 ## How it works
 
 1. **Detection** ([`train.py`](train.py)): YOLO11n from COCO weights, fine-tuned at **960 px** (instead of
@@ -88,6 +217,11 @@ them on the test frames would have reported a slightly better, dishonest number.
 - **Football pitch keypoints** (Kaggle `danielmachniak/football-pitch-keypoints-detection`, MIT; Bundesliga
   broadcast frames): 222 / 30 / 24 train / valid / test, 32 landmarks per frame. The landmark numbering was
   checked by drawing the labels on training frames and against the dataset's left/right flip map.
+- **Metrica Sports sample data** (github.com/metrica-sports/sample-data, games 1–2, tracking + events): no formal
+  licence; the repo asks users to use it responsibly and to acknowledge Metrica Sports in public work. Used for
+  stage S4 validation, not redistributed.
+- **StatsBomb open data** (github.com/statsbomb/open-data), under the StatsBomb Public Data User Agreement
+  (research/analysis use, no redistribution, StatsBomb attribution on published analysis). Only the shots are kept.
 - **Location:** `../../cv-data/football/` (not committed).
 
 ## Run it
@@ -128,4 +262,4 @@ python evaluate_pitch.py          # landmark + pitch-position error, tactical ma
 
 ## Tech stack
 
-Python · Ultralytics YOLO11 · OpenCV (Lab color, masking) · scikit-learn (k-means, silhouette) · NumPy · Matplotlib
+Python · Ultralytics YOLO11 · OpenCV (Lab color, masking) · scikit-learn (k-means, silhouette, xG models) · NumPy · pandas · SciPy (Hungarian) · networkx · Matplotlib

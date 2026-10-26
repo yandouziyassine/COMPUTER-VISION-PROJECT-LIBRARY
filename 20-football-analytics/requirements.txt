@@ -3,3 +3,6 @@ opencv-python
 numpy
 scikit-learn
 matplotlib
+pandas
+scipy
+networkx

@@ -1,0 +1,2615 @@
+{
+  "xg": {
+    "data": {
+      "shots": 15308,
+      "matches": 597,
+      "competitions": [
+        "1. Bundesliga",
+        "African Cup of Nations",
+        "Champions League",
+        "Copa America",
+        "FIFA World Cup",
+        "Indian Super league",
+        "La Liga",
+        "Ligue 1",
+        "Major League Soccer",
+        "UEFA Euro"
+      ],
+      "goal_rate": 0.11706297360857068,
+      "shots_with_freeze_frame": 0.974261823882937,
+      "train_shots": 12228,
+      "test_shots": 3080,
+      "test_matches": 120
+    },
+    "features": [
+      "distance_m",
+      "log_distance",
+      "angle_rad",
+      "dist_x_angle",
+      "body_Right Foot",
+      "body_Left Foot",
+      "body_Head",
+      "body_Other",
+      "header",
+      "type_Open Play",
+      "type_Free Kick",
+      "type_Penalty",
+      "type_Corner",
+      "type_Kick Off",
+      "pattern_Regular Play",
+      "pattern_From Corner",
+      "pattern_From Free Kick",
+      "pattern_From Throw In",
+      "pattern_From Counter",
+      "pattern_From Goal Kick",
+      "pattern_From Keeper",
+      "pattern_From Kick Off",
+      "pattern_Other",
+      "first_time",
+      "under_pressure",
+      "has_freeze_frame",
+      "defenders_in_cone",
+      "keeper_in_cone",
+      "keeper_dist_m",
+      "nearest_defender_m"
+    ],
+    "test": {
+      "base rate": {
+        "log_loss": 0.3541405387104027,
+        "brier": 0.10074154208780797,
+        "roc_auc": 0.5
+      },
+      "StatsBomb xG": {
+        "log_loss": 0.27029459708791903,
+        "brier": 0.07733356675238075,
+        "roc_auc": 0.8229084249084249
+      },
+      "logistic regression": {
+        "log_loss": 0.27095730864413126,
+        "brier": 0.07727063530473678,
+        "roc_auc": 0.8186195709052851
+      },
+      "gradient boosting": {
+        "log_loss": 0.2726095256599389,
+        "brier": 0.07779555702844962,
+        "roc_auc": 0.8170947148090005
+      }
+    },
+    "cv5_grouped": {
+      "logistic regression": {
+        "log_loss_mean": 0.2781030247620535,
+        "log_loss_std": 0.007103327065038967,
+        "statsbomb_log_loss_mean": 0.2760016764010418
+      },
+      "gradient boosting": {
+        "log_loss_mean": 0.2779833283030535,
+        "log_loss_std": 0.006127585613101197,
+        "statsbomb_log_loss_mean": 0.2760016764010418
+      }
+    },
+    "test_no_penalties": {
+      "StatsBomb xG": {
+        "log_loss": 0.25945668501438623,
+        "brier": 0.07310407612673996,
+        "roc_auc": 0.7947159605546839
+      },
+      "logistic regression": {
+        "log_loss": 0.2628466443215958,
+        "brier": 0.07420578432755114,
+        "roc_auc": 0.7880069399262633
+      },
+      "gradient boosting": {
+        "log_loss": 0.2644477479396869,
+        "brier": 0.07472083605929279,
+        "roc_auc": 0.7866980494214602
+      }
+    },
+    "test_total_xg": {
+      "goals": 350,
+      "StatsBomb": 356.5036316974,
+      "logistic regression": 364.32574260966356,
+      "gradient boosting": 364.72487065481937
+    },
+    "calibration_curves": {
+      "StatsBomb xG": [
+        [
+          0.009584031696103897,
+          0.01948051948051948,
+          308
+        ],
+        [
+          0.02164736435064935,
+          0.01948051948051948,
+          308
+        ],
+        [
+          0.029709662077922083,
+          0.025974025974025976,
+          308
+        ],
+        [
+          0.039527315438311686,
+          0.02922077922077922,
+          308
+        ],
+        [
+          0.05086897424999999,
+          0.05519480519480519,
+          308
+        ],
+        [
+          0.06461157923376624,
+          0.05194805194805195,
+          308
+        ],
+        [
+          0.08462647620129869,
+          0.10064935064935066,
+          308
+        ],
+        [
+          0.11619767774999999,
+          0.11363636363636363,
+          308
+        ],
+        [
+          0.19261811724025973,
+          0.2077922077922078,
+          308
+        ],
+        [
+          0.5480881254545455,
+          0.512987012987013,
+          308
+        ]
+      ],
+      "logistic regression": [
+        [
+          0.013970296851306336,
+          0.022727272727272728,
+          308
+        ],
+        [
+          0.024910646515255076,
+          0.01948051948051948,
+          308
+        ],
+        [
+          0.033806837285773834,
+          0.025974025974025976,
+          308
+        ],
+        [
+          0.04407375297044956,
+          0.048701298701298704,
+          308
+        ],
+        [
+          0.056368275209814474,
+          0.032467532467532464,
+          308
+        ],
+        [
+          0.07186680398433636,
+          0.06493506493506493,
+          308
+        ],
+        [
+          0.0932653704899582,
+          0.10064935064935066,
+          308
+        ],
+        [
+          0.12541562414675364,
+          0.11363636363636363,
+          308
+        ],
+        [
+          0.19331979601682767,
+          0.2077922077922078,
+          308
+        ],
+        [
+          0.5258783842232377,
+          0.5,
+          308
+        ]
+      ],
+      "gradient boosting": [
+        [
+          0.013049181760654826,
+          0.022727272727272728,
+          308
+        ],
+        [
+          0.023981433388472598,
+          0.016233766233766232,
+          308
+        ],
+        [
+          0.032083427343854345,
+          0.025974025974025976,
+          308
+        ],
+        [
+          0.041360434746221385,
+          0.025974025974025976,
+          308
+        ],
+        [
+          0.05259932353103288,
+          0.05844155844155844,
+          308
+        ],
+        [
+          0.06725370286805168,
+          0.07467532467532467,
+          308
+        ],
+        [
+          0.08822918426952177,
+          0.09740259740259741,
+          308
+        ],
+        [
+          0.12546397864699682,
+          0.12012987012987013,
+          308
+        ],
+        [
+          0.20175307044199048,
+          0.18831168831168832,
+          308
+        ],
+        [
+          0.5383979209733959,
+          0.5064935064935064,
+          308
+        ]
+      ]
+    }
+  },
+  "metrica": {
+    "params": {
+      "smooth_s": 0.0,
+      "r_control": 0.5,
+      "min_control": 2,
+      "min_frames_possession": 5
+    },
+    "params_noise_tuned": {
+      "smooth_s": 0.0,
+      "r_control": 2.0,
+      "min_control": 5,
+      "min_frames_possession": 5
+    },
+    "tuning_game1": {
+      "best": {
+        "smooth_s": 0.0,
+        "r_control": 0.5,
+        "min_control": 2,
+        "precision": 0.9463350785340314,
+        "recall": 0.904881101376721,
+        "f1": 0.9251439539347408,
+        "tp": 723,
+        "fp": 41,
+        "fn": 76
+      },
+      "grid": [
+        {
+          "smooth_s": 0.0,
+          "r_control": 0.5,
+          "min_control": 1,
+          "precision": 0.9139240506329114,
+          "recall": 0.9036295369211514,
+          "f1": 0.908747640025173,
+          "tp": 722,
+          "fp": 68,
+          "fn": 77
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 0.5,
+          "min_control": 2,
+          "precision": 0.9463350785340314,
+          "recall": 0.904881101376721,
+          "f1": 0.9251439539347408,
+          "tp": 723,
+          "fp": 41,
+          "fn": 76
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 0.5,
+          "min_control": 3,
+          "precision": 0.9456521739130435,
+          "recall": 0.7622027534418022,
+          "f1": 0.8440748440748441,
+          "tp": 609,
+          "fp": 35,
+          "fn": 190
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 0.5,
+          "min_control": 4,
+          "precision": 0.9386281588447654,
+          "recall": 0.6508135168961201,
+          "f1": 0.7686622320768662,
+          "tp": 520,
+          "fp": 34,
+          "fn": 279
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 0.5,
+          "min_control": 5,
+          "precision": 0.9382022471910112,
+          "recall": 0.6270337922403004,
+          "f1": 0.7516879219804952,
+          "tp": 501,
+          "fp": 33,
+          "fn": 298
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 0.75,
+          "min_control": 1,
+          "precision": 0.8721518987341772,
+          "recall": 0.8623279098873592,
+          "f1": 0.867212083071114,
+          "tp": 689,
+          "fp": 101,
+          "fn": 110
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 0.75,
+          "min_control": 2,
+          "precision": 0.8976982097186701,
+          "recall": 0.8785982478097623,
+          "f1": 0.888045540796964,
+          "tp": 702,
+          "fp": 80,
+          "fn": 97
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 0.75,
+          "min_control": 3,
+          "precision": 0.931787175989086,
+          "recall": 0.8548185231539425,
+          "f1": 0.8916449086161881,
+          "tp": 683,
+          "fp": 50,
+          "fn": 116
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 0.75,
+          "min_control": 4,
+          "precision": 0.9385826771653544,
+          "recall": 0.7459324155193993,
+          "f1": 0.8312412831241284,
+          "tp": 596,
+          "fp": 39,
+          "fn": 203
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 0.75,
+          "min_control": 5,
+          "precision": 0.9421052631578948,
+          "recall": 0.672090112640801,
+          "f1": 0.7845142439737035,
+          "tp": 537,
+          "fp": 33,
+          "fn": 262
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.0,
+          "min_control": 1,
+          "precision": 0.8312182741116751,
+          "recall": 0.8197747183979975,
+          "f1": 0.8254568367989917,
+          "tp": 655,
+          "fp": 133,
+          "fn": 144
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.0,
+          "min_control": 2,
+          "precision": 0.8622908622908623,
+          "recall": 0.8385481852315394,
+          "f1": 0.8502538071065989,
+          "tp": 670,
+          "fp": 107,
+          "fn": 129
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.0,
+          "min_control": 3,
+          "precision": 0.8992042440318302,
+          "recall": 0.8485607008760951,
+          "f1": 0.8731487443657437,
+          "tp": 678,
+          "fp": 76,
+          "fn": 121
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.0,
+          "min_control": 4,
+          "precision": 0.9167842031029619,
+          "recall": 0.8135168961201502,
+          "f1": 0.8620689655172414,
+          "tp": 650,
+          "fp": 59,
+          "fn": 149
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.0,
+          "min_control": 5,
+          "precision": 0.9375,
+          "recall": 0.7509386733416771,
+          "f1": 0.8339124391938846,
+          "tp": 600,
+          "fp": 40,
+          "fn": 199
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.25,
+          "min_control": 1,
+          "precision": 0.8072916666666666,
+          "recall": 0.7759699624530664,
+          "f1": 0.7913209955328653,
+          "tp": 620,
+          "fp": 148,
+          "fn": 179
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.25,
+          "min_control": 2,
+          "precision": 0.8185328185328186,
+          "recall": 0.7959949937421777,
+          "f1": 0.8071065989847716,
+          "tp": 636,
+          "fp": 141,
+          "fn": 163
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.25,
+          "min_control": 3,
+          "precision": 0.8501971090670171,
+          "recall": 0.8097622027534418,
+          "f1": 0.8294871794871794,
+          "tp": 647,
+          "fp": 114,
+          "fn": 152
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.25,
+          "min_control": 4,
+          "precision": 0.8956884561891516,
+          "recall": 0.8060075093867334,
+          "f1": 0.8484848484848485,
+          "tp": 644,
+          "fp": 75,
+          "fn": 155
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.25,
+          "min_control": 5,
+          "precision": 0.9189985272459499,
+          "recall": 0.7809762202753442,
+          "f1": 0.8443843031123139,
+          "tp": 624,
+          "fp": 55,
+          "fn": 175
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.5,
+          "min_control": 1,
+          "precision": 0.7906976744186046,
+          "recall": 0.723404255319149,
+          "f1": 0.7555555555555555,
+          "tp": 578,
+          "fp": 153,
+          "fn": 221
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.5,
+          "min_control": 2,
+          "precision": 0.8016304347826086,
+          "recall": 0.7384230287859824,
+          "f1": 0.7687296416938112,
+          "tp": 590,
+          "fp": 146,
+          "fn": 209
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.5,
+          "min_control": 3,
+          "precision": 0.822972972972973,
+          "recall": 0.7622027534418022,
+          "f1": 0.7914230019493177,
+          "tp": 609,
+          "fp": 131,
+          "fn": 190
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.5,
+          "min_control": 4,
+          "precision": 0.8611111111111112,
+          "recall": 0.7759699624530664,
+          "f1": 0.8163265306122449,
+          "tp": 620,
+          "fp": 100,
+          "fn": 179
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.5,
+          "min_control": 5,
+          "precision": 0.8978102189781022,
+          "recall": 0.769712140175219,
+          "f1": 0.8288409703504043,
+          "tp": 615,
+          "fp": 70,
+          "fn": 184
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 2.0,
+          "min_control": 1,
+          "precision": 0.7369186046511628,
+          "recall": 0.6345431789737171,
+          "f1": 0.6819098856758574,
+          "tp": 507,
+          "fp": 181,
+          "fn": 292
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 2.0,
+          "min_control": 2,
+          "precision": 0.7474747474747475,
+          "recall": 0.6483103879849812,
+          "f1": 0.6943699731903484,
+          "tp": 518,
+          "fp": 175,
+          "fn": 281
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 2.0,
+          "min_control": 3,
+          "precision": 0.7647058823529411,
+          "recall": 0.6670838548185232,
+          "f1": 0.7125668449197862,
+          "tp": 533,
+          "fp": 164,
+          "fn": 266
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 2.0,
+          "min_control": 4,
+          "precision": 0.7971014492753623,
+          "recall": 0.688360450563204,
+          "f1": 0.7387508394895904,
+          "tp": 550,
+          "fp": 140,
+          "fn": 249
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 2.0,
+          "min_control": 5,
+          "precision": 0.8385185185185186,
+          "recall": 0.7083854818523154,
+          "f1": 0.76797829036635,
+          "tp": 566,
+          "fp": 109,
+          "fn": 233
+        }
+      ]
+    },
+    "tuning_noisy_game1": {
+      "best": {
+        "smooth_s": 0.0,
+        "r_control": 2.0,
+        "min_control": 5,
+        "precision": 0.07871720116618076,
+        "recall": 0.03379224030037547,
+        "f1": 0.04728546409807356,
+        "tp": 27,
+        "fp": 316,
+        "fn": 772
+      },
+      "grid": [
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.0,
+          "min_control": 1,
+          "precision": 0.07384615384615385,
+          "recall": 0.030037546933667083,
+          "f1": 0.04270462633451957,
+          "tp": 24,
+          "fp": 301,
+          "fn": 775
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.0,
+          "min_control": 3,
+          "precision": 0.06792452830188679,
+          "recall": 0.02252816020025031,
+          "f1": 0.03383458646616541,
+          "tp": 18,
+          "fp": 247,
+          "fn": 781
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.0,
+          "min_control": 5,
+          "precision": 0.053763440860215055,
+          "recall": 0.012515644555694618,
+          "f1": 0.020304568527918784,
+          "tp": 10,
+          "fp": 176,
+          "fn": 789
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 1.0,
+          "min_control": 10,
+          "precision": 0.05982905982905983,
+          "recall": 0.008760951188986232,
+          "f1": 0.015283842794759821,
+          "tp": 7,
+          "fp": 110,
+          "fn": 792
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 2.0,
+          "min_control": 1,
+          "precision": 0.06188118811881188,
+          "recall": 0.03128911138923655,
+          "f1": 0.04156275976724855,
+          "tp": 25,
+          "fp": 379,
+          "fn": 774
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 2.0,
+          "min_control": 3,
+          "precision": 0.06788511749347259,
+          "recall": 0.03254067584480601,
+          "f1": 0.043993231810490696,
+          "tp": 26,
+          "fp": 357,
+          "fn": 773
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 2.0,
+          "min_control": 5,
+          "precision": 0.07871720116618076,
+          "recall": 0.03379224030037547,
+          "f1": 0.04728546409807356,
+          "tp": 27,
+          "fp": 316,
+          "fn": 772
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 2.0,
+          "min_control": 10,
+          "precision": 0.09401709401709402,
+          "recall": 0.02753441802252816,
+          "f1": 0.04259438528557599,
+          "tp": 22,
+          "fp": 212,
+          "fn": 777
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 3.0,
+          "min_control": 1,
+          "precision": 0.03598971722365039,
+          "recall": 0.017521902377972465,
+          "f1": 0.023569023569023566,
+          "tp": 14,
+          "fp": 375,
+          "fn": 785
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 3.0,
+          "min_control": 3,
+          "precision": 0.03867403314917127,
+          "recall": 0.017521902377972465,
+          "f1": 0.024117140396210164,
+          "tp": 14,
+          "fp": 348,
+          "fn": 785
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 3.0,
+          "min_control": 5,
+          "precision": 0.046511627906976744,
+          "recall": 0.02002503128911139,
+          "f1": 0.02799650043744532,
+          "tp": 16,
+          "fp": 328,
+          "fn": 783
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 3.0,
+          "min_control": 10,
+          "precision": 0.08118081180811808,
+          "recall": 0.02753441802252816,
+          "f1": 0.041121495327102804,
+          "tp": 22,
+          "fp": 249,
+          "fn": 777
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 4.0,
+          "min_control": 1,
+          "precision": 0.0273972602739726,
+          "recall": 0.010012515644555695,
+          "f1": 0.014665444546287812,
+          "tp": 8,
+          "fp": 284,
+          "fn": 791
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 4.0,
+          "min_control": 3,
+          "precision": 0.03496503496503497,
+          "recall": 0.012515644555694618,
+          "f1": 0.018433179723502308,
+          "tp": 10,
+          "fp": 276,
+          "fn": 789
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 4.0,
+          "min_control": 5,
+          "precision": 0.04316546762589928,
+          "recall": 0.015018773466833541,
+          "f1": 0.022284122562674095,
+          "tp": 12,
+          "fp": 266,
+          "fn": 787
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 4.0,
+          "min_control": 10,
+          "precision": 0.06614785992217899,
+          "recall": 0.02127659574468085,
+          "f1": 0.032196969696969696,
+          "tp": 17,
+          "fp": 240,
+          "fn": 782
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 5.0,
+          "min_control": 1,
+          "precision": 0.016877637130801686,
+          "recall": 0.0050062578222778474,
+          "f1": 0.007722007722007723,
+          "tp": 4,
+          "fp": 233,
+          "fn": 795
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 5.0,
+          "min_control": 3,
+          "precision": 0.017699115044247787,
+          "recall": 0.0050062578222778474,
+          "f1": 0.007804878048780488,
+          "tp": 4,
+          "fp": 222,
+          "fn": 795
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 5.0,
+          "min_control": 5,
+          "precision": 0.02564102564102564,
+          "recall": 0.007509386733416771,
+          "f1": 0.011616650532429816,
+          "tp": 6,
+          "fp": 228,
+          "fn": 793
+        },
+        {
+          "smooth_s": 0.0,
+          "r_control": 5.0,
+          "min_control": 10,
+          "precision": 0.06172839506172839,
+          "recall": 0.01877346683354193,
+          "f1": 0.02879078694817658,
+          "tp": 15,
+          "fp": 228,
+          "fn": 784
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 1.0,
+          "min_control": 1,
+          "precision": 0.07641196013289037,
+          "recall": 0.028785982478097622,
+          "f1": 0.04181818181818182,
+          "tp": 23,
+          "fp": 278,
+          "fn": 776
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 1.0,
+          "min_control": 3,
+          "precision": 0.07114624505928854,
+          "recall": 0.02252816020025031,
+          "f1": 0.034220532319391636,
+          "tp": 18,
+          "fp": 235,
+          "fn": 781
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 1.0,
+          "min_control": 5,
+          "precision": 0.05759162303664921,
+          "recall": 0.01376720901126408,
+          "f1": 0.022222222222222223,
+          "tp": 11,
+          "fp": 180,
+          "fn": 788
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 1.0,
+          "min_control": 10,
+          "precision": 0.06422018348623854,
+          "recall": 0.008760951188986232,
+          "f1": 0.015418502202643172,
+          "tp": 7,
+          "fp": 102,
+          "fn": 792
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 2.0,
+          "min_control": 1,
+          "precision": 0.06493506493506493,
+          "recall": 0.03128911138923655,
+          "f1": 0.042229729729729736,
+          "tp": 25,
+          "fp": 360,
+          "fn": 774
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 2.0,
+          "min_control": 3,
+          "precision": 0.0718232044198895,
+          "recall": 0.03254067584480601,
+          "f1": 0.04478897502153316,
+          "tp": 26,
+          "fp": 336,
+          "fn": 773
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 2.0,
+          "min_control": 5,
+          "precision": 0.07761194029850746,
+          "recall": 0.03254067584480601,
+          "f1": 0.045855379188712526,
+          "tp": 26,
+          "fp": 309,
+          "fn": 773
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 2.0,
+          "min_control": 10,
+          "precision": 0.09322033898305085,
+          "recall": 0.02753441802252816,
+          "f1": 0.042512077294685986,
+          "tp": 22,
+          "fp": 214,
+          "fn": 777
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 3.0,
+          "min_control": 1,
+          "precision": 0.03591160220994475,
+          "recall": 0.016270337922403004,
+          "f1": 0.02239448751076658,
+          "tp": 13,
+          "fp": 349,
+          "fn": 786
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 3.0,
+          "min_control": 3,
+          "precision": 0.038011695906432746,
+          "recall": 0.016270337922403004,
+          "f1": 0.02278702892199825,
+          "tp": 13,
+          "fp": 329,
+          "fn": 786
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 3.0,
+          "min_control": 5,
+          "precision": 0.046153846153846156,
+          "recall": 0.01877346683354193,
+          "f1": 0.026690391459074734,
+          "tp": 15,
+          "fp": 310,
+          "fn": 784
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 3.0,
+          "min_control": 10,
+          "precision": 0.0749063670411985,
+          "recall": 0.025031289111389236,
+          "f1": 0.0375234521575985,
+          "tp": 20,
+          "fp": 247,
+          "fn": 779
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 4.0,
+          "min_control": 1,
+          "precision": 0.025547445255474453,
+          "recall": 0.008760951188986232,
+          "f1": 0.013047530288909601,
+          "tp": 7,
+          "fp": 267,
+          "fn": 792
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 4.0,
+          "min_control": 3,
+          "precision": 0.02973977695167286,
+          "recall": 0.010012515644555695,
+          "f1": 0.0149812734082397,
+          "tp": 8,
+          "fp": 261,
+          "fn": 791
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 4.0,
+          "min_control": 5,
+          "precision": 0.03474903474903475,
+          "recall": 0.011264080100125156,
+          "f1": 0.017013232514177693,
+          "tp": 9,
+          "fp": 250,
+          "fn": 790
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 4.0,
+          "min_control": 10,
+          "precision": 0.055776892430278883,
+          "recall": 0.017521902377972465,
+          "f1": 0.026666666666666665,
+          "tp": 14,
+          "fp": 237,
+          "fn": 785
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 5.0,
+          "min_control": 1,
+          "precision": 0.01904761904761905,
+          "recall": 0.0050062578222778474,
+          "f1": 0.007928642220019821,
+          "tp": 4,
+          "fp": 206,
+          "fn": 795
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 5.0,
+          "min_control": 3,
+          "precision": 0.019417475728155338,
+          "recall": 0.0050062578222778474,
+          "f1": 0.007960199004975124,
+          "tp": 4,
+          "fp": 202,
+          "fn": 795
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 5.0,
+          "min_control": 5,
+          "precision": 0.023148148148148147,
+          "recall": 0.006257822277847309,
+          "f1": 0.009852216748768473,
+          "tp": 5,
+          "fp": 211,
+          "fn": 794
+        },
+        {
+          "smooth_s": 1.0,
+          "r_control": 5.0,
+          "min_control": 10,
+          "precision": 0.05555555555555555,
+          "recall": 0.016270337922403004,
+          "f1": 0.025169409486931266,
+          "tp": 13,
+          "fp": 221,
+          "fn": 786
+        }
+      ]
+    },
+    "pass_detection_under_combined_noise": {
+      "clean_params_on_noisy_game2": {
+        "precision": 0.1171875,
+        "recall": 0.015560165975103735,
+        "f1": 0.027472527472527472,
+        "tp": 15,
+        "fp": 113,
+        "fn": 949
+      },
+      "noisy_params_on_noisy_game2": {
+        "precision": 0.17270194986072424,
+        "recall": 0.06431535269709543,
+        "f1": 0.09372637944066514,
+        "tp": 62,
+        "fp": 297,
+        "fn": 902
+      },
+      "noisy_params_on_clean_game2": {
+        "precision": 0.8517060367454068,
+        "recall": 0.6732365145228216,
+        "f1": 0.7520278099652375,
+        "tp": 649,
+        "fp": 113,
+        "fn": 315
+      },
+      "noisy_params_on_noisy_game2_team_level": {
+        "precision": 0.5877437325905293,
+        "recall": 0.21887966804979253,
+        "f1": 0.31897203325774753,
+        "tp": 211,
+        "fp": 148,
+        "fn": 753
+      },
+      "noisy_params_on_game2_independent_noise": {
+        "precision": 0.03278688524590164,
+        "recall": 0.006224066390041493,
+        "f1": 0.010462074978204011,
+        "tp": 6,
+        "fp": 177,
+        "fn": 958
+      }
+    },
+    "matches": {
+      "game1": {
+        "physical": {
+          "home": {
+            "distance_per90_m": 9115.499103974018,
+            "mean_top_speed": 8.855680031209193,
+            "sprints": 97,
+            "player_minutes": 1063.379333333333
+          },
+          "away": {
+            "distance_per90_m": 9414.301701067645,
+            "mean_top_speed": 8.428355144391576,
+            "sprints": 93,
+            "player_minutes": 1063.3793333333333
+          }
+        },
+        "top_speeds_m_s": [
+          12.0,
+          12.0,
+          12.0
+        ],
+        "possession_home_pct": 52.837140751658076,
+        "passes_detected": 764,
+        "passes_events": 799,
+        "pass_detection": {
+          "precision": 0.9463350785340314,
+          "recall": 0.904881101376721,
+          "f1": 0.9251439539347408,
+          "tp": 723,
+          "fp": 41,
+          "fn": 76
+        },
+        "pass_detection_team_level": {
+          "precision": 0.9581151832460733,
+          "recall": 0.9161451814768461,
+          "f1": 0.9366602687140114,
+          "tp": 732,
+          "fp": 32,
+          "fn": 67
+        },
+        "halves": {
+          "1": {
+            "home": {
+              "formation": "4-2-3-1",
+              "compactness_m2": 946.0053729688017,
+              "defensive_line_m": 37.618131071979796,
+              "ppda_tracking": 3.935483870967742,
+              "ppda_events": 4.0606060606060606,
+              "ppda_counts_tracking": [
+                122,
+                31
+              ],
+              "ppda_counts_events": [
+                134,
+                33
+              ]
+            },
+            "away": {
+              "formation": "3-5-2",
+              "compactness_m2": 849.0267037208729,
+              "defensive_line_m": 30.88653348533745,
+              "ppda_tracking": 4.133333333333334,
+              "ppda_events": 3.657142857142857,
+              "ppda_counts_tracking": [
+                124,
+                30
+              ],
+              "ppda_counts_events": [
+                128,
+                35
+              ]
+            }
+          },
+          "2": {
+            "home": {
+              "formation": "4-4-2",
+              "compactness_m2": 827.0731892352837,
+              "defensive_line_m": 32.276682607811225,
+              "ppda_tracking": 7.1875,
+              "ppda_events": 5.565217391304348,
+              "ppda_counts_tracking": [
+                115,
+                16
+              ],
+              "ppda_counts_events": [
+                128,
+                23
+              ]
+            },
+            "away": {
+              "formation": "3-5-2",
+              "compactness_m2": 739.7691811952911,
+              "defensive_line_m": 37.042582058584216,
+              "ppda_tracking": 8.727272727272727,
+              "ppda_events": 7.88,
+              "ppda_counts_tracking": [
+                192,
+                22
+              ],
+              "ppda_counts_events": [
+                197,
+                25
+              ]
+            }
+          }
+        }
+      },
+      "game2": {
+        "physical": {
+          "home": {
+            "distance_per90_m": 9552.889206197171,
+            "mean_top_speed": 10.425844850780308,
+            "sprints": 63,
+            "player_minutes": 1035.1460000000002
+          },
+          "away": {
+            "distance_per90_m": 8980.22888816818,
+            "mean_top_speed": 9.050420285738854,
+            "sprints": 60,
+            "player_minutes": 1035.1446666666668
+          }
+        },
+        "top_speeds_m_s": [
+          12.0,
+          12.0,
+          12.0
+        ],
+        "possession_home_pct": 52.46685816617189,
+        "passes_detected": 905,
+        "passes_events": 964,
+        "pass_detection": {
+          "precision": 0.9591160220994475,
+          "recall": 0.9004149377593361,
+          "f1": 0.9288389513108614,
+          "tp": 868,
+          "fp": 37,
+          "fn": 96
+        },
+        "pass_detection_team_level": {
+          "precision": 0.9679558011049724,
+          "recall": 0.9087136929460581,
+          "f1": 0.9373996789727127,
+          "tp": 876,
+          "fp": 29,
+          "fn": 88
+        },
+        "halves": {
+          "1": {
+            "home": {
+              "formation": "4-3-3",
+              "compactness_m2": 877.9016808281013,
+              "defensive_line_m": 34.42143117227169,
+              "ppda_tracking": 5.655172413793103,
+              "ppda_events": 5.896551724137931,
+              "ppda_counts_tracking": [
+                164,
+                29
+              ],
+              "ppda_counts_events": [
+                171,
+                29
+              ]
+            },
+            "away": {
+              "formation": "4-2-3-1",
+              "compactness_m2": 910.0801831428123,
+              "defensive_line_m": 33.70348631245861,
+              "ppda_tracking": 6.566666666666666,
+              "ppda_events": 7.464285714285714,
+              "ppda_counts_tracking": [
+                197,
+                30
+              ],
+              "ppda_counts_events": [
+                209,
+                28
+              ]
+            }
+          },
+          "2": {
+            "home": {
+              "formation": "4-4-2",
+              "compactness_m2": 645.2519280716173,
+              "defensive_line_m": 33.08004886293792,
+              "ppda_tracking": 8.909090909090908,
+              "ppda_events": 5.190476190476191,
+              "ppda_counts_tracking": [
+                98,
+                11
+              ],
+              "ppda_counts_events": [
+                109,
+                21
+              ]
+            },
+            "away": {
+              "formation": "5-3-2",
+              "compactness_m2": 771.2533799243804,
+              "defensive_line_m": 36.404097101003885,
+              "ppda_tracking": 5.2,
+              "ppda_events": 8.0,
+              "ppda_counts_tracking": [
+                130,
+                25
+              ],
+              "ppda_counts_events": [
+                144,
+                18
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ablation": {
+      "windows": 20,
+      "seeds_per_window": 2,
+      "noise_model": "position error = log-normal-scaled isotropic Gaussian, median 2.5 m, p90 6.2 m (project 20 v1)",
+      "conditions": {
+        "clean": null,
+        "independent noise, per frame": {
+          "tau_s": 0.0
+        },
+        "independent noise, smooth (1 s)": {
+          "tau_s": 1.0
+        },
+        "independent noise, smooth, half size": {
+          "tau_s": 1.0,
+          "pos_scale": 0.5
+        },
+        "camera-level noise (shared, 1 s) + 0.5 m local": {
+          "tau_s": 1.0,
+          "shared": true
+        },
+        "10 % frames missing": {
+          "missing_frac": 0.1
+        },
+        "30 % frames missing": {
+          "missing_frac": 0.3
+        },
+        "1 ID swap / min": {
+          "swaps_per_min": 1.0
+        },
+        "5 ID swaps / min": {
+          "swaps_per_min": 5.0
+        },
+        "combined: camera-level noise + 10 % missing + 1 swap/min": {
+          "tau_s": 1.0,
+          "shared": true,
+          "missing_frac": 0.1,
+          "swaps_per_min": 1.0
+        }
+      },
+      "results": {
+        "clean": {
+          "distance_per90_m": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "sprints": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "passes": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "compactness_m2": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "passes_nt": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "top_speed": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "possession_home": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "defensive_line_m": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "possession_home_nt": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "pass_f1": {
+            "mean": 0.922929474803475,
+            "ci95": [
+              0.9095334700257968,
+              0.9352991148791042
+            ]
+          },
+          "pass_f1_nt": {
+            "mean": 0.7539962070776163,
+            "ci95": [
+              0.7326480601421691,
+              0.7771894878895649
+            ]
+          },
+          "pass_f1_team": {
+            "mean": 0.9326690213933924,
+            "ci95": [
+              0.9199996598813712,
+              0.9430836540784371
+            ]
+          },
+          "formation_agreement": {
+            "mean": 1.0,
+            "ci95": [
+              1.0,
+              1.0
+            ]
+          },
+          "ppda": {
+            "mean": 0.0,
+            "ci95": [
+              -17.199021540466376,
+              22.74731575872199
+            ],
+            "value": 5.932291666666667
+          }
+        },
+        "independent noise, per frame": {
+          "distance_per90_m": {
+            "mean": 80.54566901615988,
+            "ci95": [
+              76.53465870170558,
+              84.9874250996056
+            ]
+          },
+          "sprints": {
+            "mean": -59.988186858431426,
+            "ci95": [
+              -65.79234139388691,
+              -54.668513828788974
+            ]
+          },
+          "passes": {
+            "mean": -100.0,
+            "ci95": [
+              -100.0,
+              -100.0
+            ]
+          },
+          "compactness_m2": {
+            "mean": 5.013092229637953,
+            "ci95": [
+              4.7692246826222195,
+              5.2701470080282675
+            ]
+          },
+          "passes_nt": {
+            "mean": -100.0,
+            "ci95": [
+              -100.0,
+              -100.0
+            ]
+          },
+          "top_speed": {
+            "mean": 4.5516840044634215,
+            "ci95": [
+              4.4260172785126874,
+              4.677365279231614
+            ]
+          },
+          "possession_home": {
+            "mean": -2.1899113976179487,
+            "ci95": [
+              -8.055662961028808,
+              3.831943792036164
+            ]
+          },
+          "defensive_line_m": {
+            "mean": -1.1496091607895305,
+            "ci95": [
+              -1.171127519044824,
+              -1.1286817481306286
+            ]
+          },
+          "possession_home_nt": {
+            "mean": -1.2112025636857655,
+            "ci95": [
+              -2.80203559151488,
+              0.29725244150365987
+            ]
+          },
+          "pass_f1": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "pass_f1_nt": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "pass_f1_team": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "formation_agreement": {
+            "mean": 0.9875,
+            "ci95": [
+              0.9625,
+              1.0
+            ]
+          },
+          "ppda": {
+            "mean": -100.00000000000001,
+            "ci95": [
+              -100.00000000000001,
+              -100.00000000000001
+            ],
+            "value": 0.0
+          }
+        },
+        "independent noise, smooth (1 s)": {
+          "distance_per90_m": {
+            "mean": 79.62998358257613,
+            "ci95": [
+              75.70507293373716,
+              83.75370599907737
+            ]
+          },
+          "sprints": {
+            "mean": 2188.4401158925616,
+            "ci95": [
+              1792.8919764074992,
+              2684.886116359486
+            ]
+          },
+          "passes": {
+            "mean": -96.95666907166905,
+            "ci95": [
+              -97.51736228963196,
+              -96.37859281340555
+            ]
+          },
+          "compactness_m2": {
+            "mean": 5.068213777299752,
+            "ci95": [
+              4.813497289017889,
+              5.333083630599512
+            ]
+          },
+          "passes_nt": {
+            "mean": -60.65001375018519,
+            "ci95": [
+              -63.05718040483812,
+              -58.106145291137075
+            ]
+          },
+          "top_speed": {
+            "mean": 4.584073261425745,
+            "ci95": [
+              4.465280848822601,
+              4.703053391965937
+            ]
+          },
+          "possession_home": {
+            "mean": 1.2817954436467036,
+            "ci95": [
+              -3.7054390547425395,
+              6.314332311722907
+            ]
+          },
+          "defensive_line_m": {
+            "mean": -1.1731282934015013,
+            "ci95": [
+              -1.228045514122971,
+              -1.1184554121072294
+            ]
+          },
+          "possession_home_nt": {
+            "mean": -0.9466352643221061,
+            "ci95": [
+              -3.0355492617447974,
+              1.0906093302697106
+            ]
+          },
+          "pass_f1": {
+            "mean": 0.01799687708487482,
+            "ci95": [
+              0.012584753541705256,
+              0.02324060837840793
+            ]
+          },
+          "pass_f1_nt": {
+            "mean": 0.15119403984216134,
+            "ci95": [
+              0.13917897657152042,
+              0.16313427064880184
+            ]
+          },
+          "pass_f1_team": {
+            "mean": 0.029240102153093576,
+            "ci95": [
+              0.021454160337751223,
+              0.037216375562985494
+            ]
+          },
+          "formation_agreement": {
+            "mean": 0.9125,
+            "ci95": [
+              0.85,
+              0.9625
+            ]
+          },
+          "ppda": {
+            "mean": -91.51091769253607,
+            "ci95": [
+              -93.63190628511086,
+              -89.15409273740735
+            ],
+            "value": 0.5035971223021583
+          }
+        },
+        "independent noise, smooth, half size": {
+          "distance_per90_m": {
+            "mean": 28.3342931970613,
+            "ci95": [
+              26.61474310362056,
+              30.179602713209906
+            ]
+          },
+          "sprints": {
+            "mean": 234.92414989901403,
+            "ci95": [
+              198.01472573508917,
+              280.5203611832008
+            ]
+          },
+          "passes": {
+            "mean": -92.21991704368978,
+            "ci95": [
+              -93.40482039498903,
+              -90.95608248285241
+            ]
+          },
+          "compactness_m2": {
+            "mean": 1.303290693982574,
+            "ci95": [
+              1.1838782158368386,
+              1.4230306637557597
+            ]
+          },
+          "passes_nt": {
+            "mean": -34.048969552642596,
+            "ci95": [
+              -36.26103047397414,
+              -31.65559773511233
+            ]
+          },
+          "top_speed": {
+            "mean": 2.1108450449483747,
+            "ci95": [
+              2.0085929397642266,
+              2.2075836388325643
+            ]
+          },
+          "possession_home": {
+            "mean": -2.5837737933681035,
+            "ci95": [
+              -6.213335788401847,
+              1.1171743300441326
+            ]
+          },
+          "defensive_line_m": {
+            "mean": -0.35920119003532863,
+            "ci95": [
+              -0.38347917450644525,
+              -0.33679815872034524
+            ]
+          },
+          "possession_home_nt": {
+            "mean": -0.9369187430638041,
+            "ci95": [
+              -2.319406198087192,
+              0.4142159849547248
+            ]
+          },
+          "pass_f1": {
+            "mean": 0.07461921784053935,
+            "ci95": [
+              0.06183718412248497,
+              0.0896828827856506
+            ]
+          },
+          "pass_f1_nt": {
+            "mean": 0.41610521423904145,
+            "ci95": [
+              0.39400257288910173,
+              0.43783436809703713
+            ]
+          },
+          "pass_f1_team": {
+            "mean": 0.08987203796228463,
+            "ci95": [
+              0.07600267444417441,
+              0.10532566534383132
+            ]
+          },
+          "formation_agreement": {
+            "mean": 0.9625,
+            "ci95": [
+              0.9125,
+              1.0
+            ]
+          },
+          "ppda": {
+            "mean": -87.03860824399997,
+            "ci95": [
+              -89.81448806683689,
+              -83.70061079371565
+            ],
+            "value": 0.7689075630252101
+          }
+        },
+        "camera-level noise (shared, 1 s) + 0.5 m local": {
+          "distance_per90_m": {
+            "mean": 83.17910670488946,
+            "ci95": [
+              78.51860624494122,
+              88.06958581749635
+            ]
+          },
+          "sprints": {
+            "mean": 2425.591804330935,
+            "ci95": [
+              1950.3541363829409,
+              2979.4044009809636
+            ]
+          },
+          "passes": {
+            "mean": -68.14496375101632,
+            "ci95": [
+              -70.20189899606125,
+              -65.90394417181471
+            ]
+          },
+          "compactness_m2": {
+            "mean": 0.20757337992439817,
+            "ci95": [
+              0.15963493754820943,
+              0.2523710899421058
+            ]
+          },
+          "passes_nt": {
+            "mean": -8.272935364242752,
+            "ci95": [
+              -10.438053795208756,
+              -6.188395178187094
+            ]
+          },
+          "top_speed": {
+            "mean": 4.592528256826118,
+            "ci95": [
+              4.445758009373828,
+              4.740190225468229
+            ]
+          },
+          "possession_home": {
+            "mean": -2.7712112078868345,
+            "ci95": [
+              -5.151426608366993,
+              -0.45139785189322434
+            ]
+          },
+          "defensive_line_m": {
+            "mean": -0.07824934227177298,
+            "ci95": [
+              -0.08762317485809942,
+              -0.06930125947017221
+            ]
+          },
+          "possession_home_nt": {
+            "mean": -0.7476307827062314,
+            "ci95": [
+              -1.5746996168044318,
+              0.033657344285884724
+            ]
+          },
+          "pass_f1": {
+            "mean": 0.32000909352902285,
+            "ci95": [
+              0.2958552818811172,
+              0.34225320339825416
+            ]
+          },
+          "pass_f1_nt": {
+            "mean": 0.680514173056187,
+            "ci95": [
+              0.6600425529954483,
+              0.7010889931628316
+            ]
+          },
+          "pass_f1_team": {
+            "mean": 0.3748564891759196,
+            "ci95": [
+              0.35043229181345914,
+              0.3968793150965299
+            ]
+          },
+          "formation_agreement": {
+            "mean": 1.0,
+            "ci95": [
+              1.0,
+              1.0
+            ]
+          },
+          "ppda": {
+            "mean": -62.81267459493974,
+            "ci95": [
+              -67.95528659224884,
+              -56.79006543993194
+            ],
+            "value": 2.206060606060606
+          }
+        },
+        "10 % frames missing": {
+          "distance_per90_m": {
+            "mean": 0.02981436062258621,
+            "ci95": [
+              -0.0643033808167707,
+              0.11662024358970653
+            ]
+          },
+          "sprints": {
+            "mean": -6.590898005979528,
+            "ci95": [
+              -9.092778038311327,
+              -4.340259955171641
+            ]
+          },
+          "passes": {
+            "mean": -28.427196328271172,
+            "ci95": [
+              -29.989331605196345,
+              -26.84709924082501
+            ]
+          },
+          "compactness_m2": {
+            "mean": -6.229023186737452,
+            "ci95": [
+              -6.53224757821577,
+              -5.879903816699239
+            ]
+          },
+          "passes_nt": {
+            "mean": -25.93936451729032,
+            "ci95": [
+              -27.410869366328356,
+              -24.424886358391483
+            ]
+          },
+          "top_speed": {
+            "mean": -0.026374453048099312,
+            "ci95": [
+              -0.043473724412112544,
+              -0.010305571375490354
+            ]
+          },
+          "possession_home": {
+            "mean": -0.028315757762070782,
+            "ci95": [
+              -0.6290327024761697,
+              0.6194246801434747
+            ]
+          },
+          "defensive_line_m": {
+            "mean": 0.23387092369686524,
+            "ci95": [
+              0.16771806263287262,
+              0.2975032871527383
+            ]
+          },
+          "possession_home_nt": {
+            "mean": -0.49134746762278086,
+            "ci95": [
+              -1.0127322410949413,
+              0.019241811425289423
+            ]
+          },
+          "pass_f1": {
+            "mean": 0.752742587664633,
+            "ci95": [
+              0.7407385001185389,
+              0.7648010745755413
+            ]
+          },
+          "pass_f1_nt": {
+            "mean": 0.6232049324200315,
+            "ci95": [
+              0.6096596126611423,
+              0.6372626026380432
+            ]
+          },
+          "pass_f1_team": {
+            "mean": 0.7740435327515224,
+            "ci95": [
+              0.763044410825169,
+              0.7852263242138071
+            ]
+          },
+          "formation_agreement": {
+            "mean": 0.9625,
+            "ci95": [
+              0.9125,
+              1.0
+            ]
+          },
+          "ppda": {
+            "mean": -22.467740388517136,
+            "ci95": [
+              -33.230539248826574,
+              -10.15012354001256
+            ],
+            "value": 4.599439775910364
+          }
+        },
+        "30 % frames missing": {
+          "distance_per90_m": {
+            "mean": -0.12119436519908296,
+            "ci95": [
+              -0.30262973002139437,
+              0.06630781165063394
+            ]
+          },
+          "sprints": {
+            "mean": -19.824368415401022,
+            "ci95": [
+              -24.458382981752546,
+              -15.097842740743555
+            ]
+          },
+          "passes": {
+            "mean": -67.73989177155102,
+            "ci95": [
+              -69.90121469828713,
+              -65.65394787804097
+            ]
+          },
+          "compactness_m2": {
+            "mean": -11.812875487294098,
+            "ci95": [
+              -12.427161744901149,
+              -11.203778022125647
+            ]
+          },
+          "passes_nt": {
+            "mean": -65.69705634989994,
+            "ci95": [
+              -67.92486383543407,
+              -63.249923428229735
+            ]
+          },
+          "top_speed": {
+            "mean": -0.11086316278315564,
+            "ci95": [
+              -0.15915113564187697,
+              -0.06419525390921871
+            ]
+          },
+          "possession_home": {
+            "mean": -0.5431292095036138,
+            "ci95": [
+              -1.616054992139694,
+              0.5153773533442747
+            ]
+          },
+          "defensive_line_m": {
+            "mean": 0.4552798868411763,
+            "ci95": [
+              0.23282222202789615,
+              0.6783098118579796
+            ]
+          },
+          "possession_home_nt": {
+            "mean": 0.02151539649185814,
+            "ci95": [
+              -0.7654010399622189,
+              0.7776141527560063
+            ]
+          },
+          "pass_f1": {
+            "mean": 0.4178408627717028,
+            "ci95": [
+              0.3951032359368867,
+              0.438351165170122
+            ]
+          },
+          "pass_f1_nt": {
+            "mean": 0.3437283433439741,
+            "ci95": [
+              0.3227245546009944,
+              0.36426795366289205
+            ]
+          },
+          "pass_f1_team": {
+            "mean": 0.4360911630184067,
+            "ci95": [
+              0.4137580049593986,
+              0.45637794840905593
+            ]
+          },
+          "formation_agreement": {
+            "mean": 0.8,
+            "ci95": [
+              0.7,
+              0.8875
+            ]
+          },
+          "ppda": {
+            "mean": -57.478635724289205,
+            "ci95": [
+              -63.24694364331865,
+              -50.93296524325503
+            ],
+            "value": 2.5224913494809686
+          }
+        },
+        "1 ID swap / min": {
+          "distance_per90_m": {
+            "mean": 0.3979036156435345,
+            "ci95": [
+              0.3499800744488195,
+              0.44946235080224206
+            ]
+          },
+          "sprints": {
+            "mean": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "passes": {
+            "mean": -26.932302650383377,
+            "ci95": [
+              -30.907424399276685,
+              -22.75758064720376
+            ]
+          },
+          "compactness_m2": {
+            "mean": 3.8025287973473803,
+            "ci95": [
+              1.5637707719441447,
+              5.953375026110943
+            ]
+          },
+          "passes_nt": {
+            "mean": -21.22517732341324,
+            "ci95": [
+              -24.951110432752433,
+              -17.774235387207632
+            ]
+          },
+          "top_speed": {
+            "mean": 1.5572934074741107,
+            "ci95": [
+              1.3702582933953809,
+              1.755005892667097
+            ]
+          },
+          "possession_home": {
+            "mean": -1.2830532586704553,
+            "ci95": [
+              -3.708182146332319,
+              1.2240421974703388
+            ]
+          },
+          "defensive_line_m": {
+            "mean": -1.3905250344685487,
+            "ci95": [
+              -2.201634295344115,
+              -0.6714706432245948
+            ]
+          },
+          "possession_home_nt": {
+            "mean": -0.5137855160157276,
+            "ci95": [
+              -2.736586950986356,
+              1.7686964574949107
+            ]
+          },
+          "pass_f1": {
+            "mean": 0.49787223292438776,
+            "ci95": [
+              0.4452358830652764,
+              0.5475581167347058
+            ]
+          },
+          "pass_f1_nt": {
+            "mean": 0.3967799791400664,
+            "ci95": [
+              0.35300561034018363,
+              0.43798426290131764
+            ]
+          },
+          "pass_f1_team": {
+            "mean": 0.683451175705809,
+            "ci95": [
+              0.6453814750411713,
+              0.7212910180357475
+            ]
+          },
+          "formation_agreement": {
+            "mean": 0.4875,
+            "ci95": [
+              0.375,
+              0.6
+            ]
+          },
+          "ppda": {
+            "mean": -68.3631927723062,
+            "ci95": [
+              -72.4086464386048,
+              -63.90291196171172
+            ],
+            "value": 1.8767876787678768
+          }
+        },
+        "5 ID swaps / min": {
+          "distance_per90_m": {
+            "mean": 1.9536403175133046,
+            "ci95": [
+              1.82513508534039,
+              2.0845626971397615
+            ]
+          },
+          "sprints": {
+            "mean": 0.7836538461538461,
+            "ci95": [
+              0.234375,
+              1.4941406249999991
+            ]
+          },
+          "passes": {
+            "mean": -38.44616710969028,
+            "ci95": [
+              -41.13704489752626,
+              -35.76092666527041
+            ]
+          },
+          "compactness_m2": {
+            "mean": 15.814281297860044,
+            "ci95": [
+              12.573449875563542,
+              19.1013389982869
+            ]
+          },
+          "passes_nt": {
+            "mean": -29.326954983195684,
+            "ci95": [
+              -32.13613010933906,
+              -26.40277157426211
+            ]
+          },
+          "top_speed": {
+            "mean": 3.905898155554566,
+            "ci95": [
+              3.7641281910901445,
+              4.048757436639326
+            ]
+          },
+          "possession_home": {
+            "mean": -2.5917812041846213,
+            "ci95": [
+              -6.038243899268247,
+              0.6541672611522269
+            ]
+          },
+          "defensive_line_m": {
+            "mean": -4.020007533998632,
+            "ci95": [
+              -5.357823050749655,
+              -2.7511310279198717
+            ]
+          },
+          "possession_home_nt": {
+            "mean": -1.8986980112921248,
+            "ci95": [
+              -4.991104448346559,
+              0.8550472709009534
+            ]
+          },
+          "pass_f1": {
+            "mean": 0.16665555412193642,
+            "ci95": [
+              0.1405764253553949,
+              0.194200156322323
+            ]
+          },
+          "pass_f1_nt": {
+            "mean": 0.1327751118009129,
+            "ci95": [
+              0.10967015113466216,
+              0.1566003602831199
+            ]
+          },
+          "pass_f1_team": {
+            "mean": 0.4647576148232441,
+            "ci95": [
+              0.43772977450952166,
+              0.49148380140235254
+            ]
+          },
+          "formation_agreement": {
+            "mean": 0.3125,
+            "ci95": [
+              0.225,
+              0.4125
+            ]
+          },
+          "ppda": {
+            "mean": -78.86952973327234,
+            "ci95": [
+              -80.53815204083931,
+              -76.9656503743613
+            ],
+            "value": 1.2535211267605635
+          }
+        },
+        "combined: camera-level noise + 10 % missing + 1 swap/min": {
+          "distance_per90_m": {
+            "mean": 80.67780192396842,
+            "ci95": [
+              76.50686754229986,
+              85.19240137148256
+            ]
+          },
+          "sprints": {
+            "mean": 1880.8924880222432,
+            "ci95": [
+              1532.2678277866457,
+              2300.544206791472
+            ]
+          },
+          "passes": {
+            "mean": -83.85620710603743,
+            "ci95": [
+              -85.43097646988733,
+              -82.34533981932412
+            ]
+          },
+          "compactness_m2": {
+            "mean": -2.881621353217481,
+            "ci95": [
+              -5.330317344506025,
+              -0.2585949500093083
+            ]
+          },
+          "passes_nt": {
+            "mean": -43.85190279355696,
+            "ci95": [
+              -46.8042853562337,
+              -40.553925678155295
+            ]
+          },
+          "top_speed": {
+            "mean": 4.597536558151607,
+            "ci95": [
+              4.455726431706293,
+              4.742915943785827
+            ]
+          },
+          "possession_home": {
+            "mean": 0.23806644587463416,
+            "ci95": [
+              -3.211863787418686,
+              3.9267720784239226
+            ]
+          },
+          "defensive_line_m": {
+            "mean": -0.7935773322664399,
+            "ci95": [
+              -1.4222189355403865,
+              -0.25832059059202295
+            ]
+          },
+          "possession_home_nt": {
+            "mean": 0.9645523081483102,
+            "ci95": [
+              -1.7034451038953247,
+              3.7923149783544163
+            ]
+          },
+          "pass_f1": {
+            "mean": 0.12685891700265645,
+            "ci95": [
+              0.10883145909934823,
+              0.1460991171092766
+            ]
+          },
+          "pass_f1_nt": {
+            "mean": 0.30615399332635096,
+            "ci95": [
+              0.27173187297046936,
+              0.3429796902449036
+            ]
+          },
+          "pass_f1_team": {
+            "mean": 0.18788670440195981,
+            "ci95": [
+              0.16838776683955914,
+              0.20573723998228863
+            ]
+          },
+          "formation_agreement": {
+            "mean": 0.3875,
+            "ci95": [
+              0.2875,
+              0.4875
+            ]
+          },
+          "ppda": {
+            "mean": -84.39027661076898,
+            "ci95": [
+              -86.52222488338366,
+              -82.0916248257752
+            ],
+            "value": 0.9260143198090692
+          }
+        }
+      }
+    },
+    "camera_noise_sweep": {
+      "windows": 7,
+      "results": [
+        {
+          "tau_s": 1.0,
+          "median_error_m": 0.625,
+          "distance_per90_m": {
+            "mean": 11.04173202791617,
+            "ci95": [
+              9.536415943008814,
+              12.713869601070629
+            ]
+          },
+          "sprints": {
+            "mean": 39.94205199562343,
+            "ci95": [
+              27.92038318824033,
+              50.49843014128728
+            ]
+          }
+        },
+        {
+          "tau_s": 1.0,
+          "median_error_m": 1.25,
+          "distance_per90_m": {
+            "mean": 31.984535735899403,
+            "ci95": [
+              28.109500864401213,
+              36.696833824271685
+            ]
+          },
+          "sprints": {
+            "mean": 261.2133104990248,
+            "ci95": [
+              173.28623757195186,
+              361.8692557442556
+            ]
+          }
+        },
+        {
+          "tau_s": 1.0,
+          "median_error_m": 2.5,
+          "distance_per90_m": {
+            "mean": 87.04624545356462,
+            "ci95": [
+              81.06073184683763,
+              93.11381236115359
+            ]
+          },
+          "sprints": {
+            "mean": 1959.060641739213,
+            "ci95": [
+              1492.9428309785455,
+              2434.2744755244753
+            ]
+          }
+        },
+        {
+          "tau_s": 3.0,
+          "median_error_m": 0.625,
+          "distance_per90_m": {
+            "mean": 1.7335582820286852,
+            "ci95": [
+              1.2787512254620192,
+              2.3162853124533367
+            ]
+          },
+          "sprints": {
+            "mean": -0.13831406688549588,
+            "ci95": [
+              -6.657390228818801,
+              6.895604395604396
+            ]
+          }
+        },
+        {
+          "tau_s": 3.0,
+          "median_error_m": 1.25,
+          "distance_per90_m": {
+            "mean": 5.8094330775757115,
+            "ci95": [
+              4.772199839354877,
+              7.134659469295215
+            ]
+          },
+          "sprints": {
+            "mean": 29.866740402454692,
+            "ci95": [
+              9.667091836734695,
+              49.044705294705295
+            ]
+          }
+        },
+        {
+          "tau_s": 3.0,
+          "median_error_m": 2.5,
+          "distance_per90_m": {
+            "mean": 19.586378173064393,
+            "ci95": [
+              16.042237346945267,
+              22.667190585239197
+            ]
+          },
+          "sprints": {
+            "mean": 87.03249131820562,
+            "ci95": [
+              43.29670329670329,
+              133.0854026925455
+            ]
+          }
+        },
+        {
+          "tau_s": 10.0,
+          "median_error_m": 0.625,
+          "distance_per90_m": {
+            "mean": 0.1035186475628441,
+            "ci95": [
+              -0.014112467623947479,
+              0.23838146723630604
+            ]
+          },
+          "sprints": {
+            "mean": 4.300401978973407,
+            "ci95": [
+              1.5731292517006803,
+              7.240259740259741
+            ]
+          }
+        },
+        {
+          "tau_s": 10.0,
+          "median_error_m": 1.25,
+          "distance_per90_m": {
+            "mean": 0.860535685186881,
+            "ci95": [
+              0.38980736149024126,
+              1.3523880469156437
+            ]
+          },
+          "sprints": {
+            "mean": 1.6430593216307503,
+            "ci95": [
+              -4.3746729461015175,
+              8.266435945007375
+            ]
+          }
+        },
+        {
+          "tau_s": 10.0,
+          "median_error_m": 2.5,
+          "distance_per90_m": {
+            "mean": 2.8283689966364456,
+            "ci95": [
+              2.0350973443662967,
+              3.3353353988284056
+            ]
+          },
+          "sprints": {
+            "mean": 9.88449050949051,
+            "ci95": [
+              1.1667239010989008,
+              17.684315684315674
+            ]
+          }
+        },
+        {
+          "tau_s": 30.0,
+          "median_error_m": 0.625,
+          "distance_per90_m": {
+            "mean": 0.01621859941839365,
+            "ci95": [
+              -0.01831178028342986,
+              0.045862323773126545
+            ]
+          },
+          "sprints": {
+            "mean": 1.5453296703296704,
+            "ci95": [
+              0.0,
+              3.7431318681318686
+            ]
+          }
+        },
+        {
+          "tau_s": 30.0,
+          "median_error_m": 1.25,
+          "distance_per90_m": {
+            "mean": 0.14163434216165735,
+            "ci95": [
+              0.0392164484272798,
+              0.24489213460302858
+            ]
+          },
+          "sprints": {
+            "mean": 0.6524725274725275,
+            "ci95": [
+              -1.3392857142857142,
+              3.2967032967032965
+            ]
+          }
+        },
+        {
+          "tau_s": 30.0,
+          "median_error_m": 2.5,
+          "distance_per90_m": {
+            "mean": 0.2510576648931111,
+            "ci95": [
+              0.02033869904511513,
+              0.4530901778162002
+            ]
+          },
+          "sprints": {
+            "mean": 0.040584415584415466,
+            "ci95": [
+              -3.896103896103896,
+              4.017857142857143
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -107,6 +107,20 @@ planned (login, dataset size, GPU or API key).
 - **Not verified:** Docker images were not built (C: space), CI hasn't run on GitHub yet (repo not public).
   The CI badge line in the root README is commented out until then.
 
+## Project 20 v2, stage S4: statistics engine (2026-10-25)
+
+- New subpackage `20-football-analytics/stats/` (CPU only, no Kaggle): physical stats, possession with hysteresis,
+  pass detection + networks, formation (Hungarian), compactness, defensive line, PPDA-style pressing, noise
+  injection, Metrica loader, StatsBomb xG. Tests: `tests/test_20_stats.py` (15 tests; formation tests skip without SciPy).
+- Metrica (2 matches): pass F1 **0.929** on held-out game 2 (target 0.7). Noise ablation with v1's errors:
+  possession, compactness and defensive line survive; distance/speed/sprints break (+81 % distance) unless the
+  position error varies over >= 10 s (+2.8 %); ID swaps break formation and player-level passes (F1 0.31 per
+  10-min window, 0.09 over a full match as swaps accumulate). Requirements for S1-S3 follow from this.
+- xG on 15,308 StatsBomb shots (597 matches, grouped split): logistic regression log-loss 0.271 / Brier 0.0773 vs
+  StatsBomb's own xG 0.270 / 0.0773.
+- Data: `C:/Users/yando/Code/cv-data/football/metrica` (~160 MB) and `.../statsbomb/shots.csv` (raw JSON not kept).
+- Next: S1 tracking (needs Kaggle GPU), S2 identity, S3 calibration smoothing + ball, S5 events, S6 deployment/report.
+
 ## Notes for the owner
 
 - Git on the USB key needed `git config --global --add safe.directory D:/COMPUTER-VISION-PROJECT-LIBRARY`

@@ -60,3 +60,13 @@ def plane_depth(u, v, n, d, K):
     fx, fy, cx, cy = K
     rx, ry = (np.asarray(u, np.float64) - cx) / fx, (np.asarray(v, np.float64) - cy) / fy
     return -d / (n[0] * rx + n[1] * ry + n[2])
+
+
+def crop_to_aspect(picture, aspect=4 / 3):
+    """Centre crop to a landscape aspect ratio so a portrait photo is not squashed into the poster."""
+    h, w = picture.shape[:2]
+    if w / h > aspect:
+        nw = int(h * aspect)
+        return picture[:, (w - nw) // 2 : (w - nw) // 2 + nw]
+    nh = int(w / aspect)
+    return picture[(h - nh) // 2 : (h - nh) // 2 + nh]

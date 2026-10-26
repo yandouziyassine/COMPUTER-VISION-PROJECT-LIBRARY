@@ -56,7 +56,7 @@ def test_poster_quad_lies_inside_the_wall():
     poster = load_defs(
         "14",
         "poster_test.py",
-        ["wall_plane", "poster_quad"],
+        ["wall_plane", "orient_quad", "poster_quad"],
         {"np": np, "cv2": cv2, "backproject": m.backproject, "fit_plane": m.fit_plane},
     )
     z = np.full((480, 640), 3.0)  # fronto-parallel wall 3 m away

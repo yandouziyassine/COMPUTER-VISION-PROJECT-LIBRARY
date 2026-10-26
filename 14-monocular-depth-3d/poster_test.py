@@ -20,7 +20,7 @@ import numpy as np
 
 import models as M
 from benchmark import DOCS
-from metrics import align_disparity, backproject, eval_mask, fit_plane, plane_depth
+from metrics import align_disparity, backproject, crop_to_aspect, eval_mask, fit_plane, plane_depth
 from nyu import K, NYU
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -46,16 +46,6 @@ def orient_quad(quad):
     q = np.asarray(quad, np.float32)
     s, d = q.sum(axis=1), q[:, 0] - q[:, 1]
     return np.float32([q[s.argmin()], q[d.argmax()], q[s.argmax()], q[d.argmin()]])
-
-
-def crop_to_aspect(picture, aspect=4 / 3):
-    """Centre crop to a landscape aspect ratio so a portrait photo is not squashed into the poster."""
-    h, w = picture.shape[:2]
-    if w / h > aspect:
-        nw = int(h * aspect)
-        return picture[:, (w - nw) // 2 : (w - nw) // 2 + nw]
-    nh = int(w / aspect)
-    return picture[(h - nh) // 2 : (h - nh) // 2 + nh]
 
 
 def poster_quad(wall, depth, K, fill=0.7):

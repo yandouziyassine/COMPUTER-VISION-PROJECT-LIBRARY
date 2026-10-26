@@ -4,10 +4,7 @@ Detects when a person **falls** in a video and raises an alarm, while **not** al
 they sit, crouch or lie down on purpose. Each frame is reduced to a body skeleton (YOLO11n-pose),
 the skeleton to posture and motion features, and a classifier decides whether a fall is happening.
 
-<p float="left">
-  <img src="docs/demo_fall.gif" width="49%" />
-  <img src="docs/demo_lying_not_fall.gif" width="49%" />
-</p>
+> Example images not shown: the dataset licence (UR Fall Detection, research use only) does not allow redistribution; see the dataset page.
 
 *Left: a real fall, alarm raised. Right: lying down on purpose, no alarm. The bar at the bottom
 is the fall probability. Both are test-time (out-of-fold) predictions.*

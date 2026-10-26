@@ -4,7 +4,7 @@ Outlines **colorectal polyps** pixel by pixel in colonoscopy images with a **U-N
 encoder, ImageNet-pretrained), trained on a laptop CPU. Polyps are precursors of colorectal
 cancer; automatic segmentation helps endoscopists not miss them.
 
-![predictions](docs/predictions.jpg)
+> Example images not shown: the dataset licence (Kvasir-SEG, research / education only) does not allow redistribution; see the dataset page.
 
 *Three typical test cases (left) and the two worst (right). Red: expert annotation. Blue: U-Net prediction.*
 

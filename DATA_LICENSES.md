@@ -66,6 +66,8 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 
 - Publishing **code + small result figures** for learning/portfolio purposes is fine.
 - Don't commit or redistribute the datasets themselves (`.gitignore` already blocks data and weights).
-- Figures showing LFW faces (project 10) are photos of public figures from a research benchmark; keep them
-  as they are, but don't build a public face-search service on top of this.
+- **Dataset images are only shown when their licence allows redistribution** (CC0 / public domain / CC BY /
+  CC BY-SA / MIT). Figures with photos from ⚠️ or ❓ sources (02, 08, 09, 10, 11, 13, 14 NYU/KITTI/ETH3D,
+  15, 16/17/18 COCO, 20 broadcast frames, 07 watermarked photos) were removed on 2026-10-26; READMEs show
+  own charts or a note instead. Older versions remain in git history.
 - Anything commercial would need: replacing AGPL YOLO (or a license), and replacing the ⚠️ datasets.

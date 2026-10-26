@@ -4,7 +4,7 @@ Detects every head in an image as **wearing a hard hat** or **not**, and raises 
 when anyone is missing one. YOLO11n (COCO-pretrained) fine-tuned on a laptop CPU; evaluated both
 as an object detector (mAP) and as the alert a safety manager would actually receive.
 
-![examples](docs/examples.jpg)
+> Example images not shown: the dataset licence (Roboflow CC BY 4.0, but the source photos carry third-party watermarks) does not allow redistribution; see the dataset page.
 
 *Top: images with violations, where the alert fires. Bottom: compliant images, with hard hats detected (green).*
 

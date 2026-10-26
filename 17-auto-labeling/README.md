@@ -6,7 +6,9 @@ hand-drawn boxes: **Grounding DINO** finds objects from a text prompt, **SAM** t
 into a mask. The point is to bootstrap a labeled dataset that you then *review* instead of
 drawing from scratch.
 
-![open-vocabulary demo](docs/open_vocab_demo.jpg)
+![results](docs/results_chart.png)
+
+> Example images not shown: COCO images are Flickr photos under mixed licences; see the dataset page.
 
 *Prompts with objects COCO has no labels for (goggles, glove, ski pole, curb, cap). Mistakes are
 visible too: "street lamp" lands on the stop-sign post.*

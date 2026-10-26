@@ -4,7 +4,9 @@ Turns a phone photo of a receipt into a flat, clean scan and extracts **date** a
 JSON. Page detection and perspective correction use classical OpenCV (no deep learning); text
 recognition uses RapidOCR (PaddleOCR models) running through **OpenVINO**, ~0.7 s per receipt on a laptop CPU.
 
-![examples](docs/examples.jpg)
+![results](docs/results_chart.png)
+
+> Example photos not shown: the synthetic photos use COCO backgrounds (Flickr, mixed licences).
 
 *Top: synthetic phone photos with the detected page (green). Bottom: scanner output. The two
 table photos succeed; the snowy scene fails (white snow merges with the white paper) and in the

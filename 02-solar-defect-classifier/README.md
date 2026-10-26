@@ -4,7 +4,7 @@ Classifies photos of solar panels into 6 conditions (bird droppings, clean, dust
 damage, physical damage, snow-covered) by fine-tuning a pretrained **EfficientNet-B0**, and
 shows *why* it decided with **Grad-CAM** heatmaps. Trained entirely on a laptop CPU.
 
-![Grad-CAM examples](docs/gradcam_examples.png)
+> Example images not shown: the dataset licence (licence not recorded, Kaggle) does not allow redistribution; see the dataset page.
 
 ## Results
 

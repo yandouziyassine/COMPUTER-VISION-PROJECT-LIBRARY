@@ -8,8 +8,6 @@ evaluated on the MVTec AD benchmark on a laptop CPU.
 **▶ Try it live:** [Hugging Face demo](https://huggingface.co/spaces/yandyassine/patchcore-defect-detection), running entirely in your browser (ONNX Runtime Web, WebGPU or WebAssembly; no server).
 Model files and card: [yandyassine/patchcore-mvtec-ad](https://huggingface.co/yandyassine/patchcore-mvtec-ad).
 
-![metal_nut results](docs/metal_nut_examples.png)
-
 *Top: defective test parts. Middle: ground-truth defect masks. Bottom: PatchCore anomaly heatmap.
 The model was fitted on defect-free nuts only.*
 
@@ -28,10 +26,9 @@ The model was fitted on defect-free nuts only.*
 
 The from-scratch implementation reproduces the published numbers within ~1 point.
 
-<p float="left">
-  <img src="docs/bottle_examples.png" width="49%" />
-  <img src="docs/grid_examples.png" width="49%" />
-</p>
+![results](docs/results_chart.png)
+
+> Example images not shown: the dataset licence (MVTec AD, CC BY-NC-SA 4.0) does not allow redistribution; see the dataset page.
 
 ## How it works
 

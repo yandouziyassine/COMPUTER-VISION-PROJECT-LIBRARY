@@ -27,7 +27,7 @@ of genuine users.* For reference, OpenCV reports 99.60 % for SFace on LFW.
   image). OpenCV's default DNN backend doesn't accelerate INT8 on this CPU (OpenVINO would, see project 19).
   Both timings were measured while another model trained on the same CPU, so absolute speeds are pessimistic.
 
-![hardest errors](docs/hardest_errors.jpg)
+> Example images not shown: the dataset licence (LFW, research benchmark, no redistribution licence) does not allow redistribution; see the dataset page.
 
 *Hardest mistakes. Rejected genuine pairs involve occlusion (a hand over the face), extreme
 expressions and large pose changes. One false accept pairs two quite different-looking men at

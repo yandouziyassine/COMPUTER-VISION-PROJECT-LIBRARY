@@ -5,7 +5,7 @@ color without any team labels**, and decides **which team has the ball**. A YOLO
 on a laptop CPU, plus unsupervised color clustering and simple geometry: the pieces of a match-analytics
 pipeline, each measured where ground truth exists.
 
-![examples](docs/examples.jpg)
+> Example images not shown: the dataset licence (broadcast footage, copyright of the broadcasters) does not allow redistribution; see the dataset page.
 
 *Blue / orange: teams found by jersey color (no labels used). Grey: referee, goalkeeper or unsure.
 Yellow circle: ball. Title: team in possession (nearest player to the ball).*
@@ -44,10 +44,7 @@ heights of it: **41 of 130 frames**. The bottleneck is ball detection, not the p
 
 ### Tactical map: from the broadcast view to the pitch
 
-![tactical map](docs/tactical_map.jpg)
-
-*Left: test frames with the detected pitch landmarks (yellow) and players colored by team. Right: the same moment
-seen from above. Grey = referee, goalkeeper or unsure.*
+*Tactical-map figure (broadcast frames + top-down view) not shown: the frames are broadcast footage owned by the broadcasters.*
 
 A second model finds **32 pitch landmarks** (corners, penalty and goal boxes, halfway line, centre circle) in
 each frame; any 4 or more give a **homography** from the image to the pitch, and each player's feet are projected

@@ -4,8 +4,6 @@ Search a photo collection by **describing what you want**, like "a dog catching 
 or by giving an example photo. CLIP embeds images and text into the same vector space, FAISS
 finds the nearest images in milliseconds. No labels or tags needed.
 
-![query example](docs/query_2.jpg)
-
 ## Results
 
 Index: the 5,000 images of COCO val2017. Evaluation: 5,000 human-written COCO captions, each with
@@ -24,10 +22,7 @@ COCO 5k), with **no training on COCO at all**. Picking the exact right image out
 first try 39 % of the time is hard: many COCO captions ("a man riding a wave on a surfboard") fit
 dozens of images, so the top results are often correct-looking images that just aren't *the* one.
 
-| | |
-|---|---|
-| ![](docs/query_1.jpg) | ![](docs/query_3.jpg) |
-| ![](docs/query_4.jpg) | ![](docs/query_5.jpg) |
+> Example images not shown: the dataset licence (COCO images are Flickr photos under mixed licences) does not allow redistribution; see the dataset page.
 
 ## How it works
 

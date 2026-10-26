@@ -232,3 +232,25 @@ rf-venv/
 # Ultralytics settings/fonts created next to a script when it runs before common.paths
 **/Ultralytics/
 14-monocular-depth-3d/docs/_*.npy
+
+# Dataset-photo figures not redistributable (licence rule 2026-10-26); scripts may still write them locally
+02-solar-defect-classifier/docs/gradcam_examples.png
+03-document-scanner-ocr/docs/examples.jpg
+07-ppe-safety-monitor/docs/examples*.jpg
+08-traffic-analytics/docs/*.gif
+08-traffic-analytics/docs/*.jpg
+09-retail-shelf-monitor/docs/examples*.jpg
+10-face-recognition/docs/hardest_errors.jpg
+11-medical-segmentation/docs/predictions.jpg
+13-anomaly-detection-patchcore/docs/*_examples.png
+14-monocular-depth-3d/docs/*_views.jpg
+14-monocular-depth-3d/docs/demo.gif
+14-monocular-depth-3d/docs/depth_maps.jpg
+14-monocular-depth-3d/docs/see_vs_infer.*
+14-monocular-depth-3d/docs/poster_test.jpg
+15-fall-detection/docs/*.gif
+16-text-to-image-search/docs/query_*.jpg
+17-auto-labeling/docs/open_vocab_demo.jpg
+18-video-qa-assistant/docs/vqa_examples.jpg
+20-football-analytics/docs/examples.jpg
+20-football-analytics/docs/tactical_map.jpg

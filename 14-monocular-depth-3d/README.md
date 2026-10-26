@@ -8,7 +8,7 @@ photo**, with the accuracy of that measurement reported.
 
 ## What you see vs what the computer sees
 
-![what you see vs what the computer sees](docs/see_vs_infer.jpg)
+> Example images not shown: the dataset licence (NYU Depth V2, research use only) does not allow redistribution; see the dataset page.
 
 You see a room. The computer receives only a grid of brightness numbers (second column, the 8 × 8 pixels at
 the image centre): no depth, no objects. From those numbers alone, the model *infers* depth (third column),
@@ -74,8 +74,6 @@ Error by object class, scored only on pixels the Kinect actually measured (perce
   except mirrors.
 
 ### 3 · The poster test: an illusion with a known answer
-
-![poster test](docs/poster_test.jpg)
 
 48 test images with a large flat wall (plane fitted to the sensor depth, median residual < 2 cm). A COCO photo
 is pasted onto the wall as a framed poster, warped with the wall's real perspective. The true depth inside the

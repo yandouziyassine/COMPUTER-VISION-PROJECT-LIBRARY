@@ -133,3 +133,59 @@ def _full_revision(repo, short):
     if not full.startswith(short):
         print(f"warning: {repo} head is {full[:10]}, pinned {short}; using head", flush=True)
     return full
+
+
+def load_with_focal(name, device="cuda"):
+    """Metric models with camera control (W5): predictor(rgb, fx=None) -> (depth meters, fx the model used).
+
+    fx=None lets the model estimate the focal length itself. Depth Pro predicts depth proportional to the focal
+    length in pixels, so a given fx is applied by rescaling its output by fx / fx_predicted (what its own pipeline
+    does when the focal length is known); MoGe-2 takes the horizontal field of view as an input. The indoor DA-V2
+    metric model has no camera input (fx_used = None)."""
+    import math
+
+    import torch
+    from PIL import Image
+
+    source, repo, rev, _, _ = MODELS[name]
+    full_rev = _full_revision(repo, rev)
+    if name == "depth-pro":
+        from transformers import DepthProForDepthEstimation, DepthProImageProcessorFast
+
+        proc = DepthProImageProcessorFast.from_pretrained(repo, revision=full_rev)
+        net = DepthProForDepthEstimation.from_pretrained(repo, revision=full_rev, torch_dtype=torch.float16)
+        net = net.to(device).eval()
+
+        @torch.inference_mode()
+        def predict(rgb, fx=None):
+            inputs = proc(images=Image.fromarray(rgb), return_tensors="pt").to(device, torch.float16)
+            post = proc.post_process_depth_estimation(net(**inputs), target_sizes=[rgb.shape[:2]])[0]
+            depth, f_pred = post["predicted_depth"].float().cpu().numpy(), float(post["focal_length"])
+            return (depth, f_pred) if fx is None else (depth * (fx / f_pred), fx)
+
+    elif name == "moge2-large":
+        from moge.model.v2 import MoGeModel
+
+        net = MoGeModel.from_pretrained(repo, revision=full_rev).to(device).eval()
+
+        @torch.inference_mode()
+        def predict(rgb, fx=None):
+            h, w = rgb.shape[:2]
+            x = torch.tensor(rgb / 255.0, dtype=torch.float32, device=device).permute(2, 0, 1)
+            fov = None if fx is None else math.degrees(2 * math.atan(w / (2 * fx)))
+            out = net.infer(x, apply_mask=False, fov_x=fov)
+            d = out["depth"].float().cpu().numpy()
+            bad = ~np.isfinite(d) | (d <= 0)
+            if bad.any():
+                d[bad] = np.nanmax(np.where(bad, np.nan, d))
+            return d, float(out["intrinsics"][0, 0]) * w  # normalized intrinsics -> pixels
+
+    elif name == "da2-metric-indoor":
+        base = load(name, device)
+
+        def predict(rgb, fx=None):
+            return base(rgb), None
+
+    else:
+        raise ValueError(f"{name} has no camera model")
+    return predict

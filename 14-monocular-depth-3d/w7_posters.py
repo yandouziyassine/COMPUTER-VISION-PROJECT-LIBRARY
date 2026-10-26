@@ -59,6 +59,9 @@ def paste(rgb, quad, picture, frame):
     """Warp `picture` into `quad`, with a white frame or none. Returns image and picture mask."""
     import cv2
 
+    from poster_test import crop_to_aspect
+
+    picture = crop_to_aspect(picture)
     b = picture.shape[0] // 12 if frame else 0
     framed = cv2.copyMakeBorder(picture, b, b, b, b, cv2.BORDER_CONSTANT, value=(245, 245, 245))
     fh, fw = framed.shape[:2]

@@ -40,6 +40,24 @@ def wall_plane(wall, depth, K):
     return n, d, float(np.median(np.abs(pts @ n + d)))
 
 
+def orient_quad(quad):
+    """Corners ordered top-left, top-right, bottom-right, bottom-left in the image. The plane normal from
+    fit_plane has an arbitrary sign, which used to flip or rotate the pasted picture (fixed 2026-10-26)."""
+    q = np.asarray(quad, np.float32)
+    s, d = q.sum(axis=1), q[:, 0] - q[:, 1]
+    return np.float32([q[s.argmin()], q[d.argmax()], q[s.argmax()], q[d.argmin()]])
+
+
+def crop_to_aspect(picture, aspect=4 / 3):
+    """Centre crop to a landscape aspect ratio so a portrait photo is not squashed into the poster."""
+    h, w = picture.shape[:2]
+    if w / h > aspect:
+        nw = int(h * aspect)
+        return picture[:, (w - nw) // 2 : (w - nw) // 2 + nw]
+    nh = int(w / aspect)
+    return picture[(h - nh) // 2 : (h - nh) // 2 + nh]
+
+
 def poster_quad(wall, depth, K, fill=0.7):
     """Image corners of a rectangle lying on the wall plane, centred on the point deepest inside the wall
     mask and small enough to stay on the wall. None if the wall is too small."""
@@ -67,13 +85,14 @@ def poster_quad(wall, depth, K, fill=0.7):
         ]
         quad = np.array([project(c) for c in corners], np.float32)
         if np.all(np.linalg.norm(quad - [ux, vy], axis=1) <= fill * r):
-            return quad
+            return orient_quad(quad)
         half *= 0.92
     return None
 
 
 def composite(rgb, quad, picture):
     """Warp `picture` into `quad` with a white frame; returns the new image and the poster mask."""
+    picture = crop_to_aspect(picture)
     h = picture.shape[0]
     b = h // 12
     framed = cv2.copyMakeBorder(picture, b, b, b, b, cv2.BORDER_CONSTANT, value=(245, 245, 245))

@@ -1,0 +1,23 @@
+{
+ "_note": "Hand-annotated mirror / reflective-surface pairs on permissively licensed Wikimedia Commons photos. Fractions of width/height. Answers follow from geometry that is certain: a wash basin projects from the wall that carries the mirror above it; a side wall running toward the camera is nearer than the back wall; a polished floor near the bottom of the photo is nearer than the far end of the hall, whatever its reflection shows.",
+ "images": {
+  "bath_bergen_2016": "File:Bathroom in hotel in Bergen, Norway. 2016-03-16. Hand wash basin sink, mirror, toilet, etc. Also wall and floor tiles.jpg",
+  "bath_bergen_2018": "File:Hotel room toilet (bathroom) with hand wash sink, mirror, waste bin, toilet, etc., in Bergen, Norway 2018-03-16 A. Also wall and floor tiles.jpg",
+  "school_toilet_stord": "File:Mirror, hand wash basin sink, brick walls etc. in school toilet, Stord, Norway 2018-03-08 IMG 5863.jpg",
+  "gresham_palace": "File:Interior of the Gresham Palace.jpg"
+ },
+ "pairs": [
+  {"image": "bath_bergen_2016", "a": [0.32, 0.28], "b": [0.32, 0.46], "truth": "b",
+   "why": "Point A is on the mirror (it shows a window behind the photographer); the basin rim B sticks out from that same wall toward the camera."},
+  {"image": "bath_bergen_2016", "a": [0.20, 0.31], "b": [0.93, 0.33], "truth": "b",
+   "why": "The mirror is on the back wall; B is on the side wall that runs toward the camera, so it is nearer."},
+  {"image": "bath_bergen_2018", "a": [0.30, 0.25], "b": [0.30, 0.51], "truth": "b",
+   "why": "A is on the mirror on the back wall; the basin rim B projects from that wall toward the camera."},
+  {"image": "school_toilet_stord", "a": [0.20, 0.19], "b": [0.45, 0.73], "truth": "b",
+   "why": "A is on the small wall mirror; the basin rim B projects from the wall below it toward the camera."},
+  {"image": "gresham_palace", "a": [0.55, 0.85], "b": [0.55, 0.58], "truth": "a",
+   "why": "A is on the polished floor just in front of the camera (it reflects the far end of the hall); B is at the far end of the hall."},
+  {"image": "gresham_palace", "a": [0.40, 0.90], "b": [0.67, 0.55], "truth": "a",
+   "why": "A is on the polished floor near the camera; B is on a person standing far down the hall."}
+ ]
+}

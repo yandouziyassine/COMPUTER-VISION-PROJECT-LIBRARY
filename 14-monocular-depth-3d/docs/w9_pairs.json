@@ -1,0 +1,5640 @@
+{
+ "version": 1,
+ "n_pairs": 300,
+ "counts": {
+  "normal": 70,
+  "textureless": 50,
+  "mirror": 50,
+  "glass": 40,
+  "poster": 82,
+  "illusion": 8
+ },
+ "illusion_credits": {
+  "ames_room": {
+   "title": "File:Ames room forced perspective.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Ames_room_forced_perspective.jpg",
+   "license": "CC BY 2.0",
+   "artist": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/39325045@N00\">mosso</a>"
+  },
+  "hollow_face_borg": {
+   "title": "File:Bjorn Borg Hollow Face-concave.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bjorn_Borg_Hollow_Face-concave.jpg",
+   "license": "Public domain",
+   "artist": "No machine-readable author provided. <a href=\"//commons.wikimedia.org/wiki/User:Skagedal\" title=\"User:Skagedal\">Skagedal</a> assumed (based on copyright claims)."
+  },
+  "hollow_faces_wanaka": {
+   "title": "File:Stuart Landsboroughs Puzzling World, Wanaka, New Zealand (Magic Faces) (3423396757).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Stuart_Landsboroughs_Puzzling_World,_Wanaka,_New_Zealand_(Magic_Faces)_(3423396757).jpg",
+   "license": "CC BY 2.0",
+   "artist": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/34120957@N04\">Alex Proimos</a> from Sydney, Australia"
+  },
+  "hollow_faces_hall": {
+   "title": "File:Hall of Following Faces in Stuart Landsborough's Puzzling World.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Hall_of_Following_Faces_in_Stuart_Landsborough%27s_Puzzling_World.jpg",
+   "license": "Public domain",
+   "artist": "<a href=\"https://en.wikipedia.org/wiki/User:Pseudopanax\" class=\"extiw\" title=\"wikipedia:User:Pseudopanax\">Pseudopanax</a> at <a href=\"https://en.wikipedia.org/wiki/\" class=\"extiw\" title=\"wikipedia:\">English Wikipedia</a>"
+  },
+  "street_parrots": {
+   "title": "File:3D street painting.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:3D_street_painting.jpg",
+   "license": "CC BY-SA 4.0",
+   "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Limnesh_Augustine&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Limnesh Augustine (page does not exist)\">Limnesh Augustine</a>"
+  },
+  "street_boots": {
+   "title": "File:Den Helder - Julianaplein, 3D street art 2020.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Den_Helder_-_Julianaplein,_3D_street_art_2020.jpg",
+   "license": "CC BY-SA 4.0",
+   "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Larshei\" title=\"User:Larshei\">Lars van der Heide</a>"
+  }
+ },
+ "pairs": [
+  {
+   "id": "normal_030",
+   "category": "normal",
+   "image": "nyu_0602.jpg",
+   "a": [
+    477,
+    123
+   ],
+   "b": [
+    588,
+    439
+   ],
+   "depth_a": 6.566,
+   "depth_b": 2.527,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_002",
+   "category": "mirror",
+   "image": "nyu_0185.jpg",
+   "a": [
+    329,
+    424
+   ],
+   "b": [
+    59,
+    403
+   ],
+   "depth_a": 2.37,
+   "depth_b": 1.779,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 3.882248878479004,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_024",
+   "category": "poster",
+   "image": "poster_1002.jpg",
+   "a": [
+    300,
+    92
+   ],
+   "b": [
+    225,
+    159
+   ],
+   "depth_a": 1.912,
+   "depth_b": 1.763,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_000",
+   "category": "textureless",
+   "image": "nyu_0556.jpg",
+   "a": [
+    59,
+    245
+   ],
+   "b": [
+    206,
+    347
+   ],
+   "depth_a": 2.006,
+   "depth_b": 1.538,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "mirror_017",
+   "category": "mirror",
+   "image": "nyu_1057.jpg",
+   "a": [
+    350,
+    458
+   ],
+   "b": [
+    496,
+    151
+   ],
+   "depth_a": 1.864,
+   "depth_b": 2.348,
+   "truth": "a",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.50419020652771,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_051",
+   "category": "poster",
+   "image": "poster_1293.jpg",
+   "a": [
+    530,
+    407
+   ],
+   "b": [
+    535,
+    233
+   ],
+   "depth_a": 2.248,
+   "depth_b": 2.106,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_019",
+   "category": "textureless",
+   "image": "nyu_1441.jpg",
+   "a": [
+    525,
+    431
+   ],
+   "b": [
+    89,
+    350
+   ],
+   "depth_a": 1.726,
+   "depth_b": 1.469,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_027",
+   "category": "poster",
+   "image": "poster_1263.jpg",
+   "a": [
+    219,
+    137
+   ],
+   "b": [
+    285,
+    143
+   ],
+   "depth_a": 2.445,
+   "depth_b": 2.596,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "textureless_035",
+   "category": "textureless",
+   "image": "nyu_0693.jpg",
+   "a": [
+    512,
+    306
+   ],
+   "b": [
+    308,
+    213
+   ],
+   "depth_a": 0.948,
+   "depth_b": 1.816,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "textureless_001",
+   "category": "textureless",
+   "image": "nyu_0181.jpg",
+   "a": [
+    110,
+    356
+   ],
+   "b": [
+    367,
+    64
+   ],
+   "depth_a": 1.829,
+   "depth_b": 2.414,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_016",
+   "category": "poster",
+   "image": "poster_1329.jpg",
+   "a": [
+    572,
+    195
+   ],
+   "b": [
+    370,
+    140
+   ],
+   "depth_a": 2.76,
+   "depth_b": 2.943,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "glass_015",
+   "category": "glass",
+   "image": "nyu_1346.jpg",
+   "a": [
+    101,
+    150
+   ],
+   "b": [
+    290,
+    289
+   ],
+   "depth_a": 3.017,
+   "depth_b": 1.386,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 3.159754514694214,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_020",
+   "category": "glass",
+   "image": "nyu_0386.jpg",
+   "a": [
+    424,
+    102
+   ],
+   "b": [
+    359,
+    266
+   ],
+   "depth_a": 2.146,
+   "depth_b": 3.838,
+   "truth": "a",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_009",
+   "category": "normal",
+   "image": "nyu_1441.jpg",
+   "a": [
+    137,
+    83
+   ],
+   "b": [
+    476,
+    327
+   ],
+   "depth_a": 3.817,
+   "depth_b": 1.977,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_048",
+   "category": "mirror",
+   "image": "nyu_0926.jpg",
+   "a": [
+    63,
+    451
+   ],
+   "b": [
+    65,
+    66
+   ],
+   "depth_a": 1.397,
+   "depth_b": 2.759,
+   "truth": "a",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.2885992527008057,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_068",
+   "category": "normal",
+   "image": "nyu_0020.jpg",
+   "a": [
+    80,
+    118
+   ],
+   "b": [
+    490,
+    380
+   ],
+   "depth_a": 2.739,
+   "depth_b": 1.904,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_038",
+   "category": "mirror",
+   "image": "nyu_0663.jpg",
+   "a": [
+    568,
+    335
+   ],
+   "b": [
+    473,
+    79
+   ],
+   "depth_a": 1.037,
+   "depth_b": 1.627,
+   "truth": "a",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.001709461212158,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_043",
+   "category": "mirror",
+   "image": "nyu_1078.jpg",
+   "a": [
+    434,
+    454
+   ],
+   "b": [
+    51,
+    348
+   ],
+   "depth_a": 1.239,
+   "depth_b": 2.686,
+   "truth": "a",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.3060972690582275,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_005",
+   "category": "textureless",
+   "image": "nyu_0469.jpg",
+   "a": [
+    69,
+    64
+   ],
+   "b": [
+    538,
+    375
+   ],
+   "depth_a": 2.845,
+   "depth_b": 3.799,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_022",
+   "category": "poster",
+   "image": "poster_1002.jpg",
+   "a": [
+    236,
+    145
+   ],
+   "b": [
+    277,
+    203
+   ],
+   "depth_a": 1.781,
+   "depth_b": 1.932,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "textureless_006",
+   "category": "textureless",
+   "image": "nyu_0849.jpg",
+   "a": [
+    536,
+    332
+   ],
+   "b": [
+    450,
+    367
+   ],
+   "depth_a": 1.914,
+   "depth_b": 2.403,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "glass_008",
+   "category": "glass",
+   "image": "nyu_1441.jpg",
+   "a": [
+    489,
+    229
+   ],
+   "b": [
+    362,
+    206
+   ],
+   "depth_a": 1.795,
+   "depth_b": 3.392,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_078",
+   "category": "poster",
+   "image": "poster_0168.jpg",
+   "a": [
+    355,
+    49
+   ],
+   "b": [
+    498,
+    132
+   ],
+   "depth_a": 2.003,
+   "depth_b": 1.864,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_029",
+   "category": "textureless",
+   "image": "nyu_1101.jpg",
+   "a": [
+    429,
+    356
+   ],
+   "b": [
+    518,
+    175
+   ],
+   "depth_a": 2.447,
+   "depth_b": 3.03,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_048",
+   "category": "normal",
+   "image": "nyu_1175.jpg",
+   "a": [
+    568,
+    291
+   ],
+   "b": [
+    201,
+    226
+   ],
+   "depth_a": 2.845,
+   "depth_b": 2.333,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_019",
+   "category": "poster",
+   "image": "poster_0520.jpg",
+   "a": [
+    249,
+    245
+   ],
+   "b": [
+    207,
+    132
+   ],
+   "depth_a": 2.79,
+   "depth_b": 2.567,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_015",
+   "category": "normal",
+   "image": "nyu_0905.jpg",
+   "a": [
+    228,
+    423
+   ],
+   "b": [
+    245,
+    291
+   ],
+   "depth_a": 2.913,
+   "depth_b": 2.448,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_023",
+   "category": "poster",
+   "image": "poster_1002.jpg",
+   "a": [
+    230,
+    229
+   ],
+   "b": [
+    173,
+    75
+   ],
+   "depth_a": 1.823,
+   "depth_b": 1.6,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_058",
+   "category": "poster",
+   "image": "poster_0166.jpg",
+   "a": [
+    155,
+    189
+   ],
+   "b": [
+    194,
+    142
+   ],
+   "depth_a": 3.416,
+   "depth_b": 3.173,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "normal_035",
+   "category": "normal",
+   "image": "nyu_0579.jpg",
+   "a": [
+    437,
+    377
+   ],
+   "b": [
+    478,
+    175
+   ],
+   "depth_a": 2.631,
+   "depth_b": 3.679,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_046",
+   "category": "poster",
+   "image": "poster_1413.jpg",
+   "a": [
+    61,
+    51
+   ],
+   "b": [
+    114,
+    299
+   ],
+   "depth_a": 1.972,
+   "depth_b": 2.187,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_036",
+   "category": "normal",
+   "image": "nyu_0519.jpg",
+   "a": [
+    275,
+    381
+   ],
+   "b": [
+    164,
+    458
+   ],
+   "depth_a": 1.81,
+   "depth_b": 1.365,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_047",
+   "category": "poster",
+   "image": "poster_0716.jpg",
+   "a": [
+    212,
+    99
+   ],
+   "b": [
+    79,
+    452
+   ],
+   "depth_a": 1.642,
+   "depth_b": 1.53,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_067",
+   "category": "normal",
+   "image": "nyu_0521.jpg",
+   "a": [
+    476,
+    294
+   ],
+   "b": [
+    571,
+    459
+   ],
+   "depth_a": 1.884,
+   "depth_b": 1.216,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_009",
+   "category": "textureless",
+   "image": "nyu_0686.jpg",
+   "a": [
+    273,
+    68
+   ],
+   "b": [
+    456,
+    58
+   ],
+   "depth_a": 3.882,
+   "depth_b": 3.04,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "glass_022",
+   "category": "glass",
+   "image": "nyu_1147.jpg",
+   "a": [
+    186,
+    175
+   ],
+   "b": [
+    381,
+    62
+   ],
+   "depth_a": 2.5,
+   "depth_b": 3.168,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 3.179185628890991,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_012",
+   "category": "glass",
+   "image": "nyu_1164.jpg",
+   "a": [
+    230,
+    111
+   ],
+   "b": [
+    446,
+    428
+   ],
+   "depth_a": 4.064,
+   "depth_b": 2.593,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_016",
+   "category": "mirror",
+   "image": "nyu_1057.jpg",
+   "a": [
+    427,
+    79
+   ],
+   "b": [
+    534,
+    65
+   ],
+   "depth_a": 2.801,
+   "depth_b": 2.096,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_026",
+   "category": "mirror",
+   "image": "nyu_0649.jpg",
+   "a": [
+    384,
+    470
+   ],
+   "b": [
+    73,
+    87
+   ],
+   "depth_a": 1.709,
+   "depth_b": 1.27,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_038",
+   "category": "normal",
+   "image": "nyu_0785.jpg",
+   "a": [
+    457,
+    461
+   ],
+   "b": [
+    285,
+    96
+   ],
+   "depth_a": 0.872,
+   "depth_b": 5.283,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "glass_030",
+   "category": "glass",
+   "image": "nyu_0616.jpg",
+   "a": [
+    506,
+    453
+   ],
+   "b": [
+    401,
+    109
+   ],
+   "depth_a": 2.116,
+   "depth_b": 3.555,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_017",
+   "category": "poster",
+   "image": "poster_0520.jpg",
+   "a": [
+    142,
+    121
+   ],
+   "b": [
+    203,
+    181
+   ],
+   "depth_a": 2.396,
+   "depth_b": 2.597,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "mirror_018",
+   "category": "mirror",
+   "image": "nyu_0221.jpg",
+   "a": [
+    178,
+    316
+   ],
+   "b": [
+    357,
+    298
+   ],
+   "depth_a": 4.715,
+   "depth_b": 2.753,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.3639750480651855,
+   "nyu_split": "test"
+  },
+  {
+   "id": "illusion_002",
+   "category": "illusion",
+   "image": "ill_hollow_face_borg.jpg",
+   "a": [
+    1050,
+    600
+   ],
+   "b": [
+    700,
+    690
+   ],
+   "depth_a": null,
+   "depth_b": null,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Concave mask: the nose tip lies behind the board surface; the board point is on the side nearer the camera.",
+   "kind": "hollow_face"
+  },
+  {
+   "id": "normal_049",
+   "category": "normal",
+   "image": "nyu_0180.jpg",
+   "a": [
+    396,
+    385
+   ],
+   "b": [
+    497,
+    95
+   ],
+   "depth_a": 2.304,
+   "depth_b": 2.832,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_037",
+   "category": "mirror",
+   "image": "nyu_0663.jpg",
+   "a": [
+    512,
+    358
+   ],
+   "b": [
+    563,
+    71
+   ],
+   "depth_a": 1.06,
+   "depth_b": 1.419,
+   "truth": "a",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.4652631282806396,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_010",
+   "category": "glass",
+   "image": "nyu_1101.jpg",
+   "a": [
+    230,
+    167
+   ],
+   "b": [
+    472,
+    90
+   ],
+   "depth_a": 3.983,
+   "depth_b": 3.04,
+   "truth": "b",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 3.0608937740325928,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_000",
+   "category": "normal",
+   "image": "nyu_0185.jpg",
+   "a": [
+    552,
+    382
+   ],
+   "b": [
+    371,
+    363
+   ],
+   "depth_a": 1.275,
+   "depth_b": 2.382,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_039",
+   "category": "textureless",
+   "image": "nyu_1440.jpg",
+   "a": [
+    540,
+    302
+   ],
+   "b": [
+    461,
+    368
+   ],
+   "depth_a": 1.519,
+   "depth_b": 1.156,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "glass_024",
+   "category": "glass",
+   "image": "nyu_0764.jpg",
+   "a": [
+    88,
+    67
+   ],
+   "b": [
+    479,
+    114
+   ],
+   "depth_a": 1.245,
+   "depth_b": 1.93,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "illusion_000",
+   "category": "illusion",
+   "image": "ill_ames_room.jpg",
+   "a": [
+    844,
+    341
+   ],
+   "b": [
+    480,
+    213
+   ],
+   "depth_a": null,
+   "depth_b": null,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Ames room: the person who looks smaller stands in the far corner of a trapezoidal room; her feet are also higher in the image on a floor built to look level.",
+   "kind": "ames_room"
+  },
+  {
+   "id": "normal_001",
+   "category": "normal",
+   "image": "nyu_0088.jpg",
+   "a": [
+    369,
+    142
+   ],
+   "b": [
+    568,
+    68
+   ],
+   "depth_a": 3.093,
+   "depth_b": 4.973,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_005",
+   "category": "normal",
+   "image": "nyu_0686.jpg",
+   "a": [
+    159,
+    430
+   ],
+   "b": [
+    335,
+    362
+   ],
+   "depth_a": 0.834,
+   "depth_b": 2.664,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "glass_033",
+   "category": "glass",
+   "image": "nyu_0581.jpg",
+   "a": [
+    557,
+    84
+   ],
+   "b": [
+    282,
+    360
+   ],
+   "depth_a": 4.532,
+   "depth_b": 2.965,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_016",
+   "category": "normal",
+   "image": "nyu_0786.jpg",
+   "a": [
+    451,
+    89
+   ],
+   "b": [
+    535,
+    315
+   ],
+   "depth_a": 4.109,
+   "depth_b": 0.826,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "glass_034",
+   "category": "glass",
+   "image": "nyu_0581.jpg",
+   "a": [
+    180,
+    338
+   ],
+   "b": [
+    584,
+    102
+   ],
+   "depth_a": 3.042,
+   "depth_b": 5.471,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_058",
+   "category": "normal",
+   "image": "nyu_0444.jpg",
+   "a": [
+    291,
+    146
+   ],
+   "b": [
+    557,
+    124
+   ],
+   "depth_a": 3.757,
+   "depth_b": 2.344,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_031",
+   "category": "mirror",
+   "image": "nyu_0508.jpg",
+   "a": [
+    191,
+    139
+   ],
+   "b": [
+    64,
+    249
+   ],
+   "depth_a": 2.593,
+   "depth_b": 0.932,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_068",
+   "category": "poster",
+   "image": "poster_0055.jpg",
+   "a": [
+    194,
+    123
+   ],
+   "b": [
+    304,
+    190
+   ],
+   "depth_a": 2.436,
+   "depth_b": 2.862,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "mirror_049",
+   "category": "mirror",
+   "image": "nyu_0926.jpg",
+   "a": [
+    498,
+    324
+   ],
+   "b": [
+    125,
+    55
+   ],
+   "depth_a": 2.366,
+   "depth_b": 3.403,
+   "truth": "a",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.4311418533325195,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_050",
+   "category": "poster",
+   "image": "poster_0537.jpg",
+   "a": [
+    272,
+    135
+   ],
+   "b": [
+    502,
+    111
+   ],
+   "depth_a": 3.081,
+   "depth_b": 3.558,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_041",
+   "category": "poster",
+   "image": "poster_0462.jpg",
+   "a": [
+    576,
+    160
+   ],
+   "b": [
+    99,
+    151
+   ],
+   "depth_a": 3.163,
+   "depth_b": 3.429,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "illusion_003",
+   "category": "illusion",
+   "image": "ill_hollow_face_borg.jpg",
+   "a": [
+    734,
+    473
+   ],
+   "b": [
+    1052,
+    979
+   ],
+   "depth_a": null,
+   "depth_b": null,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Concave mask: the eye region is recessed behind the board; the board point is on the near side.",
+   "kind": "hollow_face"
+  },
+  {
+   "id": "poster_075",
+   "category": "poster",
+   "image": "poster_1421.jpg",
+   "a": [
+    44,
+    389
+   ],
+   "b": [
+    143,
+    168
+   ],
+   "depth_a": 1.376,
+   "depth_b": 1.483,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_055",
+   "category": "poster",
+   "image": "poster_0183.jpg",
+   "a": [
+    188,
+    212
+   ],
+   "b": [
+    522,
+    166
+   ],
+   "depth_a": 1.876,
+   "depth_b": 1.718,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_063",
+   "category": "poster",
+   "image": "poster_0188.jpg",
+   "a": [
+    491,
+    245
+   ],
+   "b": [
+    371,
+    247
+   ],
+   "depth_a": 1.823,
+   "depth_b": 1.997,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_034",
+   "category": "poster",
+   "image": "poster_0712.jpg",
+   "a": [
+    178,
+    251
+   ],
+   "b": [
+    114,
+    281
+   ],
+   "depth_a": 2.579,
+   "depth_b": 2.767,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "mirror_011",
+   "category": "mirror",
+   "image": "nyu_0410.jpg",
+   "a": [
+    311,
+    372
+   ],
+   "b": [
+    341,
+    101
+   ],
+   "depth_a": 1.575,
+   "depth_b": 4.285,
+   "truth": "a",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.3639750480651855,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_062",
+   "category": "normal",
+   "image": "nyu_0619.jpg",
+   "a": [
+    45,
+    444
+   ],
+   "b": [
+    443,
+    290
+   ],
+   "depth_a": 0.837,
+   "depth_b": 2.822,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_034",
+   "category": "mirror",
+   "image": "nyu_0679.jpg",
+   "a": [
+    367,
+    57
+   ],
+   "b": [
+    492,
+    200
+   ],
+   "depth_a": 2.113,
+   "depth_b": 0.931,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.06286883354187,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_033",
+   "category": "mirror",
+   "image": "nyu_0679.jpg",
+   "a": [
+    342,
+    54
+   ],
+   "b": [
+    496,
+    54
+   ],
+   "depth_a": 2.199,
+   "depth_b": 0.831,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_042",
+   "category": "textureless",
+   "image": "nyu_1346.jpg",
+   "a": [
+    122,
+    288
+   ],
+   "b": [
+    60,
+    207
+   ],
+   "depth_a": 3.245,
+   "depth_b": 2.692,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "textureless_034",
+   "category": "textureless",
+   "image": "nyu_1164.jpg",
+   "a": [
+    355,
+    247
+   ],
+   "b": [
+    63,
+    215
+   ],
+   "depth_a": 4.015,
+   "depth_b": 4.653,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_014",
+   "category": "poster",
+   "image": "poster_0384.jpg",
+   "a": [
+    474,
+    167
+   ],
+   "b": [
+    58,
+    58
+   ],
+   "depth_a": 2.386,
+   "depth_b": 2.152,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_043",
+   "category": "normal",
+   "image": "nyu_0678.jpg",
+   "a": [
+    108,
+    254
+   ],
+   "b": [
+    282,
+    378
+   ],
+   "depth_a": 1.364,
+   "depth_b": 1.1,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_069",
+   "category": "poster",
+   "image": "poster_0041.jpg",
+   "a": [
+    83,
+    410
+   ],
+   "b": [
+    526,
+    337
+   ],
+   "depth_a": 2.155,
+   "depth_b": 1.866,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_056",
+   "category": "poster",
+   "image": "poster_0183.jpg",
+   "a": [
+    494,
+    196
+   ],
+   "b": [
+    274,
+    337
+   ],
+   "depth_a": 1.736,
+   "depth_b": 1.866,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_054",
+   "category": "poster",
+   "image": "poster_0191.jpg",
+   "a": [
+    45,
+    168
+   ],
+   "b": [
+    552,
+    237
+   ],
+   "depth_a": 1.991,
+   "depth_b": 2.132,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_049",
+   "category": "poster",
+   "image": "poster_0537.jpg",
+   "a": [
+    403,
+    102
+   ],
+   "b": [
+    488,
+    111
+   ],
+   "depth_a": 3.287,
+   "depth_b": 3.521,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_069",
+   "category": "normal",
+   "image": "nyu_0705.jpg",
+   "a": [
+    334,
+    350
+   ],
+   "b": [
+    563,
+    451
+   ],
+   "depth_a": 3.461,
+   "depth_b": 0.818,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_007",
+   "category": "poster",
+   "image": "poster_0605.jpg",
+   "a": [
+    285,
+    191
+   ],
+   "b": [
+    397,
+    104
+   ],
+   "depth_a": 3.413,
+   "depth_b": 3.025,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_027",
+   "category": "textureless",
+   "image": "nyu_0328.jpg",
+   "a": [
+    136,
+    359
+   ],
+   "b": [
+    128,
+    446
+   ],
+   "depth_a": 2.055,
+   "depth_b": 1.661,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_063",
+   "category": "normal",
+   "image": "nyu_0301.jpg",
+   "a": [
+    368,
+    425
+   ],
+   "b": [
+    132,
+    222
+   ],
+   "depth_a": 1.525,
+   "depth_b": 4.715,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_039",
+   "category": "normal",
+   "image": "nyu_0616.jpg",
+   "a": [
+    372,
+    338
+   ],
+   "b": [
+    471,
+    403
+   ],
+   "depth_a": 1.444,
+   "depth_b": 2.451,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "glass_004",
+   "category": "glass",
+   "image": "nyu_0281.jpg",
+   "a": [
+    132,
+    52
+   ],
+   "b": [
+    380,
+    452
+   ],
+   "depth_a": 2.442,
+   "depth_b": 1.779,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.414433002471924,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_040",
+   "category": "textureless",
+   "image": "nyu_0084.jpg",
+   "a": [
+    321,
+    461
+   ],
+   "b": [
+    121,
+    416
+   ],
+   "depth_a": 2.829,
+   "depth_b": 3.299,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_009",
+   "category": "poster",
+   "image": "poster_1173.jpg",
+   "a": [
+    113,
+    130
+   ],
+   "b": [
+    505,
+    134
+   ],
+   "depth_a": 2.486,
+   "depth_b": 3.908,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_027",
+   "category": "normal",
+   "image": "nyu_0128.jpg",
+   "a": [
+    210,
+    189
+   ],
+   "b": [
+    476,
+    259
+   ],
+   "depth_a": 1.109,
+   "depth_b": 1.437,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_021",
+   "category": "textureless",
+   "image": "nyu_1258.jpg",
+   "a": [
+    85,
+    441
+   ],
+   "b": [
+    535,
+    370
+   ],
+   "depth_a": 2.06,
+   "depth_b": 1.292,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_020",
+   "category": "normal",
+   "image": "nyu_0525.jpg",
+   "a": [
+    148,
+    303
+   ],
+   "b": [
+    338,
+    432
+   ],
+   "depth_a": 2.671,
+   "depth_b": 2.319,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_065",
+   "category": "poster",
+   "image": "poster_0055.jpg",
+   "a": [
+    201,
+    113
+   ],
+   "b": [
+    269,
+    159
+   ],
+   "depth_a": 2.454,
+   "depth_b": 2.706,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "mirror_042",
+   "category": "mirror",
+   "image": "nyu_1078.jpg",
+   "a": [
+    51,
+    350
+   ],
+   "b": [
+    135,
+    268
+   ],
+   "depth_a": 2.698,
+   "depth_b": 1.825,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.3079333305358887,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_032",
+   "category": "normal",
+   "image": "nyu_0385.jpg",
+   "a": [
+    444,
+    423
+   ],
+   "b": [
+    393,
+    267
+   ],
+   "depth_a": 1.421,
+   "depth_b": 2.048,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_007",
+   "category": "textureless",
+   "image": "nyu_0168.jpg",
+   "a": [
+    568,
+    236
+   ],
+   "b": [
+    79,
+    75
+   ],
+   "depth_a": 1.844,
+   "depth_b": 2.366,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "glass_009",
+   "category": "glass",
+   "image": "nyu_1101.jpg",
+   "a": [
+    304,
+    78
+   ],
+   "b": [
+    535,
+    468
+   ],
+   "depth_a": 3.495,
+   "depth_b": 1.957,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 3.4610836505889893,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_067",
+   "category": "poster",
+   "image": "poster_0055.jpg",
+   "a": [
+    285,
+    221
+   ],
+   "b": [
+    210,
+    166
+   ],
+   "depth_a": 2.799,
+   "depth_b": 2.503,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "glass_038",
+   "category": "glass",
+   "image": "nyu_1249.jpg",
+   "a": [
+    103,
+    73
+   ],
+   "b": [
+    585,
+    426
+   ],
+   "depth_a": 4.359,
+   "depth_b": 2.378,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.456911087036133,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_006",
+   "category": "normal",
+   "image": "nyu_1183.jpg",
+   "a": [
+    465,
+    258
+   ],
+   "b": [
+    46,
+    176
+   ],
+   "depth_a": 2.755,
+   "depth_b": 2.274,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_045",
+   "category": "textureless",
+   "image": "nyu_1447.jpg",
+   "a": [
+    517,
+    316
+   ],
+   "b": [
+    400,
+    415
+   ],
+   "depth_a": 1.488,
+   "depth_b": 0.999,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "mirror_023",
+   "category": "mirror",
+   "image": "nyu_0650.jpg",
+   "a": [
+    513,
+    210
+   ],
+   "b": [
+    104,
+    108
+   ],
+   "depth_a": 1.873,
+   "depth_b": 1.496,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 1.977590560913086,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_016",
+   "category": "textureless",
+   "image": "nyu_0813.jpg",
+   "a": [
+    585,
+    364
+   ],
+   "b": [
+    434,
+    63
+   ],
+   "depth_a": 1.805,
+   "depth_b": 2.366,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "textureless_002",
+   "category": "textureless",
+   "image": "nyu_0185.jpg",
+   "a": [
+    585,
+    173
+   ],
+   "b": [
+    69,
+    358
+   ],
+   "depth_a": 2.319,
+   "depth_b": 1.874,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_064",
+   "category": "poster",
+   "image": "poster_0188.jpg",
+   "a": [
+    386,
+    253
+   ],
+   "b": [
+    537,
+    221
+   ],
+   "depth_a": 1.973,
+   "depth_b": 1.764,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_045",
+   "category": "normal",
+   "image": "nyu_0706.jpg",
+   "a": [
+    164,
+    227
+   ],
+   "b": [
+    281,
+    237
+   ],
+   "depth_a": 1.252,
+   "depth_b": 1.551,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_002",
+   "category": "poster",
+   "image": "poster_0181.jpg",
+   "a": [
+    97,
+    60
+   ],
+   "b": [
+    236,
+    124
+   ],
+   "depth_a": 2.12,
+   "depth_b": 2.32,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "glass_032",
+   "category": "glass",
+   "image": "nyu_0616.jpg",
+   "a": [
+    368,
+    91
+   ],
+   "b": [
+    252,
+    267
+   ],
+   "depth_a": 3.49,
+   "depth_b": 2.123,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_018",
+   "category": "glass",
+   "image": "nyu_0386.jpg",
+   "a": [
+    412,
+    62
+   ],
+   "b": [
+    562,
+    53
+   ],
+   "depth_a": 3.253,
+   "depth_b": 1.224,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_021",
+   "category": "mirror",
+   "image": "nyu_0650.jpg",
+   "a": [
+    564,
+    308
+   ],
+   "b": [
+    535,
+    210
+   ],
+   "depth_a": 1.308,
+   "depth_b": 1.908,
+   "truth": "a",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_080",
+   "category": "poster",
+   "image": "poster_1296.jpg",
+   "a": [
+    125,
+    166
+   ],
+   "b": [
+    248,
+    182
+   ],
+   "depth_a": 2.69,
+   "depth_b": 2.865,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "mirror_036",
+   "category": "mirror",
+   "image": "nyu_0663.jpg",
+   "a": [
+    515,
+    110
+   ],
+   "b": [
+    355,
+    446
+   ],
+   "depth_a": 1.463,
+   "depth_b": 1.971,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.3326592445373535,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_022",
+   "category": "normal",
+   "image": "nyu_1087.jpg",
+   "a": [
+    249,
+    413
+   ],
+   "b": [
+    156,
+    325
+   ],
+   "depth_a": 1.063,
+   "depth_b": 1.929,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_015",
+   "category": "textureless",
+   "image": "nyu_0927.jpg",
+   "a": [
+    527,
+    427
+   ],
+   "b": [
+    74,
+    50
+   ],
+   "depth_a": 1.482,
+   "depth_b": 2.518,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_044",
+   "category": "poster",
+   "image": "poster_0194.jpg",
+   "a": [
+    416,
+    390
+   ],
+   "b": [
+    537,
+    319
+   ],
+   "depth_a": 1.198,
+   "depth_b": 1.092,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_048",
+   "category": "poster",
+   "image": "poster_0716.jpg",
+   "a": [
+    188,
+    91
+   ],
+   "b": [
+    53,
+    108
+   ],
+   "depth_a": 1.579,
+   "depth_b": 1.322,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_003",
+   "category": "poster",
+   "image": "poster_0181.jpg",
+   "a": [
+    211,
+    125
+   ],
+   "b": [
+    459,
+    94
+   ],
+   "depth_a": 2.292,
+   "depth_b": 2.583,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "glass_001",
+   "category": "glass",
+   "image": "nyu_0469.jpg",
+   "a": [
+    47,
+    83
+   ],
+   "b": [
+    366,
+    56
+   ],
+   "depth_a": 2.822,
+   "depth_b": 3.671,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_025",
+   "category": "textureless",
+   "image": "nyu_1103.jpg",
+   "a": [
+    303,
+    326
+   ],
+   "b": [
+    267,
+    134
+   ],
+   "depth_a": 1.461,
+   "depth_b": 3.151,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_050",
+   "category": "normal",
+   "image": "nyu_0333.jpg",
+   "a": [
+    291,
+    284
+   ],
+   "b": [
+    138,
+    384
+   ],
+   "depth_a": 5.807,
+   "depth_b": 3.086,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_077",
+   "category": "poster",
+   "image": "poster_0168.jpg",
+   "a": [
+    499,
+    139
+   ],
+   "b": [
+    140,
+    128
+   ],
+   "depth_a": 1.864,
+   "depth_b": 2.315,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_018",
+   "category": "poster",
+   "image": "poster_0520.jpg",
+   "a": [
+    191,
+    180
+   ],
+   "b": [
+    137,
+    142
+   ],
+   "depth_a": 2.563,
+   "depth_b": 2.399,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "poster_043",
+   "category": "poster",
+   "image": "poster_0194.jpg",
+   "a": [
+    405,
+    374
+   ],
+   "b": [
+    156,
+    217
+   ],
+   "depth_a": 1.199,
+   "depth_b": 1.308,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_000",
+   "category": "poster",
+   "image": "poster_0965.jpg",
+   "a": [
+    189,
+    201
+   ],
+   "b": [
+    144,
+    67
+   ],
+   "depth_a": 2.699,
+   "depth_b": 2.437,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_071",
+   "category": "poster",
+   "image": "poster_0042.jpg",
+   "a": [
+    392,
+    166
+   ],
+   "b": [
+    81,
+    180
+   ],
+   "depth_a": 2.405,
+   "depth_b": 3.369,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_052",
+   "category": "normal",
+   "image": "nyu_0799.jpg",
+   "a": [
+    320,
+    330
+   ],
+   "b": [
+    279,
+    64
+   ],
+   "depth_a": 1.11,
+   "depth_b": 1.599,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_018",
+   "category": "normal",
+   "image": "nyu_1227.jpg",
+   "a": [
+    93,
+    186
+   ],
+   "b": [
+    349,
+    180
+   ],
+   "depth_a": 1.925,
+   "depth_b": 2.631,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_051",
+   "category": "normal",
+   "image": "nyu_0083.jpg",
+   "a": [
+    41,
+    366
+   ],
+   "b": [
+    574,
+    306
+   ],
+   "depth_a": 1.024,
+   "depth_b": 1.735,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_049",
+   "category": "textureless",
+   "image": "nyu_0767.jpg",
+   "a": [
+    438,
+    350
+   ],
+   "b": [
+    516,
+    376
+   ],
+   "depth_a": 3.299,
+   "depth_b": 1.397,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_035",
+   "category": "poster",
+   "image": "poster_0712.jpg",
+   "a": [
+    168,
+    274
+   ],
+   "b": [
+    76,
+    345
+   ],
+   "depth_a": 2.627,
+   "depth_b": 2.956,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_020",
+   "category": "poster",
+   "image": "poster_0520.jpg",
+   "a": [
+    144,
+    138
+   ],
+   "b": [
+    224,
+    213
+   ],
+   "depth_a": 2.412,
+   "depth_b": 2.684,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "glass_023",
+   "category": "glass",
+   "image": "nyu_1147.jpg",
+   "a": [
+    325,
+    124
+   ],
+   "b": [
+    559,
+    218
+   ],
+   "depth_a": 3.146,
+   "depth_b": 2.35,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 3.179185628890991,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_038",
+   "category": "textureless",
+   "image": "nyu_0031.jpg",
+   "a": [
+    172,
+    339
+   ],
+   "b": [
+    83,
+    96
+   ],
+   "depth_a": 2.089,
+   "depth_b": 2.651,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_011",
+   "category": "poster",
+   "image": "poster_1130.jpg",
+   "a": [
+    555,
+    116
+   ],
+   "b": [
+    549,
+    325
+   ],
+   "depth_a": 3.083,
+   "depth_b": 3.38,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_023",
+   "category": "normal",
+   "image": "nyu_0179.jpg",
+   "a": [
+    165,
+    126
+   ],
+   "b": [
+    134,
+    257
+   ],
+   "depth_a": 3.299,
+   "depth_b": 2.348,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_042",
+   "category": "normal",
+   "image": "nyu_1253.jpg",
+   "a": [
+    545,
+    83
+   ],
+   "b": [
+    570,
+    417
+   ],
+   "depth_a": 1.451,
+   "depth_b": 1.158,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_035",
+   "category": "mirror",
+   "image": "nyu_0679.jpg",
+   "a": [
+    51,
+    242
+   ],
+   "b": [
+    351,
+    57
+   ],
+   "depth_a": 2.755,
+   "depth_b": 2.171,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.1486239433288574,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_081",
+   "category": "poster",
+   "image": "poster_1092.jpg",
+   "a": [
+    536,
+    205
+   ],
+   "b": [
+    60,
+    127
+   ],
+   "depth_a": 2.43,
+   "depth_b": 3.36,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_014",
+   "category": "normal",
+   "image": "nyu_0084.jpg",
+   "a": [
+    70,
+    137
+   ],
+   "b": [
+    511,
+    426
+   ],
+   "depth_a": 3.425,
+   "depth_b": 1.232,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_011",
+   "category": "normal",
+   "image": "nyu_0532.jpg",
+   "a": [
+    147,
+    313
+   ],
+   "b": [
+    547,
+    88
+   ],
+   "depth_a": 2.891,
+   "depth_b": 2.189,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_056",
+   "category": "normal",
+   "image": "nyu_0730.jpg",
+   "a": [
+    490,
+    326
+   ],
+   "b": [
+    455,
+    126
+   ],
+   "depth_a": 1.158,
+   "depth_b": 1.908,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_061",
+   "category": "poster",
+   "image": "poster_1082.jpg",
+   "a": [
+    282,
+    105
+   ],
+   "b": [
+    522,
+    114
+   ],
+   "depth_a": 2.911,
+   "depth_b": 2.692,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "mirror_040",
+   "category": "mirror",
+   "image": "nyu_1303.jpg",
+   "a": [
+    99,
+    72
+   ],
+   "b": [
+    548,
+    375
+   ],
+   "depth_a": 4.621,
+   "depth_b": 1.726,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.636307716369629,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_006",
+   "category": "poster",
+   "image": "poster_0605.jpg",
+   "a": [
+    402,
+    106
+   ],
+   "b": [
+    338,
+    148
+   ],
+   "depth_a": 3.021,
+   "depth_b": 3.214,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "poster_039",
+   "category": "poster",
+   "image": "poster_0524.jpg",
+   "a": [
+    162,
+    230
+   ],
+   "b": [
+    547,
+    223
+   ],
+   "depth_a": 2.606,
+   "depth_b": 2.422,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_012",
+   "category": "normal",
+   "image": "nyu_0802.jpg",
+   "a": [
+    232,
+    303
+   ],
+   "b": [
+    380,
+    346
+   ],
+   "depth_a": 1.936,
+   "depth_b": 3.839,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "glass_021",
+   "category": "glass",
+   "image": "nyu_1147.jpg",
+   "a": [
+    333,
+    90
+   ],
+   "b": [
+    176,
+    385
+   ],
+   "depth_a": 3.109,
+   "depth_b": 2.366,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 3.150672674179077,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_018",
+   "category": "textureless",
+   "image": "nyu_1367.jpg",
+   "a": [
+    93,
+    179
+   ],
+   "b": [
+    369,
+    291
+   ],
+   "depth_a": 4.715,
+   "depth_b": 2.261,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_040",
+   "category": "poster",
+   "image": "poster_0524.jpg",
+   "a": [
+    185,
+    190
+   ],
+   "b": [
+    514,
+    191
+   ],
+   "depth_a": 2.559,
+   "depth_b": 2.411,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "glass_017",
+   "category": "glass",
+   "image": "nyu_1346.jpg",
+   "a": [
+    198,
+    132
+   ],
+   "b": [
+    97,
+    125
+   ],
+   "depth_a": 4.251,
+   "depth_b": 2.99,
+   "truth": "b",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_013",
+   "category": "normal",
+   "image": "nyu_1440.jpg",
+   "a": [
+    506,
+    395
+   ],
+   "b": [
+    186,
+    55
+   ],
+   "depth_a": 1.057,
+   "depth_b": 3.67,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_041",
+   "category": "normal",
+   "image": "nyu_1089.jpg",
+   "a": [
+    165,
+    64
+   ],
+   "b": [
+    482,
+    246
+   ],
+   "depth_a": 1.799,
+   "depth_b": 3.192,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "glass_000",
+   "category": "glass",
+   "image": "nyu_0469.jpg",
+   "a": [
+    111,
+    68
+   ],
+   "b": [
+    443,
+    70
+   ],
+   "depth_a": 2.965,
+   "depth_b": 3.968,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_029",
+   "category": "poster",
+   "image": "poster_1263.jpg",
+   "a": [
+    237,
+    128
+   ],
+   "b": [
+    407,
+    102
+   ],
+   "depth_a": 2.47,
+   "depth_b": 2.842,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "mirror_004",
+   "category": "mirror",
+   "image": "nyu_1145.jpg",
+   "a": [
+    49,
+    112
+   ],
+   "b": [
+    246,
+    352
+   ],
+   "depth_a": 1.804,
+   "depth_b": 2.671,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 1.8538258075714111,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_008",
+   "category": "poster",
+   "image": "poster_0605.jpg",
+   "a": [
+    594,
+    90
+   ],
+   "b": [
+    393,
+    146
+   ],
+   "depth_a": 2.706,
+   "depth_b": 3.109,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_008",
+   "category": "normal",
+   "image": "nyu_0716.jpg",
+   "a": [
+    533,
+    335
+   ],
+   "b": [
+    230,
+    321
+   ],
+   "depth_a": 0.921,
+   "depth_b": 1.086,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_062",
+   "category": "poster",
+   "image": "poster_1082.jpg",
+   "a": [
+    522,
+    93
+   ],
+   "b": [
+    433,
+    174
+   ],
+   "depth_a": 2.671,
+   "depth_b": 2.839,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_007",
+   "category": "normal",
+   "image": "nyu_0281.jpg",
+   "a": [
+    92,
+    273
+   ],
+   "b": [
+    569,
+    159
+   ],
+   "depth_a": 2.541,
+   "depth_b": 3.461,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_020",
+   "category": "mirror",
+   "image": "nyu_0221.jpg",
+   "a": [
+    405,
+    381
+   ],
+   "b": [
+    371,
+    176
+   ],
+   "depth_a": 1.79,
+   "depth_b": 2.83,
+   "truth": "a",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.162267684936523,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_031",
+   "category": "poster",
+   "image": "poster_0185.jpg",
+   "a": [
+    165,
+    173
+   ],
+   "b": [
+    374,
+    345
+   ],
+   "depth_a": 2.144,
+   "depth_b": 2.36,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_061",
+   "category": "normal",
+   "image": "nyu_0725.jpg",
+   "a": [
+    458,
+    149
+   ],
+   "b": [
+    278,
+    335
+   ],
+   "depth_a": 2.715,
+   "depth_b": 1.925,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "glass_028",
+   "category": "glass",
+   "image": "nyu_0770.jpg",
+   "a": [
+    550,
+    419
+   ],
+   "b": [
+    436,
+    129
+   ],
+   "depth_a": 1.318,
+   "depth_b": 1.865,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 1.9367942810058594,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_014",
+   "category": "glass",
+   "image": "nyu_1164.jpg",
+   "a": [
+    294,
+    102
+   ],
+   "b": [
+    501,
+    334
+   ],
+   "depth_a": 3.891,
+   "depth_b": 1.77,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_013",
+   "category": "glass",
+   "image": "nyu_1164.jpg",
+   "a": [
+    264,
+    140
+   ],
+   "b": [
+    343,
+    384
+   ],
+   "depth_a": 4.03,
+   "depth_b": 3.165,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_002",
+   "category": "glass",
+   "image": "nyu_0469.jpg",
+   "a": [
+    352,
+    55
+   ],
+   "b": [
+    186,
+    288
+   ],
+   "depth_a": 3.613,
+   "depth_b": 2.663,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_036",
+   "category": "glass",
+   "image": "nyu_1249.jpg",
+   "a": [
+    223,
+    409
+   ],
+   "b": [
+    79,
+    160
+   ],
+   "depth_a": 2.61,
+   "depth_b": 4.036,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_041",
+   "category": "textureless",
+   "image": "nyu_0549.jpg",
+   "a": [
+    464,
+    293
+   ],
+   "b": [
+    481,
+    101
+   ],
+   "depth_a": 2.497,
+   "depth_b": 3.456,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "mirror_029",
+   "category": "mirror",
+   "image": "nyu_0440.jpg",
+   "a": [
+    101,
+    172
+   ],
+   "b": [
+    506,
+    144
+   ],
+   "depth_a": 2.842,
+   "depth_b": 1.844,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 5.500673770904541,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_010",
+   "category": "mirror",
+   "image": "nyu_0410.jpg",
+   "a": [
+    330,
+    104
+   ],
+   "b": [
+    329,
+    294
+   ],
+   "depth_a": 4.39,
+   "depth_b": 2.366,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.313347339630127,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_014",
+   "category": "mirror",
+   "image": "nyu_1020.jpg",
+   "a": [
+    594,
+    389
+   ],
+   "b": [
+    51,
+    257
+   ],
+   "depth_a": 1.99,
+   "depth_b": 1.104,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "illusion_001",
+   "category": "illusion",
+   "image": "ill_ames_room.jpg",
+   "a": [
+    473,
+    528
+   ],
+   "b": [
+    838,
+    511
+   ],
+   "depth_a": null,
+   "depth_b": null,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Same two people, points on their legs: the left person is in the near corner.",
+   "kind": "ames_room"
+  },
+  {
+   "id": "illusion_005",
+   "category": "illusion",
+   "image": "ill_hollow_faces_wanaka.jpg",
+   "a": [
+    823,
+    1080
+   ],
+   "b": [
+    729,
+    913
+   ],
+   "depth_a": null,
+   "depth_b": null,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Hollow face (row 3): nose recessed behind the panel surface.",
+   "kind": "hollow_face"
+  },
+  {
+   "id": "glass_026",
+   "category": "glass",
+   "image": "nyu_0764.jpg",
+   "a": [
+    576,
+    270
+   ],
+   "b": [
+    509,
+    116
+   ],
+   "depth_a": 1.503,
+   "depth_b": 1.979,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_070",
+   "category": "poster",
+   "image": "poster_0041.jpg",
+   "a": [
+    100,
+    406
+   ],
+   "b": [
+    304,
+    430
+   ],
+   "depth_a": 2.142,
+   "depth_b": 1.999,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_024",
+   "category": "normal",
+   "image": "nyu_1279.jpg",
+   "a": [
+    381,
+    185
+   ],
+   "b": [
+    533,
+    455
+   ],
+   "depth_a": 6.096,
+   "depth_b": 2.175,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_013",
+   "category": "textureless",
+   "image": "nyu_1108.jpg",
+   "a": [
+    464,
+    460
+   ],
+   "b": [
+    328,
+    82
+   ],
+   "depth_a": 1.271,
+   "depth_b": 3.238,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_005",
+   "category": "poster",
+   "image": "poster_1087.jpg",
+   "a": [
+    188,
+    102
+   ],
+   "b": [
+    506,
+    116
+   ],
+   "depth_a": 2.811,
+   "depth_b": 2.488,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "mirror_008",
+   "category": "mirror",
+   "image": "nyu_1047.jpg",
+   "a": [
+    52,
+    92
+   ],
+   "b": [
+    481,
+    188
+   ],
+   "depth_a": 3.362,
+   "depth_b": 1.596,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_039",
+   "category": "glass",
+   "image": "nyu_1097.jpg",
+   "a": [
+    194,
+    445
+   ],
+   "b": [
+    48,
+    52
+   ],
+   "depth_a": 2.28,
+   "depth_b": 3.576,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_017",
+   "category": "textureless",
+   "image": "nyu_1297.jpg",
+   "a": [
+    176,
+    368
+   ],
+   "b": [
+    544,
+    442
+   ],
+   "depth_a": 1.372,
+   "depth_b": 1.018,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_055",
+   "category": "normal",
+   "image": "nyu_0172.jpg",
+   "a": [
+    430,
+    128
+   ],
+   "b": [
+    352,
+    93
+   ],
+   "depth_a": 1.763,
+   "depth_b": 5.48,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_037",
+   "category": "poster",
+   "image": "poster_1161.jpg",
+   "a": [
+    365,
+    308
+   ],
+   "b": [
+    433,
+    217
+   ],
+   "depth_a": 3.143,
+   "depth_b": 2.964,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_033",
+   "category": "textureless",
+   "image": "nyu_1206.jpg",
+   "a": [
+    310,
+    382
+   ],
+   "b": [
+    472,
+    61
+   ],
+   "depth_a": 2.274,
+   "depth_b": 5.055,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_076",
+   "category": "poster",
+   "image": "poster_1421.jpg",
+   "a": [
+    100,
+    161
+   ],
+   "b": [
+    429,
+    129
+   ],
+   "depth_a": 1.398,
+   "depth_b": 2.405,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_023",
+   "category": "textureless",
+   "image": "nyu_0726.jpg",
+   "a": [
+    484,
+    57
+   ],
+   "b": [
+    371,
+    392
+   ],
+   "depth_a": 1.925,
+   "depth_b": 1.565,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "textureless_003",
+   "category": "textureless",
+   "image": "nyu_0088.jpg",
+   "a": [
+    213,
+    397
+   ],
+   "b": [
+    342,
+    198
+   ],
+   "depth_a": 3.786,
+   "depth_b": 3.095,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_037",
+   "category": "normal",
+   "image": "nyu_1127.jpg",
+   "a": [
+    468,
+    235
+   ],
+   "b": [
+    198,
+    227
+   ],
+   "depth_a": 2.136,
+   "depth_b": 2.465,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_044",
+   "category": "normal",
+   "image": "nyu_1203.jpg",
+   "a": [
+    83,
+    308
+   ],
+   "b": [
+    236,
+    420
+   ],
+   "depth_a": 2.684,
+   "depth_b": 1.298,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_010",
+   "category": "normal",
+   "image": "nyu_0315.jpg",
+   "a": [
+    287,
+    372
+   ],
+   "b": [
+    484,
+    309
+   ],
+   "depth_a": 2.216,
+   "depth_b": 3.812,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_002",
+   "category": "normal",
+   "image": "nyu_1095.jpg",
+   "a": [
+    69,
+    337
+   ],
+   "b": [
+    353,
+    418
+   ],
+   "depth_a": 1.377,
+   "depth_b": 1.011,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_010",
+   "category": "poster",
+   "image": "poster_1173.jpg",
+   "a": [
+    139,
+    129
+   ],
+   "b": [
+    359,
+    176
+   ],
+   "depth_a": 2.547,
+   "depth_b": 3.268,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_020",
+   "category": "textureless",
+   "image": "nyu_0516.jpg",
+   "a": [
+    592,
+    219
+   ],
+   "b": [
+    575,
+    371
+   ],
+   "depth_a": 3.061,
+   "depth_b": 1.948,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_066",
+   "category": "normal",
+   "image": "nyu_1057.jpg",
+   "a": [
+    171,
+    203
+   ],
+   "b": [
+    123,
+    452
+   ],
+   "depth_a": 2.259,
+   "depth_b": 1.864,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_019",
+   "category": "normal",
+   "image": "nyu_1047.jpg",
+   "a": [
+    592,
+    358
+   ],
+   "b": [
+    406,
+    303
+   ],
+   "depth_a": 0.934,
+   "depth_b": 1.077,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_015",
+   "category": "poster",
+   "image": "poster_1329.jpg",
+   "a": [
+    554,
+    128
+   ],
+   "b": [
+    398,
+    125
+   ],
+   "depth_a": 2.723,
+   "depth_b": 2.895,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_026",
+   "category": "textureless",
+   "image": "nyu_0315.jpg",
+   "a": [
+    128,
+    386
+   ],
+   "b": [
+    371,
+    421
+   ],
+   "depth_a": 1.743,
+   "depth_b": 2.457,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "glass_031",
+   "category": "glass",
+   "image": "nyu_0616.jpg",
+   "a": [
+    497,
+    353
+   ],
+   "b": [
+    528,
+    142
+   ],
+   "depth_a": 2.891,
+   "depth_b": 3.727,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_046",
+   "category": "mirror",
+   "image": "nyu_0441.jpg",
+   "a": [
+    306,
+    283
+   ],
+   "b": [
+    440,
+    160
+   ],
+   "depth_a": 3.798,
+   "depth_b": 3.013,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 5.80661153793335,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_041",
+   "category": "mirror",
+   "image": "nyu_1303.jpg",
+   "a": [
+    87,
+    90
+   ],
+   "b": [
+    442,
+    154
+   ],
+   "depth_a": 4.553,
+   "depth_b": 6.821,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.4827046394348145,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_039",
+   "category": "mirror",
+   "image": "nyu_1303.jpg",
+   "a": [
+    64,
+    120
+   ],
+   "b": [
+    494,
+    223
+   ],
+   "depth_a": 4.424,
+   "depth_b": 6.309,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.471353054046631,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_047",
+   "category": "textureless",
+   "image": "nyu_0905.jpg",
+   "a": [
+    295,
+    459
+   ],
+   "b": [
+    268,
+    357
+   ],
+   "depth_a": 2.113,
+   "depth_b": 2.5,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "textureless_032",
+   "category": "textureless",
+   "image": "nyu_0802.jpg",
+   "a": [
+    284,
+    51
+   ],
+   "b": [
+    321,
+    319
+   ],
+   "depth_a": 5.204,
+   "depth_b": 2.891,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "glass_003",
+   "category": "glass",
+   "image": "nyu_0281.jpg",
+   "a": [
+    182,
+    149
+   ],
+   "b": [
+    50,
+    415
+   ],
+   "depth_a": 2.622,
+   "depth_b": 0.871,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.631460666656494,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_052",
+   "category": "poster",
+   "image": "poster_1293.jpg",
+   "a": [
+    531,
+    239
+   ],
+   "b": [
+    563,
+    121
+   ],
+   "depth_a": 2.117,
+   "depth_b": 1.99,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "glass_027",
+   "category": "glass",
+   "image": "nyu_0770.jpg",
+   "a": [
+    475,
+    84
+   ],
+   "b": [
+    405,
+    72
+   ],
+   "depth_a": 1.489,
+   "depth_b": 1.864,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_006",
+   "category": "mirror",
+   "image": "nyu_1047.jpg",
+   "a": [
+    504,
+    208
+   ],
+   "b": [
+    279,
+    142
+   ],
+   "depth_a": 1.337,
+   "depth_b": 3.427,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 1.237784504890442,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_001",
+   "category": "mirror",
+   "image": "nyu_0185.jpg",
+   "a": [
+    341,
+    448
+   ],
+   "b": [
+    586,
+    400
+   ],
+   "depth_a": 2.393,
+   "depth_b": 1.137,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_030",
+   "category": "poster",
+   "image": "poster_1263.jpg",
+   "a": [
+    218,
+    161
+   ],
+   "b": [
+    477,
+    147
+   ],
+   "depth_a": 2.473,
+   "depth_b": 3.141,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_046",
+   "category": "textureless",
+   "image": "nyu_0386.jpg",
+   "a": [
+    566,
+    130
+   ],
+   "b": [
+    135,
+    265
+   ],
+   "depth_a": 1.266,
+   "depth_b": 3.095,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_004",
+   "category": "normal",
+   "image": "nyu_0974.jpg",
+   "a": [
+    100,
+    260
+   ],
+   "b": [
+    242,
+    448
+   ],
+   "depth_a": 3.461,
+   "depth_b": 2.621,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_060",
+   "category": "normal",
+   "image": "nyu_1075.jpg",
+   "a": [
+    75,
+    210
+   ],
+   "b": [
+    328,
+    449
+   ],
+   "depth_a": 3.427,
+   "depth_b": 2.11,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_034",
+   "category": "normal",
+   "image": "nyu_0520.jpg",
+   "a": [
+    419,
+    340
+   ],
+   "b": [
+    142,
+    426
+   ],
+   "depth_a": 1.765,
+   "depth_b": 1.243,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "illusion_007",
+   "category": "illusion",
+   "image": "ill_street_boots.jpg",
+   "a": [
+    883,
+    144
+   ],
+   "b": [
+    1216,
+    288
+   ],
+   "depth_a": null,
+   "depth_b": null,
+   "truth": "b",
+   "first_point": "a",
+   "why": "The boot is paint on flat paving: its 'top' is higher in the image than the brick point, so it is farther.",
+   "kind": "street_art"
+  },
+  {
+   "id": "normal_029",
+   "category": "normal",
+   "image": "nyu_0350.jpg",
+   "a": [
+    74,
+    307
+   ],
+   "b": [
+    529,
+    190
+   ],
+   "depth_a": 3.925,
+   "depth_b": 7.458,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_003",
+   "category": "mirror",
+   "image": "nyu_1145.jpg",
+   "a": [
+    281,
+    156
+   ],
+   "b": [
+    51,
+    94
+   ],
+   "depth_a": 3.882,
+   "depth_b": 1.83,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 1.8555026054382324,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_019",
+   "category": "glass",
+   "image": "nyu_0386.jpg",
+   "a": [
+    415,
+    151
+   ],
+   "b": [
+    89,
+    462
+   ],
+   "depth_a": 2.636,
+   "depth_b": 2.013,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_026",
+   "category": "normal",
+   "image": "nyu_1147.jpg",
+   "a": [
+    225,
+    94
+   ],
+   "b": [
+    281,
+    463
+   ],
+   "depth_a": 2.448,
+   "depth_b": 1.904,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_025",
+   "category": "poster",
+   "image": "poster_0994.jpg",
+   "a": [
+    347,
+    406
+   ],
+   "b": [
+    145,
+    398
+   ],
+   "depth_a": 3.054,
+   "depth_b": 2.777,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_012",
+   "category": "textureless",
+   "image": "nyu_0281.jpg",
+   "a": [
+    583,
+    290
+   ],
+   "b": [
+    276,
+    186
+   ],
+   "depth_a": 2.203,
+   "depth_b": 2.868,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "mirror_044",
+   "category": "mirror",
+   "image": "nyu_1078.jpg",
+   "a": [
+    49,
+    348
+   ],
+   "b": [
+    419,
+    271
+   ],
+   "depth_a": 2.894,
+   "depth_b": 3.779,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.3188118934631348,
+   "nyu_split": "test"
+  },
+  {
+   "id": "illusion_006",
+   "category": "illusion",
+   "image": "ill_street_parrots.jpg",
+   "a": [
+    796,
+    266
+   ],
+   "b": [
+    364,
+    194
+   ],
+   "depth_a": null,
+   "depth_b": null,
+   "truth": "a",
+   "first_point": "b",
+   "why": "The parrots are paint on flat ground: the parrot head is higher in the image than the asphalt point, so on a flat ground it is farther.",
+   "kind": "street_art"
+  },
+  {
+   "id": "normal_046",
+   "category": "normal",
+   "image": "nyu_0270.jpg",
+   "a": [
+    540,
+    418
+   ],
+   "b": [
+    307,
+    77
+   ],
+   "depth_a": 2.391,
+   "depth_b": 3.672,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "glass_007",
+   "category": "glass",
+   "image": "nyu_1441.jpg",
+   "a": [
+    218,
+    371
+   ],
+   "b": [
+    356,
+    196
+   ],
+   "depth_a": 2.77,
+   "depth_b": 3.514,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 3.6723058223724365,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_059",
+   "category": "poster",
+   "image": "poster_0166.jpg",
+   "a": [
+    453,
+    206
+   ],
+   "b": [
+    154,
+    158
+   ],
+   "depth_a": 2.206,
+   "depth_b": 3.412,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "mirror_032",
+   "category": "mirror",
+   "image": "nyu_0508.jpg",
+   "a": [
+    176,
+    137
+   ],
+   "b": [
+    78,
+    193
+   ],
+   "depth_a": 2.576,
+   "depth_b": 0.825,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_030",
+   "category": "textureless",
+   "image": "nyu_0532.jpg",
+   "a": [
+    478,
+    51
+   ],
+   "b": [
+    293,
+    127
+   ],
+   "depth_a": 2.366,
+   "depth_b": 3.151,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_064",
+   "category": "normal",
+   "image": "nyu_0394.jpg",
+   "a": [
+    305,
+    223
+   ],
+   "b": [
+    407,
+    65
+   ],
+   "depth_a": 1.797,
+   "depth_b": 2.309,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_013",
+   "category": "poster",
+   "image": "poster_0384.jpg",
+   "a": [
+    309,
+    50
+   ],
+   "b": [
+    430,
+    157
+   ],
+   "depth_a": 2.21,
+   "depth_b": 2.36,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_074",
+   "category": "poster",
+   "image": "poster_1421.jpg",
+   "a": [
+    138,
+    197
+   ],
+   "b": [
+    85,
+    156
+   ],
+   "depth_a": 1.484,
+   "depth_b": 1.369,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "normal_059",
+   "category": "normal",
+   "image": "nyu_0523.jpg",
+   "a": [
+    576,
+    389
+   ],
+   "b": [
+    237,
+    312
+   ],
+   "depth_a": 1.492,
+   "depth_b": 2.098,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_027",
+   "category": "mirror",
+   "image": "nyu_0440.jpg",
+   "a": [
+    556,
+    167
+   ],
+   "b": [
+    148,
+    150
+   ],
+   "depth_a": 1.726,
+   "depth_b": 2.8,
+   "truth": "a",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 5.536238193511963,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_031",
+   "category": "normal",
+   "image": "nyu_0568.jpg",
+   "a": [
+    571,
+    71
+   ],
+   "b": [
+    363,
+    391
+   ],
+   "depth_a": 2.304,
+   "depth_b": 1.461,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_013",
+   "category": "mirror",
+   "image": "nyu_1020.jpg",
+   "a": [
+    47,
+    227
+   ],
+   "b": [
+    252,
+    300
+   ],
+   "depth_a": 1.086,
+   "depth_b": 4.015,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_025",
+   "category": "mirror",
+   "image": "nyu_0649.jpg",
+   "a": [
+    411,
+    269
+   ],
+   "b": [
+    57,
+    91
+   ],
+   "depth_a": 1.744,
+   "depth_b": 1.219,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_024",
+   "category": "mirror",
+   "image": "nyu_0649.jpg",
+   "a": [
+    56,
+    110
+   ],
+   "b": [
+    138,
+    275
+   ],
+   "depth_a": 1.224,
+   "depth_b": 1.623,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_022",
+   "category": "textureless",
+   "image": "nyu_0395.jpg",
+   "a": [
+    291,
+    154
+   ],
+   "b": [
+    593,
+    249
+   ],
+   "depth_a": 4.015,
+   "depth_b": 2.11,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_021",
+   "category": "poster",
+   "image": "poster_1002.jpg",
+   "a": [
+    207,
+    208
+   ],
+   "b": [
+    290,
+    178
+   ],
+   "depth_a": 1.752,
+   "depth_b": 1.95,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "poster_053",
+   "category": "poster",
+   "image": "poster_0191.jpg",
+   "a": [
+    83,
+    200
+   ],
+   "b": [
+    554,
+    251
+   ],
+   "depth_a": 2.006,
+   "depth_b": 2.135,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_072",
+   "category": "poster",
+   "image": "poster_0042.jpg",
+   "a": [
+    201,
+    99
+   ],
+   "b": [
+    412,
+    176
+   ],
+   "depth_a": 2.914,
+   "depth_b": 2.361,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "mirror_022",
+   "category": "mirror",
+   "image": "nyu_0650.jpg",
+   "a": [
+    576,
+    56
+   ],
+   "b": [
+    345,
+    311
+   ],
+   "depth_a": 1.957,
+   "depth_b": 1.498,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 1.9462603330612183,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_006",
+   "category": "glass",
+   "image": "nyu_1441.jpg",
+   "a": [
+    370,
+    176
+   ],
+   "b": [
+    417,
+    137
+   ],
+   "depth_a": 3.184,
+   "depth_b": 2.365,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_001",
+   "category": "poster",
+   "image": "poster_0965.jpg",
+   "a": [
+    189,
+    188
+   ],
+   "b": [
+    217,
+    286
+   ],
+   "depth_a": 2.677,
+   "depth_b": 2.897,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_028",
+   "category": "textureless",
+   "image": "nyu_1234.jpg",
+   "a": [
+    134,
+    226
+   ],
+   "b": [
+    517,
+    299
+   ],
+   "depth_a": 3.238,
+   "depth_b": 2.555,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_079",
+   "category": "poster",
+   "image": "poster_1296.jpg",
+   "a": [
+    144,
+    134
+   ],
+   "b": [
+    295,
+    221
+   ],
+   "depth_a": 2.673,
+   "depth_b": 2.987,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "mirror_005",
+   "category": "mirror",
+   "image": "nyu_1145.jpg",
+   "a": [
+    54,
+    105
+   ],
+   "b": [
+    477,
+    313
+   ],
+   "depth_a": 1.87,
+   "depth_b": 2.945,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 1.8833926916122437,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_044",
+   "category": "textureless",
+   "image": "nyu_0171.jpg",
+   "a": [
+    384,
+    64
+   ],
+   "b": [
+    552,
+    85
+   ],
+   "depth_a": 6.821,
+   "depth_b": 2.581,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "mirror_012",
+   "category": "mirror",
+   "image": "nyu_1020.jpg",
+   "a": [
+    51,
+    240
+   ],
+   "b": [
+    460,
+    467
+   ],
+   "depth_a": 1.162,
+   "depth_b": 1.904,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_042",
+   "category": "poster",
+   "image": "poster_0462.jpg",
+   "a": [
+    83,
+    157
+   ],
+   "b": [
+    444,
+    101
+   ],
+   "depth_a": 3.453,
+   "depth_b": 3.124,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "normal_065",
+   "category": "normal",
+   "image": "nyu_0475.jpg",
+   "a": [
+    150,
+    236
+   ],
+   "b": [
+    490,
+    76
+   ],
+   "depth_a": 3.33,
+   "depth_b": 2.631,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_028",
+   "category": "poster",
+   "image": "poster_1263.jpg",
+   "a": [
+    220,
+    115
+   ],
+   "b": [
+    277,
+    149
+   ],
+   "depth_a": 2.419,
+   "depth_b": 2.586,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "mirror_047",
+   "category": "mirror",
+   "image": "nyu_0441.jpg",
+   "a": [
+    435,
+    228
+   ],
+   "b": [
+    538,
+    408
+   ],
+   "depth_a": 3.084,
+   "depth_b": 2.187,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_019",
+   "category": "mirror",
+   "image": "nyu_0221.jpg",
+   "a": [
+    357,
+    308
+   ],
+   "b": [
+    96,
+    86
+   ],
+   "depth_a": 2.691,
+   "depth_b": 3.556,
+   "truth": "a",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.314297676086426,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_021",
+   "category": "normal",
+   "image": "nyu_1256.jpg",
+   "a": [
+    275,
+    53
+   ],
+   "b": [
+    394,
+    213
+   ],
+   "depth_a": 3.427,
+   "depth_b": 5.904,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_000",
+   "category": "mirror",
+   "image": "nyu_0185.jpg",
+   "a": [
+    293,
+    357
+   ],
+   "b": [
+    64,
+    335
+   ],
+   "depth_a": 2.307,
+   "depth_b": 1.838,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.418868064880371,
+   "nyu_split": "test"
+  },
+  {
+   "id": "glass_011",
+   "category": "glass",
+   "image": "nyu_1101.jpg",
+   "a": [
+    76,
+    71
+   ],
+   "b": [
+    394,
+    56
+   ],
+   "depth_a": 2.518,
+   "depth_b": 3.194,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 3.179185628890991,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_004",
+   "category": "poster",
+   "image": "poster_1087.jpg",
+   "a": [
+    193,
+    130
+   ],
+   "b": [
+    526,
+    71
+   ],
+   "depth_a": 2.846,
+   "depth_b": 2.42,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_037",
+   "category": "textureless",
+   "image": "nyu_0327.jpg",
+   "a": [
+    574,
+    59
+   ],
+   "b": [
+    205,
+    135
+   ],
+   "depth_a": 4.364,
+   "depth_b": 2.671,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_003",
+   "category": "normal",
+   "image": "nyu_0849.jpg",
+   "a": [
+    536,
+    312
+   ],
+   "b": [
+    525,
+    211
+   ],
+   "depth_a": 1.884,
+   "depth_b": 1.553,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_073",
+   "category": "poster",
+   "image": "poster_1421.jpg",
+   "a": [
+    144,
+    183
+   ],
+   "b": [
+    86,
+    159
+   ],
+   "depth_a": 1.491,
+   "depth_b": 1.372,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "poster_045",
+   "category": "poster",
+   "image": "poster_1413.jpg",
+   "a": [
+    100,
+    314
+   ],
+   "b": [
+    53,
+    48
+   ],
+   "depth_a": 2.171,
+   "depth_b": 1.959,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_012",
+   "category": "poster",
+   "image": "poster_1130.jpg",
+   "a": [
+    515,
+    131
+   ],
+   "b": [
+    547,
+    300
+   ],
+   "depth_a": 3.109,
+   "depth_b": 3.342,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_060",
+   "category": "poster",
+   "image": "poster_0166.jpg",
+   "a": [
+    93,
+    134
+   ],
+   "b": [
+    189,
+    156
+   ],
+   "depth_a": 3.834,
+   "depth_b": 3.204,
+   "truth": "b",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "illusion_004",
+   "category": "illusion",
+   "image": "ill_hollow_faces_wanaka.jpg",
+   "a": [
+    674,
+    844
+   ],
+   "b": [
+    569,
+    735
+   ],
+   "depth_a": null,
+   "depth_b": null,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Hollow faces at Puzzling World: the nose is recessed into the panel, the panel corner is on the panel surface.",
+   "kind": "hollow_face"
+  },
+  {
+   "id": "normal_053",
+   "category": "normal",
+   "image": "nyu_1277.jpg",
+   "a": [
+    556,
+    343
+   ],
+   "b": [
+    332,
+    73
+   ],
+   "depth_a": 2.275,
+   "depth_b": 6.474,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_054",
+   "category": "normal",
+   "image": "nyu_1328.jpg",
+   "a": [
+    309,
+    367
+   ],
+   "b": [
+    225,
+    436
+   ],
+   "depth_a": 1.957,
+   "depth_b": 1.055,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "normal_047",
+   "category": "normal",
+   "image": "nyu_1296.jpg",
+   "a": [
+    302,
+    172
+   ],
+   "b": [
+    532,
+    381
+   ],
+   "depth_a": 2.94,
+   "depth_b": 2.518,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_043",
+   "category": "textureless",
+   "image": "nyu_0042.jpg",
+   "a": [
+    115,
+    322
+   ],
+   "b": [
+    423,
+    247
+   ],
+   "depth_a": 3.233,
+   "depth_b": 2.366,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "textureless_011",
+   "category": "textureless",
+   "image": "nyu_1180.jpg",
+   "a": [
+    291,
+    214
+   ],
+   "b": [
+    527,
+    72
+   ],
+   "depth_a": 2.097,
+   "depth_b": 2.713,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_057",
+   "category": "normal",
+   "image": "nyu_0154.jpg",
+   "a": [
+    513,
+    231
+   ],
+   "b": [
+    421,
+    169
+   ],
+   "depth_a": 3.268,
+   "depth_b": 2.607,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "poster_033",
+   "category": "poster",
+   "image": "poster_0712.jpg",
+   "a": [
+    165,
+    214
+   ],
+   "b": [
+    112,
+    265
+   ],
+   "depth_a": 2.569,
+   "depth_b": 2.753,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "normal_017",
+   "category": "normal",
+   "image": "nyu_1038.jpg",
+   "a": [
+    66,
+    435
+   ],
+   "b": [
+    185,
+    269
+   ],
+   "depth_a": 2.11,
+   "depth_b": 2.799,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "glass_005",
+   "category": "glass",
+   "image": "nyu_0281.jpg",
+   "a": [
+    409,
+    427
+   ],
+   "b": [
+    235,
+    73
+   ],
+   "depth_a": 1.904,
+   "depth_b": 2.667,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 2.637894630432129,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_010",
+   "category": "textureless",
+   "image": "nyu_1183.jpg",
+   "a": [
+    179,
+    51
+   ],
+   "b": [
+    355,
+    141
+   ],
+   "depth_a": 2.575,
+   "depth_b": 3.385,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_057",
+   "category": "poster",
+   "image": "poster_0166.jpg",
+   "a": [
+    181,
+    186
+   ],
+   "b": [
+    135,
+    129
+   ],
+   "depth_a": 3.259,
+   "depth_b": 3.525,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "glass_029",
+   "category": "glass",
+   "image": "nyu_0770.jpg",
+   "a": [
+    558,
+    373
+   ],
+   "b": [
+    424,
+    140
+   ],
+   "depth_a": 1.261,
+   "depth_b": 1.886,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_038",
+   "category": "poster",
+   "image": "poster_1161.jpg",
+   "a": [
+    364,
+    57
+   ],
+   "b": [
+    417,
+    211
+   ],
+   "depth_a": 2.777,
+   "depth_b": 2.963,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "poster_066",
+   "category": "poster",
+   "image": "poster_0055.jpg",
+   "a": [
+    221,
+    111
+   ],
+   "b": [
+    262,
+    172
+   ],
+   "depth_a": 2.517,
+   "depth_b": 2.686,
+   "truth": "a",
+   "first_point": "b",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; both points on the poster"
+  },
+  {
+   "id": "glass_037",
+   "category": "glass",
+   "image": "nyu_1249.jpg",
+   "a": [
+    246,
+    166
+   ],
+   "b": [
+    49,
+    107
+   ],
+   "depth_a": 5.079,
+   "depth_b": 3.724,
+   "truth": "b",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 3.9720096588134766,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_025",
+   "category": "normal",
+   "image": "nyu_1448.jpg",
+   "a": [
+    107,
+    164
+   ],
+   "b": [
+    178,
+    445
+   ],
+   "depth_a": 5.283,
+   "depth_b": 1.349,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "mirror_015",
+   "category": "mirror",
+   "image": "nyu_1057.jpg",
+   "a": [
+    455,
+    76
+   ],
+   "b": [
+    557,
+    72
+   ],
+   "depth_a": 2.574,
+   "depth_b": 1.999,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "normal_028",
+   "category": "normal",
+   "image": "nyu_1394.jpg",
+   "a": [
+    514,
+    315
+   ],
+   "b": [
+    381,
+    407
+   ],
+   "depth_a": 3.082,
+   "depth_b": 1.284,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_031",
+   "category": "textureless",
+   "image": "nyu_0727.jpg",
+   "a": [
+    80,
+    149
+   ],
+   "b": [
+    317,
+    186
+   ],
+   "depth_a": 1.364,
+   "depth_b": 2.369,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "textureless_014",
+   "category": "textureless",
+   "image": "nyu_0716.jpg",
+   "a": [
+    523,
+    201
+   ],
+   "b": [
+    141,
+    84
+   ],
+   "depth_a": 0.998,
+   "depth_b": 1.467,
+   "truth": "a",
+   "first_point": "a",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "glass_035",
+   "category": "glass",
+   "image": "nyu_0581.jpg",
+   "a": [
+    585,
+    110
+   ],
+   "b": [
+    181,
+    401
+   ],
+   "depth_a": 5.58,
+   "depth_b": 2.547,
+   "truth": "b",
+   "first_point": "a",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_030",
+   "category": "mirror",
+   "image": "nyu_0508.jpg",
+   "a": [
+    48,
+    243
+   ],
+   "b": [
+    463,
+    433
+   ],
+   "depth_a": 1.275,
+   "depth_b": 0.719,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 1.0893023014068604,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_007",
+   "category": "mirror",
+   "image": "nyu_1047.jpg",
+   "a": [
+    238,
+    68
+   ],
+   "b": [
+    488,
+    71
+   ],
+   "depth_a": 3.33,
+   "depth_b": 1.677,
+   "truth": "b",
+   "first_point": "b",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_004",
+   "category": "textureless",
+   "image": "nyu_1095.jpg",
+   "a": [
+    66,
+    140
+   ],
+   "b": [
+    328,
+    76
+   ],
+   "depth_a": 2.245,
+   "depth_b": 3.185,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "textureless_048",
+   "category": "textureless",
+   "image": "nyu_1408.jpg",
+   "a": [
+    112,
+    439
+   ],
+   "b": [
+    416,
+    85
+   ],
+   "depth_a": 2.149,
+   "depth_b": 4.983,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_040",
+   "category": "normal",
+   "image": "nyu_1093.jpg",
+   "a": [
+    370,
+    188
+   ],
+   "b": [
+    430,
+    421
+   ],
+   "depth_a": 2.915,
+   "depth_b": 2.369,
+   "truth": "b",
+   "first_point": "a",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "textureless_024",
+   "category": "textureless",
+   "image": "nyu_0511.jpg",
+   "a": [
+    520,
+    427
+   ],
+   "b": [
+    307,
+    335
+   ],
+   "depth_a": 0.88,
+   "depth_b": 2.06,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "glass_016",
+   "category": "glass",
+   "image": "nyu_1346.jpg",
+   "a": [
+    210,
+    311
+   ],
+   "b": [
+    98,
+    128
+   ],
+   "depth_a": 1.455,
+   "depth_b": 2.997,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_032",
+   "category": "poster",
+   "image": "poster_0185.jpg",
+   "a": [
+    148,
+    171
+   ],
+   "b": [
+    379,
+    362
+   ],
+   "depth_a": 2.136,
+   "depth_b": 2.376,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "textureless_008",
+   "category": "textureless",
+   "image": "nyu_0974.jpg",
+   "a": [
+    378,
+    66
+   ],
+   "b": [
+    287,
+    441
+   ],
+   "depth_a": 3.162,
+   "depth_b": 2.671,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "poster_036",
+   "category": "poster",
+   "image": "poster_0712.jpg",
+   "a": [
+    159,
+    220
+   ],
+   "b": [
+    420,
+    169
+   ],
+   "depth_a": 2.588,
+   "depth_b": 2.073,
+   "truth": "b",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  },
+  {
+   "id": "mirror_028",
+   "category": "mirror",
+   "image": "nyu_0440.jpg",
+   "a": [
+    119,
+    293
+   ],
+   "b": [
+    286,
+    451
+   ],
+   "depth_a": 2.909,
+   "depth_b": 2.164,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "textureless_036",
+   "category": "textureless",
+   "image": "nyu_0675.jpg",
+   "a": [
+    104,
+    421
+   ],
+   "b": [
+    71,
+    151
+   ],
+   "depth_a": 1.444,
+   "depth_b": 1.173,
+   "truth": "b",
+   "first_point": "b",
+   "why": "Kinect depth, texture-free surfaces"
+  },
+  {
+   "id": "normal_033",
+   "category": "normal",
+   "image": "nyu_0196.jpg",
+   "a": [
+    279,
+    85
+   ],
+   "b": [
+    443,
+    208
+   ],
+   "depth_a": 0.868,
+   "depth_b": 1.222,
+   "truth": "a",
+   "first_point": "b",
+   "why": "Kinect depth, ordinary surfaces"
+  },
+  {
+   "id": "glass_025",
+   "category": "glass",
+   "image": "nyu_0764.jpg",
+   "a": [
+    233,
+    51
+   ],
+   "b": [
+    433,
+    91
+   ],
+   "depth_a": 1.343,
+   "depth_b": 1.811,
+   "truth": "a",
+   "first_point": "b",
+   "why": "glass surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_045",
+   "category": "mirror",
+   "image": "nyu_0441.jpg",
+   "a": [
+    457,
+    214
+   ],
+   "b": [
+    517,
+    427
+   ],
+   "depth_a": 2.966,
+   "depth_b": 1.957,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": null,
+   "nyu_split": "test"
+  },
+  {
+   "id": "mirror_009",
+   "category": "mirror",
+   "image": "nyu_0410.jpg",
+   "a": [
+    350,
+    117
+   ],
+   "b": [
+    240,
+    419
+   ],
+   "depth_a": 4.237,
+   "depth_b": 1.318,
+   "truth": "b",
+   "first_point": "a",
+   "why": "mirror surface depth = plane fitted to the sensor depth around it (frame / wall)",
+   "sensor_depth_on_surface": 4.15739631652832,
+   "nyu_split": "test"
+  },
+  {
+   "id": "poster_026",
+   "category": "poster",
+   "image": "poster_0994.jpg",
+   "a": [
+    151,
+    395
+   ],
+   "b": [
+    513,
+    270
+   ],
+   "depth_a": 2.783,
+   "depth_b": 3.257,
+   "truth": "a",
+   "first_point": "a",
+   "why": "flat poster on a flat wall: depth = wall plane fitted to the sensor; poster point vs wall point beside it"
+  }
+ ]
+}

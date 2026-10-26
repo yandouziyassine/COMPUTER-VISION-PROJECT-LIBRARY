@@ -16,16 +16,20 @@ USER = "yassineyandouzi"
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--name", required=True)
-    ap.add_argument("--datasets", nargs="+", required=True)
+    ap.add_argument("--datasets", nargs="*", default=[])
     ap.add_argument("--models", nargs="+", default=list(M.MODELS))
     ap.add_argument("--commit", required=True)
     ap.add_argument("--limit", type=int)
+    ap.add_argument(
+        "--script", default="kaggle_infer_v2.py", help="job script (kaggle_infer_v2.py or w9_kaggle_models.py)"
+    )
+    ap.add_argument("--dataset", nargs="*", default=[], help="private Kaggle datasets to attach (owner/slug)")
     ap.add_argument("--out", default=str(Path(__file__).resolve().parents[2] / "kaggle14"))
     a = ap.parse_args()
     job = {"commit": a.commit, "datasets": a.datasets, "models": a.models, "limit": a.limit}
     folder = Path(a.out) / a.name
     folder.mkdir(parents=True, exist_ok=True)
-    src = Path(__file__).with_name("kaggle_infer_v2.py").read_text(encoding="utf-8")
+    src = Path(__file__).with_name(a.script).read_text(encoding="utf-8")
     (folder / "run.py").write_text(f"JOB = {job!r}\n" + src, encoding="utf-8")
     meta = {
         "id": f"{USER}/{a.name}",
@@ -37,7 +41,7 @@ def main():
         "enable_gpu": True,
         "enable_internet": True,
         "machine_shape": "NvidiaTeslaT4",
-        "dataset_sources": [],
+        "dataset_sources": a.dataset,
         "competition_sources": [],
         "kernel_sources": [],
     }

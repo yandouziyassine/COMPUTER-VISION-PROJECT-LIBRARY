@@ -1,0 +1,29 @@
+{
+ "_note": "Hand-annotated point pairs on open-licensed illusion photos (Wikimedia Commons). Coordinates are fractions of image width/height. Only pairs whose physical answer follows from geometry that is certain (hollow = concave, flat painted ground, Ames-room layout) are included. 'truth' is the point that is physically closer to the camera.",
+ "images": {
+  "ames_room": "File:Ames room forced perspective.jpg",
+  "hollow_face_borg": "File:Bjorn Borg Hollow Face-concave.jpg",
+  "hollow_faces_wanaka": "File:Stuart Landsboroughs Puzzling World, Wanaka, New Zealand (Magic Faces) (3423396757).jpg",
+  "hollow_faces_hall": "File:Hall of Following Faces in Stuart Landsborough's Puzzling World.jpg",
+  "street_parrots": "File:3D street painting.jpg",
+  "street_boots": "File:Den Helder - Julianaplein, 3D street art 2020.jpg"
+ },
+ "pairs": [
+  {"image": "ames_room", "a": [0.375, 0.25], "b": [0.66, 0.40], "truth": "a", "kind": "ames_room",
+   "why": "Ames room: the person who looks smaller stands in the far corner of a trapezoidal room; her feet are also higher in the image on a floor built to look level."},
+  {"image": "ames_room", "a": [0.37, 0.62], "b": [0.655, 0.60], "truth": "a", "kind": "ames_room",
+   "why": "Same two people, points on their legs: the left person is in the near corner."},
+  {"image": "hollow_face_borg", "a": [0.572, 0.423], "b": [0.858, 0.368], "truth": "b", "kind": "hollow_face",
+   "why": "Concave mask: the nose tip lies behind the board surface; the board point is on the side nearer the camera."},
+  {"image": "hollow_face_borg", "a": [0.60, 0.29], "b": [0.86, 0.60], "truth": "b", "kind": "hollow_face",
+   "why": "Concave mask: the eye region is recessed behind the board; the board point is on the near side."},
+  {"image": "hollow_faces_wanaka", "a": [0.445, 0.431], "b": [0.527, 0.495], "truth": "b", "kind": "hollow_face",
+   "why": "Hollow faces at Puzzling World: the nose is recessed into the panel, the panel corner is on the panel surface."},
+  {"image": "hollow_faces_wanaka", "a": [0.643, 0.633], "b": [0.57, 0.535], "truth": "b", "kind": "hollow_face",
+   "why": "Hollow face (row 3): nose recessed behind the panel surface."},
+  {"image": "street_parrots", "a": [0.38, 0.27], "b": [0.83, 0.37], "truth": "b", "kind": "street_art",
+   "why": "The parrots are paint on flat ground: the parrot head is higher in the image than the asphalt point, so on a flat ground it is farther."},
+  {"image": "street_boots", "a": [0.69, 0.20], "b": [0.95, 0.40], "truth": "b", "kind": "street_art",
+   "why": "The boot is paint on flat paving: its 'top' is higher in the image than the brick point, so it is farther."}
+ ]
+}

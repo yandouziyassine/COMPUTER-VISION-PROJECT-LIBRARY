@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which Point Is Closer?</title>
+<style>
+  :root { --bg:#fafafa; --fg:#1d1d1f; --muted:#666; --card:#fff; --line:#ddd; --a:#e5383b; --b:#1f6feb; --ok:#2a9d8f; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#121214; --fg:#eee; --muted:#aaa; --card:#1c1c20; --line:#333; } }
+  :root[data-theme="dark"] { --bg:#121214; --fg:#eee; --muted:#aaa; --card:#1c1c20; --line:#333; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui, sans-serif; }
+  main { max-width:900px; margin:0 auto; padding:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; }
+  h1 { font-size:1.5rem; margin:0 0 8px; }
+  .muted { color:var(--muted); font-size:.92rem; }
+  button { font:inherit; padding:12px 22px; border-radius:10px; border:0; cursor:pointer; color:#fff; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:14px; }
+  #btnA { background:var(--a); } #btnB { background:var(--b); } .neutral { background:#555; }
+  .stage { position:relative; width:100%; line-height:0; }
+  .stage img { width:100%; height:auto; border-radius:8px; user-select:none; }
+  .mark { position:absolute; width:30px; height:30px; margin:-15px 0 0 -15px; border-radius:50%; border:3px solid #fff;
+          box-shadow:0 0 0 2px rgba(0,0,0,.6); color:#fff; font:bold 14px/24px system-ui; text-align:center; pointer-events:none; }
+  .mark.a { background:var(--a); } .mark.b { background:var(--b); }
+  progress { width:100%; height:10px; }
+  textarea { width:100%; height:140px; font:12px monospace; background:var(--bg); color:var(--fg); border:1px solid var(--line); }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<main>
+  <section id="intro" class="card">
+    <h1>Which point is closer?</h1>
+    <p>Part of a study comparing human and machine depth perception from a single photo. For each photo two points
+       are marked, <b style="color:var(--a)">A</b> and <b style="color:var(--b)">B</b>. Choose the one on the
+       surface that is <b>closer to the camera</b>.</p>
+    <ul>
+      <li>If a point is on a <b>mirror, window or picture</b>, judge the surface itself (the glass or the print),
+          not what you see in it.</li>
+      <li>Answer quickly, on your first impression (about 2–3 seconds). There is always a correct answer.</li>
+      <li><b id="nPairs">300</b> photos, about 15–20 minutes. Keys: <kbd>A</kbd> / <kbd>B</kbd> (or the arrow keys).</li>
+    </ul>
+    <p class="muted">Anonymous: no name, e-mail or other personal data is asked or recorded. Only your choices,
+       response times and a random session code are kept, and only if you send the file at the end. Progress is
+       saved in this browser, so you can close the page and continue later.</p>
+    <div class="row"><button id="start" class="neutral">Start</button></div>
+  </section>
+
+  <section id="task" class="hidden">
+    <progress id="prog" max="1" value="0"></progress>
+    <p class="muted" id="count"></p>
+    <div class="stage" id="stage"><img id="img" alt="photo with two marked points"></div>
+    <div class="row">
+      <button id="btnA">A is closer</button>
+      <button id="btnB">B is closer</button>
+    </div>
+  </section>
+
+  <section id="done" class="card hidden">
+    <h1>Thank you!</h1>
+    <p>Please send the answers file to the person who shared this page (download it, or copy the text below).</p>
+    <div class="row"><button id="dl" class="neutral">Download answers (.json)</button></div>
+    <p class="muted">Or copy:</p>
+    <textarea id="out" readonly></textarea>
+  </section>
+</main>
+<script src="pairs.js"></script>
+<script>
+(function () {
+  const KEY = "w9-depth-study-v1";
+  const pairs = window.PAIRS || [];
+  let st = null;
+  try { st = JSON.parse(localStorage.getItem(KEY)); } catch (e) { st = null; }
+  if (!st || st.n !== pairs.length) {
+    st = { session: Math.random().toString(36).slice(2, 10), n: pairs.length, started: new Date().toISOString(),
+           answers: [] };
+  }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+  const $ = (id) => document.getElementById(id);
+  $("nPairs").textContent = pairs.length;
+  let shownAt = 0;
+
+  function show() {
+    const k = st.answers.length;
+    if (k >= pairs.length) return finish();
+    const p = pairs[k];
+    $("prog").max = pairs.length; $("prog").value = k;
+    $("count").textContent = (k + 1) + " / " + pairs.length;
+    const img = $("img");
+    document.querySelectorAll(".mark").forEach((m) => m.remove());
+    img.onload = () => {
+      for (const [lab, xy] of [["a", p.a], ["b", p.b]]) {
+        const m = document.createElement("div");
+        m.className = "mark " + lab; m.textContent = lab.toUpperCase();
+        m.style.left = (100 * xy[0] / img.naturalWidth) + "%";
+        m.style.top = (100 * xy[1] / img.naturalHeight) + "%";
+        $("stage").appendChild(m);
+      }
+      shownAt = performance.now();
+    };
+    img.src = "img/" + p.image;
+  }
+  function answer(choice) {
+    const k = st.answers.length;
+    if (k >= pairs.length || !shownAt) return;
+    st.answers.push({ id: pairs[k].id, choice: choice, ms: Math.round(performance.now() - shownAt) });
+    shownAt = 0; save(); show();
+  }
+  function finish() {
+    $("task").classList.add("hidden"); $("done").classList.remove("hidden");
+    st.finished = st.finished || new Date().toISOString(); save();
+    $("out").value = JSON.stringify(st);
+  }
+  $("start").onclick = () => { $("intro").classList.add("hidden"); $("task").classList.remove("hidden"); show(); };
+  $("btnA").onclick = () => answer("a");
+  $("btnB").onclick = () => answer("b");
+  document.addEventListener("keydown", (e) => {
+    if ($("task").classList.contains("hidden")) return;
+    if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") answer("a");
+    if (e.key === "b" || e.key === "B" || e.key === "ArrowRight") answer("b");
+  });
+  $("dl").onclick = () => {
+    const blob = new Blob([JSON.stringify(st)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "answers_" + st.session + ".json"; a.click();
+  };
+  if (st.answers.length) $("start").textContent = "Continue (" + st.answers.length + " done)";
+})();
+</script>
+</body>
+</html>

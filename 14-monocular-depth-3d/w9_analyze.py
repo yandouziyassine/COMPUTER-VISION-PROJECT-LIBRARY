@@ -69,6 +69,27 @@ def majority(answers):
     return None if na == nb else ("a" if na > nb else "b")
 
 
+def error_kappa(correct_1, correct_2):
+    """Error consistency (Geirhos et al., NeurIPS 2020): Cohen's kappa of trial-by-trial correctness.
+    1 = the two observers fail on exactly the same trials; 0 = no more overlap than their accuracies imply."""
+    c1, c2 = np.asarray(correct_1, bool), np.asarray(correct_2, bool)
+    p1, p2 = c1.mean(), c2.mean()
+    c_exp = p1 * p2 + (1 - p1) * (1 - p2)
+    c_obs = np.mean(c1 == c2)
+    return float((c_obs - c_exp) / (1 - c_exp)) if c_exp < 1 else float("nan")
+
+
+def bootstrap_kappa(c1, c2, resamples=1000, seed=0):
+    c1, c2 = np.asarray(c1, bool), np.asarray(c2, bool)
+    rng = np.random.default_rng(seed)
+    ks = [error_kappa(c1[i], c2[i]) for i in rng.integers(0, len(c1), (resamples, len(c1)))]
+    ks = np.array([k for k in ks if np.isfinite(k)])
+    k = error_kappa(c1, c2)
+    if not len(ks) or not np.isfinite(k):
+        return None
+    return [round(k, 3), round(float(np.quantile(ks, 0.025)), 3), round(float(np.quantile(ks, 0.975)), 3)]
+
+
 def outcome(human_right, model_right):
     return {
         (True, True): "both right",
@@ -97,7 +118,8 @@ def load_humans(folder, min_answers):
         ch = {a["id"]: a["choice"] for a in s.get("answers", [])}
         if len(ch) >= min_answers:
             ms = [a["ms"] for a in s["answers"] if isinstance(a.get("ms"), (int, float))]
-            raters.append({"session": s.get("session", f.stem), "choices": ch, "ms": ms})
+            trials = [a for a in s["answers"] if a.get("id") and a.get("choice")]
+            raters.append({"session": s.get("session", f.stem), "choices": ch, "ms": ms, "trials": trials})
     return raters
 
 
@@ -105,11 +127,17 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--answers", help="folder with answers_*.json files from volunteers")
     ap.add_argument("--min-answers", type=int, default=250, help="drop incomplete sessions")
+    ap.add_argument("--pairs", default=str(DOCS / "w9_pairs.json"), help="pair spec with truth (study or public set)")
+    ap.add_argument("--model-answers", default=str(DOCS / "w9_model_answers.json"))
+    ap.add_argument("--out", default="w9_results", help="output name in docs/ (.json and .png)")
     a = ap.parse_args()
-    spec = json.loads((DOCS / "w9_pairs.json").read_text())
+    spec = json.loads(Path(a.pairs).read_text())
     pairs = spec["pairs"]
+    if "counts" not in spec:
+        spec["counts"] = {c: sum(p["category"] == c for p in pairs) for c in CATEGORIES}
     truth = {p["id"]: p["truth"] for p in pairs}
-    models = json.loads((DOCS / "w9_model_answers.json").read_text())["models"]
+    cat_of = {p["id"]: p["category"] for p in pairs}
+    models = json.loads(Path(a.model_answers).read_text())["models"]
 
     res = {"n_pairs": len(pairs), "counts": spec["counts"], "models": {}, "humans": "pending: no answers collected yet"}
     for name, m in models.items():
@@ -118,6 +146,26 @@ def main():
     gated = [m for m in GATED if m in models]
     model_vote = {p["id"]: majority([models[m]["answers"][p["id"]]["answer"] for m in gated]) for p in pairs}
     res["model_majority"] = {"members": gated, **per_category(pairs, {k: v == truth[k] for k, v in model_vote.items()})}
+    # B: error consistency between models, all pairs and per category
+    names = list(models)
+    corr = {m: {p["id"]: models[m]["answers"][p["id"]]["answer"] == p["truth"] for p in pairs} for m in names}
+    res["error_consistency_models"] = {}
+    for cat in ["all", *CATEGORIES]:
+        ids = [p["id"] for p in pairs if cat == "all" or p["category"] == cat]
+        res["error_consistency_models"][cat] = {
+            f"{m1}|{m2}": bootstrap_kappa([corr[m1][i] for i in ids], [corr[m2][i] for i in ids])
+            for j, m1 in enumerate(names)
+            for m2 in names[j + 1 :]
+        }
+    # D: cue ablations, model side
+    if all("by_transform" in m for m in models.values()):
+        res["models_by_transform"] = {
+            name: {
+                tr: per_category(pairs, {k: v["answer"] == truth[k] for k, v in ans.items()})["all"]
+                for tr, ans in m["by_transform"].items()
+            }
+            for name, m in models.items()
+        }
     # mirrors/glass: what the depth *sensor* says about the surface point (it measures the reflection / sees through)
     sens = [p for p in pairs if p["category"] in ("mirror", "glass") and p.get("sensor_depth_on_surface")]
     sensor_correct = []
@@ -164,16 +212,54 @@ def main():
                 "median_response_ms": float(np.median([m for r in raters for m in r["ms"]])),
                 "outcomes_vs_model_majority": breakdown,
             }
+            trials = [(r["session"], tr) for r in raters for tr in r["trials"]]
+            right = lambda tr: tr["choice"] == truth[tr["id"]]  # noqa: E731
+            # C: brief (200 ms) vs unlimited exposure; D: cue ablations (each trial has one condition)
+            res["humans"]["by_exposure"] = {
+                ex: {
+                    cat: bootstrap_mean(
+                        [
+                            right(tr)
+                            for _, tr in trials
+                            if tr.get("exposure") == ex and (cat == "all" or cat_of[tr["id"]] == cat)
+                        ]
+                    )
+                    for cat in ["all", *CATEGORIES]
+                }
+                for ex in ("free", "flash")
+            }
+            res["humans"]["by_transform"] = {
+                trn: bootstrap_mean([right(tr) for _, tr in trials if tr.get("transform", "none") == trn])
+                for trn in ("none", "rot180", "gray", "blur")
+            }
+            # B: human vs model error consistency on the same trials (model answer under the same transform)
+            res["humans"]["error_consistency_vs_models"] = {}
+            for m, mm in models.items():
+                bt = mm.get("by_transform", {"none": mm["answers"]})
+                hc, mc, cats = [], [], []
+                for _, tr in trials:
+                    ans = bt.get(tr.get("transform", "none"), {}).get(tr["id"])
+                    if ans:
+                        hc.append(right(tr))
+                        mc.append(ans["answer"] == truth[tr["id"]])
+                        cats.append(cat_of[tr["id"]])
+                res["humans"]["error_consistency_vs_models"][m] = {
+                    cat: bootstrap_kappa(
+                        [h for h, c in zip(hc, cats) if cat == "all" or c == cat],
+                        [x for x, c in zip(mc, cats) if cat == "all" or c == cat],
+                    )
+                    for cat in ["all", *CATEGORIES]
+                }
         else:
             res["humans"] = f"pending: {len(raters)} complete session(s), need >= 2"
-    (DOCS / "w9_results.json").write_text(json.dumps(res, indent=1))
-    figure(res)
+    (DOCS / f"{a.out}.json").write_text(json.dumps(res, indent=1))
+    figure(res, a.out)
     for name, r in res["models"].items():
         print(f"{name:18s}", " ".join(f"{c}={r[c][0]:.2f}" for c in [*CATEGORIES, "all"]))
     print("humans:", res["humans"] if isinstance(res["humans"], str) else res["humans"]["majority_vote"]["all"])
 
 
-def figure(res):
+def figure(res, out="w9_results"):
     import matplotlib
 
     matplotlib.use("Agg")
@@ -196,7 +282,7 @@ def figure(res):
     ax.set_title(title)
     fig.colorbar(im, ax=ax, fraction=0.03)
     fig.tight_layout()
-    fig.savefig(DOCS / "w9_results.png", dpi=110)
+    fig.savefig(DOCS / f"{out}.png", dpi=110)
 
 
 if __name__ == "__main__":

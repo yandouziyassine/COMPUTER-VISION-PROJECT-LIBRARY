@@ -286,6 +286,16 @@ def assemble(answers_path):
         "credits": credits,
     }
     (HERE / "docs" / "w9_public_pairs.json").write_text(json.dumps(doc, indent=1, ensure_ascii=False))
+    # volunteer study bundle over the same open-licensed pairs (static: index.html + pairs.js + img/)
+    study = OUT / "study"
+    if study.exists():
+        shutil.rmtree(study)
+    shutil.copytree(dst, study / "img")
+    public = [{"id": p["id"], "image": Path(p["img"]).name, "a": p["a"], "b": p["b"]} for p in out_pairs]
+    (study / "pairs.js").write_text("window.PAIRS = " + json.dumps(public) + ";\n")
+    shutil.copy(HERE / "web_study" / "index.html", study / "index.html")
+    truth = [{"id": p["id"], "truth": p["closer"], "category": p["category"]} for p in out_pairs]
+    (OUT / "study_truth.json").write_text(json.dumps({"pairs": truth}))
     for m, (i, _) in MODEL_IDS.items():
         if m in ans:
             acc = np.mean([p["models"][i] == p["closer"] for p in out_pairs])

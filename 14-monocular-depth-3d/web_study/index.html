@@ -25,6 +25,7 @@
   progress { width:100%; height:10px; }
   textarea { width:100%; height:140px; font:12px monospace; background:var(--bg); color:var(--fg); border:1px solid var(--line); }
   .hidden { display:none; }
+  #mask { position:absolute; inset:0; width:100%; height:100%; border-radius:8px; }
 </style>
 </head>
 <body>
@@ -38,6 +39,9 @@
       <li>If a point is on a <b>mirror, window or picture</b>, judge the surface itself (the glass or the print),
           not what you see in it.</li>
       <li>Answer quickly, on your first impression (about 2–3 seconds). There is always a correct answer.</li>
+      <li>On about half of the photos the picture is shown for only a <b>fraction of a second</b> and then
+          covered by noise; the two points stay marked. Answer from what you saw.</li>
+      <li>Some photos are shown upside down, in gray or slightly blurred. That is intended.</li>
       <li><b id="nPairs">300</b> photos, about 15–20 minutes. Keys: <kbd>A</kbd> / <kbd>B</kbd> (or the arrow keys).</li>
     </ul>
     <p class="muted">Anonymous: no name, e-mail or other personal data is asked or recorded. Only your choices,
@@ -49,7 +53,7 @@
   <section id="task" class="hidden">
     <progress id="prog" max="1" value="0"></progress>
     <p class="muted" id="count"></p>
-    <div class="stage" id="stage"><img id="img" alt="photo with two marked points"></div>
+    <div class="stage" id="stage"><img id="img" alt="photo with two marked points"><canvas id="mask" class="hidden"></canvas></div>
     <div class="row">
       <button id="btnA">A is closer</button>
       <button id="btnB">B is closer</button>
@@ -67,43 +71,72 @@
 <script src="pairs.js"></script>
 <script>
 (function () {
-  const KEY = "w9-depth-study-v1";
+  const KEY = "w9-depth-study-v2";
   const pairs = window.PAIRS || [];
+  const TRANSFORMS = ["none", "rot180", "gray", "blur"];
+  const BLUR = 0.004, FLASH_MS = 200;
   let st = null;
   try { st = JSON.parse(localStorage.getItem(KEY)); } catch (e) { st = null; }
-  if (!st || st.n !== pairs.length) {
-    st = { session: Math.random().toString(36).slice(2, 10), n: pairs.length, started: new Date().toISOString(),
+  function shuffled(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+  if (!st || st.n !== pairs.length || !st.plan) {
+    // balanced, independently shuffled conditions: half brief exposure, a quarter of each cue ablation
+    const n = pairs.length;
+    const exposure = shuffled(Array.from({ length: n }, (_, i) => (i % 2 ? "flash" : "free")));
+    const transform = shuffled(Array.from({ length: n }, (_, i) => TRANSFORMS[i % 4]));
+    st = { session: Math.random().toString(36).slice(2, 10), n: n, started: new Date().toISOString(),
+           plan: { exposure: exposure, transform: transform, flash_ms: FLASH_MS, blur_fraction: BLUR },
            answers: [] };
   }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
   const $ = (id) => document.getElementById(id);
   $("nPairs").textContent = pairs.length;
-  let shownAt = 0;
+  let shownAt = 0, timer = null;
 
+  function noise(c) {
+    c.width = 160; c.height = 120;
+    const ctx = c.getContext("2d"), im = ctx.createImageData(160, 120);
+    for (let i = 0; i < im.data.length; i += 4) {
+      const v = Math.random() * 255; im.data[i] = v; im.data[i + 1] = v; im.data[i + 2] = v; im.data[i + 3] = 255;
+    }
+    ctx.putImageData(im, 0, 0);
+  }
   function show() {
     const k = st.answers.length;
     if (k >= pairs.length) return finish();
-    const p = pairs[k];
+    const p = pairs[k], tr = st.plan.transform[k], ex = st.plan.exposure[k];
     $("prog").max = pairs.length; $("prog").value = k;
     $("count").textContent = (k + 1) + " / " + pairs.length;
-    const img = $("img");
+    const img = $("img"), mask = $("mask");
     document.querySelectorAll(".mark").forEach((m) => m.remove());
+    mask.classList.add("hidden"); clearTimeout(timer);
+    img.style.visibility = "hidden";
     img.onload = () => {
-      for (const [lab, xy] of [["a", p.a], ["b", p.b]]) {
+      const W = img.naturalWidth, H = img.naturalHeight;
+      img.style.transform = tr === "rot180" ? "rotate(180deg)" : "";
+      img.style.filter = tr === "gray" ? "grayscale(1)" : tr === "blur" ? "blur(" + (BLUR * img.clientWidth).toFixed(2) + "px)" : "";
+      for (const [lab, xy0] of [["a", p.a], ["b", p.b]]) {
+        const xy = tr === "rot180" ? [W - 1 - xy0[0], H - 1 - xy0[1]] : xy0;
         const m = document.createElement("div");
         m.className = "mark " + lab; m.textContent = lab.toUpperCase();
-        m.style.left = (100 * xy[0] / img.naturalWidth) + "%";
-        m.style.top = (100 * xy[1] / img.naturalHeight) + "%";
+        m.style.left = (100 * xy[0] / W) + "%";
+        m.style.top = (100 * xy[1] / H) + "%";
         $("stage").appendChild(m);
       }
+      img.style.visibility = "visible";
       shownAt = performance.now();
+      if (ex === "flash") timer = setTimeout(() => { noise(mask); mask.classList.remove("hidden"); }, FLASH_MS);
     };
     img.src = "img/" + p.image;
   }
   function answer(choice) {
     const k = st.answers.length;
     if (k >= pairs.length || !shownAt) return;
-    st.answers.push({ id: pairs[k].id, choice: choice, ms: Math.round(performance.now() - shownAt) });
+    st.answers.push({ id: pairs[k].id, choice: choice, ms: Math.round(performance.now() - shownAt),
+                      exposure: st.plan.exposure[k], transform: st.plan.transform[k] });
     shownAt = 0; save(); show();
   }
   function finish() {

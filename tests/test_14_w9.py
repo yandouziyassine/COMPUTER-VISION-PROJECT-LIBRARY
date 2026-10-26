@@ -65,3 +65,13 @@ def test_local_std_is_zero_on_flat_regions():
     g[:, 30:] = np.random.default_rng(1).integers(0, 255, (60, 30))
     s = b.local_std(g)
     assert s[30, 5] < 1e-3 and s[30, 50] > 20
+
+
+def test_error_consistency_kappa():
+    same = [True, False, True, True, False, True]
+    assert an.error_kappa(same, same) == pytest.approx(1.0)
+    # independent errors with the same accuracies -> about 0
+    a = [True, True, False, False]
+    b = [True, False, True, False]
+    assert an.error_kappa(a, b) == pytest.approx(0.0)
+    assert an.error_kappa([True, False], [False, True]) == pytest.approx(-1.0)

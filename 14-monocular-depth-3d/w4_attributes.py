@@ -91,15 +91,34 @@ def fit(rows, image_ids):
     df["distance"] = pd.cut(df["dist"], [0, 2, 4, 100], labels=["lt2", "2to4", "gt4"]).astype(str)
     df["thin"] = df["thin"].astype(int)
     df["dark"] = df["dark"].astype(int)
-    model = smf.mixedlm(
-        "y ~ C(surface, Treatment('other')) + C(texture, Treatment('high')) + thin + C(distance, Treatment('2to4')) + dark",
-        df,
-        groups=df["image"],
+    formula = (
+        "C(surface, Treatment('other')) + C(texture, Treatment('high')) + thin + C(distance, Treatment('2to4')) + dark"
     )
-    r = model.fit(method="lbfgs")
-    ci = r.conf_int()
+    method, var_img = "mixed model, random intercept per image (REML)", None
+    try:
+        r = smf.mixedlm("y ~ " + formula, df, groups=df["image"]).fit(reml=True)
+        var_img = float(r.cov_re.iloc[0, 0])
+        ok = r.converged and var_img > 1e-6
+    except (np.linalg.LinAlgError, ValueError):
+        ok = False
+    if ok:
+        params, ci = r.fe_params, r.conf_int()
+    else:
+        # The random-intercept fit was singular: use the within-image estimator instead (image fixed effects,
+        # i.e. every variable demeaned per image), with confidence intervals clustered by image.
+        method = "image fixed effects (within estimator), CIs clustered by image; mixed-model fit was singular"
+        X = smf.ols("y ~ " + formula, df).exog  # design matrix with intercept
+        names = smf.ols("y ~ " + formula, df).exog_names
+        Xd = X - pd.DataFrame(X).groupby(df["image"].values).transform("mean").values
+        yd = df["y"].values - df.groupby("image")["y"].transform("mean").values
+        import statsmodels.api as sm
+
+        keep = [j for j, n in enumerate(names) if n != "Intercept"]
+        r = sm.OLS(yd, Xd[:, keep]).fit(cov_type="cluster", cov_kwds={"groups": df["image"].values})
+        params = pd.Series(r.params, index=[names[j] for j in keep])
+        ci = pd.DataFrame(r.conf_int(), index=params.index)
     out = {}
-    for name in r.fe_params.index:
+    for name in params.index:
         if name == "Intercept":
             continue
         key = (
@@ -108,8 +127,8 @@ def fit(rows, image_ids):
             .replace("C(distance, Treatment('2to4'))[T.", "distance=")
             .rstrip("]")
         )
-        out[key] = [round(float(np.exp(x)), 3) for x in (r.fe_params[name], ci.loc[name, 0], ci.loc[name, 1])]
-    return out, len(df), float(r.cov_re.iloc[0, 0])
+        out[key] = [round(float(np.exp(x)), 3) for x in (params[name], ci.loc[name, 0], ci.loc[name, 1])]
+    return out, len(df), var_img, method
 
 
 def main():
@@ -154,8 +173,8 @@ def main():
                 )
             )
             ids.append(i)
-        factors, n, var_img = fit(rows, ids)
-        res[model] = {"pixels": n, "image_random_effect_var": round(var_img, 4), "factors": factors}
+        factors, n, var_img, method = fit(rows, ids)
+        res[model] = {"pixels": n, "method": method, "image_random_effect_var": var_img, "factors": factors}
         print(model, json.dumps(factors), flush=True)
         (DOCS / "w4_attributes.json").write_text(json.dumps(res, indent=1))
     figure(res)

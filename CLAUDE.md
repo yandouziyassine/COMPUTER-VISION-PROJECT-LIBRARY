@@ -10,20 +10,22 @@ every project must run, show real results, and explain itself in its README.
 - `common/` — shared utilities. Only add code here once 2+ projects need it.
 - `.venv/` — shared CPU deep-learning env (projects 02+). Rebuild with `setup_env.ps1`.
 - `01-virtual-painter/.venv/` — separate env (mediapipe 0.10.14 needs numpy<2).
-- Data lives **outside the repo** in `../cv-data/<project>/` (sibling folder on the USB key).
-  Caches (pip, Hugging Face, torch hub) go to `../cv-data/.cache/`.
+- Data lives **outside the repo** in `../cv-data/<project>/` (sibling folder: `C:\Users\yando\Code\cv-data`).
+  Caches (pip, Hugging Face, torch hub) go to `../cv-data/` too, never to the default locations on `C:`.
 
 ## Machine constraints
 
 - No NVIDIA GPU. Intel Core Ultra 7 258V, 32 GB RAM, Arc iGPU + NPU. **CPU training only**:
   fine-tune small pretrained models, small image sizes, few epochs. OpenVINO for acceleration.
-- Repo is on a **FAT32 USB key**: no file > 4 GB, no symlinks, slower small-file I/O.
-- `C:` has little free space — never download datasets/models/caches to `C:`.
+- The repo lives at `C:\Users\yando\Code\COMPUTER-VISION-PROJECT-LIBRARY` (the USB key was lost on 2026-10-23).
+  `C:` is nearly full (~27 GB free on 2026-10-26): keep big datasets on Kaggle and download only what a run needs.
+- GPU work runs on **free Kaggle GPUs** (T4/P100) through Kaggle kernels; the laptop stays CPU-only.
 
 ## Rules
 
-1. **No git commits, no pushes.** Work is saved as files on the USB key only. The owner tests
-   every project and decides what gets committed and pushed to GitHub.
+1. **Commit and push finished, tested work to `main`** (the repo is public on GitHub since 2026-10-14):
+   one focused commit per project or stage, CI green (ruff format, ruff, pytest) before pushing.
+   Never commit data, weights, videos or secrets. Unfinished experiments stay uncommitted.
 2. **Data, weights and videos stay in `../cv-data/`**, never inside the repo folder (`.gitignore`
    covers them anyway). Small result images (`docs/*.png`, `docs/*.gif`, < 2 MB each) belong in the repo.
 3. **Finish a project fully before starting the next**: code runs → real metrics measured →
@@ -56,13 +58,13 @@ every project must run, show real results, and explain itself in its README.
 
 ## Long jobs survive disconnects (lessons from 2026-10-12/13)
 
-- The USB key has disconnected mid-run twice, and harness background tasks have been killed (exit -1)
-  after long runs or laptop sleep. For any job > 30 min: launch it as a **detached process**
+- The USB key disconnected mid-run twice (2026-10-12/13), and harness background tasks have been killed
+  (exit -1) after long runs or laptop sleep. For any job > 30 min: launch it as a **detached process**
   (`Start-Process ... -WindowStyle Hidden -RedirectStandardOutput/-Error ... -PassThru`, save the PID to
   a file), then wait with a separate background loop on that PID.
 - Make long jobs **resumable**: YOLO `train.py --resume` (last.pt every epoch), checkpoint files for
   evaluation loops (project 18 saves every 5 questions), history written every epoch.
-- Before resuming, check `Test-Path D:\COMPUTER-VISION-PROJECT-LIBRARY` and that the env imports.
+- Before resuming, check that the env imports and that the run's checkpoint and log files are where you expect.
 
 ## Skills & agents
 

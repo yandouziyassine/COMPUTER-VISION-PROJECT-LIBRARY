@@ -127,6 +127,71 @@ different objects at different depths, where any depth error adds up.
 
 **Try it:** `python measure_app.py`, upload a photo, click two points, get meters with that uncertainty.
 
+## v2 (in progress): 8 models × 5 datasets, reproducible protocol
+
+Stage 1 of the v2 study ([spec](../docs/superpowers/specs/2026-10-24-depth-v2-explain-and-fix-design.md)):
+W1 protocol, W2 four new models, W3 four new datasets. Inference ran on a Kaggle T4; every image was scored with
+[`protocol.py`](protocol.py) following [`configs/protocol.yaml`](configs/protocol.yaml). Numbers are the mean over
+images with a **95 % bootstrap CI** (1,000 resamples of images). Raw data: [`docs/results_v2.json`](docs/results_v2.json).
+
+![v2 results](docs/results_v2.png)
+
+**AbsRel [95 % CI] / δ1**, headline alignment per model kind: relative-disparity models (Depth Anything, DPT) are
+aligned by least squares in disparity, Marigold by least squares in depth, metric models are **not aligned** (raw meters).
+
+| Model | NYU (654) | KITTI Eigen (652) | ETH3D (454) | DIODE val (771) | iBims-1 (100) |
+|---|---|---|---|---|---|
+| DA-V2 Large *(new)* | **0.043** [0.041–0.045] / 97.9 % | **0.080** [0.078–0.082] / 94.4 % | **0.058** [0.049–0.069] / 98.3 % | 0.235 [0.211–0.261] / 76.2 % | **0.043** [0.035–0.053] / 97.9 % |
+| DA-V2 Base | 0.046 [0.043–0.048] / 97.7 % | 0.085 [0.082–0.087] / 93.5 % | 0.062 [0.052–0.075] / 98.1 % | 0.239 [0.214–0.266] / 76.0 % | 0.079 [0.038–0.156] / 97.6 % |
+| DA-V2 Small | 0.051 [0.049–0.054] / 97.3 % | 0.087 [0.085–0.090] / 92.9 % | 0.074 [0.060–0.090] / 97.3 % | **0.231** [0.209–0.253] / 75.4 % | 0.155 [0.042–0.373] / 96.7 % |
+| Marigold LCM, 10 × 1 step *(new)* | 0.060 [0.056–0.063] / 95.8 % | 0.121 [0.118–0.125] / 85.6 % | not run (budget) | 0.282 [0.256–0.308] / 77.0 % | 0.055 [0.047–0.063] / 96.6 % |
+| DPT-Hybrid | 0.091 [0.087–0.094] / 91.9 % | 0.118 [0.114–0.122] / 86.4 % | 0.093 [0.082–0.105] / 93.9 % | 0.236 [0.217–0.256] / 73.4 % | 0.101 [0.071–0.148] / 94.0 % |
+| DA-V2 Metric-Indoor (meters) | 0.212 [0.202–0.223] / 67.9 % | 0.567 / 0.5 % | 0.345 / 43.6 % | 0.430 / 23.4 % | 0.164 / 78.8 % |
+
+**Metric models outside the main table (reproduction gate failed, see below)**, raw meters / after one median scale per image:
+
+| Model | NYU | KITTI | ETH3D | DIODE | iBims-1 |
+|---|---|---|---|---|---|
+| Depth Pro *(new)* | 0.092 / 0.050 | 0.145 / 0.066 | 0.365 / 0.067 | 0.382 / 0.252 | 0.166 / 0.046 |
+| MoGe-2 ViT-L *(new)* | 0.090 / 0.040 | 0.203 / 0.053 | 0.107 / 0.037 | 0.313 / 0.203 | 0.139 / 0.041 |
+| DA-V2 Metric-Indoor | 0.212 / 0.081 | 0.567 / 0.130 | 0.345 / 0.079 | 0.430 / 0.252 | 0.164 / 0.071 |
+
+**Reproduction gate** (one published NYU number per new model, same alignment, tolerance ±0.003 AbsRel):
+
+| Model | Published | Ours | Gap | Outcome |
+|---|---|---|---|---|
+| DA-V2 Large (DA-V2 paper, Table 2) | 0.045 | 0.0428 | −0.0022 | ✅ pass |
+| Marigold LCM 10 × 1 (Marigold journal paper) | 0.058 | 0.0596 | +0.0016 | ✅ pass |
+| Depth Pro, metric, no GT focal (MoGe-2 paper, Table B.4) | 0.107 | 0.0919 | −0.015 | ❌ not reproduced |
+| MoGe-2, metric, no GT focal (MoGe-2 paper, Table B.4) | 0.0733 | 0.0902 | +0.017 | ❌ not reproduced |
+
+The two metric gaps go in opposite directions, so they are not one systematic error on our side. The likely cause is
+MoGe-2's own NYU preprocessing (crop, depth range and image resolution are not specified in the paper); until that
+is matched, Depth Pro and MoGe-2 are reported separately and not ranked against the others.
+
+**What the numbers say so far**
+- **Scoring NYU on raw sensor depth matters.** v1 scored on the hole-filled depth (DA-V2 Small 0.062); the
+  community protocol (Marigold's evaluation code) scores on the raw Kinect depth: 0.051, close to the paper's 0.053.
+  The filled depth is interpolation exactly where the sensor failed, so it penalised the model for the sensor's holes.
+- **DA-V2 Large is the most accurate relative model on 4 of 5 datasets**, but bigger isn't always better: on DIODE
+  all relative models tie (≈ 0.23, CIs overlap) because errors there are dominated by far outdoor laser points.
+- **Metric scale is still the weak point**: every metric model loses 2–5× accuracy without a per-image scale
+  (e.g. Depth Pro ETH3D 0.365 → 0.067). The indoor metric model is useless outdoors (KITTI 0.567).
+- **Wide CIs flag unstable cases**: DA-V2 Small and Base on iBims-1 (CI up to 0.37) come from a few long-corridor
+  images where the disparity alignment pushes far pixels to huge depths; iBims-1 has no depth cap in the protocol.
+
+**Checks.** Cached NYU predictions (float16, sha256 in a manifest) re-scored locally match the Kaggle scores to
+≤ 2·10⁻⁶ AbsRel for all 8 models. Unit tests cover the YAML reader, crops, every alignment, clipping, bootstrap and
+manifest ([`tests/test_14_protocol.py`](../tests/test_14_protocol.py)).
+
+**Not done in this stage** (honest list): Marigold on ETH3D (dropped to stay within the 10 T4-hour budget; it runs
+at ~7.5 s/image with a 10-member ensemble); Booster (the monocular test split's ground truth is withheld for the online
+benchmark, and the 19 GB labeled archive's server did not answer); Depth Pro / MoGe-2 with the true focal length
+(W5); per-material and edge metrics, uncertainty, illusions at scale, fine-tuning, human study (W4–W9).
+
+**Reproduce:** `python kaggle_push_v2.py --name <job> --datasets nyu ibims kitti --commit <sha>` (and `diode`,
+`eth3d`), download each job's `scores/`, then `python results_v2.py --runs <folder> --recheck-nyu`.
+
 ## How it works
 
 - **Alignment** ([`metrics.py`](metrics.py)): for relative models, fit `s · prediction + t ≈ 1 / depth` by least

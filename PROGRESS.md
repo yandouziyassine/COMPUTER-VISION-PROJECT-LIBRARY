@@ -132,6 +132,12 @@ planned (login, dataset size, GPU or API key).
 
 ## Log
 
+- **2026-10-26 · 14 v2 stage 1 (W1–W3)**: protocol (`configs/protocol.yaml`, `protocol.py`, tests), 4 new models
+  (DA-V2 Large, Depth Pro, MoGe-2, Marigold LCM) and 4 new datasets (KITTI Eigen, ETH3D, DIODE val, iBims-1)
+  evaluated on a Kaggle T4 (~9 h). Gate: DA-V2 L and Marigold LCM reproduce published NYU within 0.003; Depth Pro
+  and MoGe-2 metric NYU do not (gaps −0.015 / +0.017), kept out of the main table. NYU now scored on raw depth.
+  Not done: Marigold on ETH3D (budget), Booster (no public test GT; 19 GB labeled set unreachable). Next: W4–W9.
+
 - Setup started. Repo copied from OneDrive folder to `D:\COMPUTER-VISION-PROJECT-LIBRARY`.
 - The `.venv` install on the FAT32 key is very slow (FAT32 handles thousands of small files badly),
   so a **temporary** copy of the env was built in the session scratchpad on C: to develop and

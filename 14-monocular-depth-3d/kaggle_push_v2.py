@@ -20,13 +20,13 @@ def main():
     ap.add_argument("--models", nargs="+", default=list(M.MODELS))
     ap.add_argument("--commit", required=True)
     ap.add_argument("--limit", type=int)
-    ap.add_argument("--out", default="../../work/kaggle14")
+    ap.add_argument("--out", default=str(Path(__file__).resolve().parents[2] / "kaggle14"))
     a = ap.parse_args()
     job = {"commit": a.commit, "datasets": a.datasets, "models": a.models, "limit": a.limit}
     folder = Path(a.out) / a.name
     folder.mkdir(parents=True, exist_ok=True)
     src = Path(__file__).with_name("kaggle_infer_v2.py").read_text(encoding="utf-8")
-    (folder / "run.py").write_text(f"JOB = {json.dumps(job)}\n" + src, encoding="utf-8")
+    (folder / "run.py").write_text(f"JOB = {job!r}\n" + src, encoding="utf-8")
     meta = {
         "id": f"{USER}/{a.name}",
         "title": a.name,

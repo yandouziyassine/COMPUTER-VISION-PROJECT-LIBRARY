@@ -33,6 +33,11 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 | 20 | StatsBomb open data (github.com/statsbomb/open-data), shots of 597 men's matches | ⚠️ StatsBomb Public Data User Agreement | Research/analysis use, no redistribution, no commercial use; published analysis must credit StatsBomb with its logo |
 | 14 | NYU Depth V2 labeled subset (Silberman et al., ECCV 2012) | ⚠️ research use | Evaluated locally, never redistributed; figures show a few frames |
 | 14 | Illusion photos (6, Wikimedia Commons) | ✅ CC BY 2.0 / CC BY-SA 4.0 / CC0 | Credits in `14-monocular-depth-3d/docs/illusion_credits.md` |
+| 14 v2 | KITTI Eigen test (652 frames + projected LiDAR, Geiger et al. / Uhrig et al.) | ⚠️ CC BY-NC-SA 3.0 | Streamed on Kaggle from the Marigold authors' public evaluation archive (646 MB), never stored or redistributed; no signed agreement involved |
+| 14 v2 | DIODE val (771 images, Vasiljevic et al. 2019) | ✅ MIT | Streamed on Kaggle from the Marigold evaluation archive (6 GB) |
+| 14 v2 | ETH3D high-res multi-view training DSLR images + laser depth (454) | ⚠️ CC BY-NC-SA 4.0 | Streamed on Kaggle from the Marigold evaluation archive (46 GB), only 1/4-resolution arrays kept |
+| 14 v2 | iBims-1 core set (100 images, Koch et al. 2018, TUM mediaTUM) | ✅ CC BY 4.0 | 170 MB, public FTP listed on mediaTUM |
+| 14 v2 | Booster (Ramirez et al., CVPR 2022, Univ. Bologna) | ⚠️ CC BY-NC 4.0 | **Not used yet**: the monocular test split (1.7 GB) has no public ground truth (online benchmark); the labeled set is a 19 GB zip whose server did not answer range requests. Decision recorded 2026-10-25 |
 
 ## Pretrained models
 
@@ -49,6 +54,10 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 | 14 | Depth Anything V2 Small / DPT-Hybrid | ✅ Apache-2.0 | |
 | 14 | Depth Anything V2 Base | ⚠️ CC BY-NC 4.0 | Non-commercial; benchmark only |
 | 14 | Depth Anything V2 Metric-Indoor Small | ❓ | No license on the model card |
+| 14 v2 | Depth Anything V2 Large | ⚠️ CC BY-NC 4.0 | Non-commercial; benchmark only |
+| 14 v2 | Depth Pro (`apple/DepthPro-hf`) | ⚠️ Apple ML Research Model licence | Non-commercial research use; benchmark only |
+| 14 v2 | MoGe-2 ViT-L (`Ruicheng/moge-2-vitl`, Microsoft) | ✅ MIT | |
+| 14 v2 | Marigold Depth LCM v1.0 (`prs-eth/marigold-depth-lcm-v1-0`) | ✅ Apache-2.0 | Built on Stable Diffusion 2 |
 | 12, 16 | OpenCLIP ViT-B/32 (`laion2b_s34b_b79k`) | ✅ MIT | |
 | 17 | Grounding DINO tiny, SAM ViT-B | ✅ Apache-2.0 | |
 | 18 | SmolVLM2-500M-Video-Instruct | ✅ Apache-2.0 | |

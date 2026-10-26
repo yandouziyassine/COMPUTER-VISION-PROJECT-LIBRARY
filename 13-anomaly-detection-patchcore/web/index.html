@@ -135,8 +135,10 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: s
           <b>Drop a photo</b> or click to upload</label>
       </div>
       <div>
-        <div class="label">or try an MVTec test image</div>
-        <div class="examples" id="examples"></div>
+        <div class="label">Test images</div>
+        <p class="note">No example images here: MVTec AD is CC BY-NC-SA 4.0, so its photos are not redistributed.
+          Download test images from the <a href="https://www.mvtec.com/company/research/datasets/mvtec-ad" target="_blank" rel="noopener">MVTec AD page</a>
+          (bottle, metal nut or grid) and upload one above.</p>
       </div>
       <p class="note">One model per product: each was fitted on that product's good parts. A photo of something else will
         (correctly) look anomalous everywhere.</p>
@@ -145,7 +147,7 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: s
     <div class="stage">
       <div class="views">
         <div class="view"><canvas id="cIn" width="224" height="224"></canvas><span class="cap">input · 224 px crop</span>
-          <div class="empty" id="emptyIn">pick an example →</div></div>
+          <div class="empty" id="emptyIn">upload a photo ←</div></div>
         <div class="view"><canvas id="cOut" width="224" height="224"></canvas><span class="cap">anomaly heatmap</span>
           <div class="empty" id="emptyOut">red = unlike any good patch</div></div>
       </div>
@@ -174,7 +176,7 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: s
 // Weights live in a Hugging Face model repo; a local copy is used when testing on localhost.
 const LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
 const BASE = LOCAL ? "models/" : "https://huggingface.co/yandyassine/patchcore-mvtec-ad/resolve/main/";
-const EXAMPLES = ["bottle_good", "bottle_broken_large", "metal_nut_good", "metal_nut_bent", "grid_good", "grid_bent"];
+const EXAMPLES = []; // MVTec AD images are CC BY-NC-SA: not redistributed
 const NAMES = { bottle: "Bottle", metal_nut: "Metal nut", grid: "Grid" };
 const MEAN = [0.485, 0.456, 0.406], STD = [0.229, 0.224, 0.225];
 const $ = (id) => document.getElementById(id);

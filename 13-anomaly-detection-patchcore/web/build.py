@@ -4,7 +4,7 @@ Writes to ../cv-data/mvtec/web/ (never committed):
 - models/backbone.onnx         image (1,3,224,224) -> patch features (784, 1536)       [loaded once]
 - models/knn_<category>.onnx   features -> anomaly map (224,224) + image score         [memory bank baked in]
 - models/thresholds.json       per-category threshold that maximizes F1 on the MVTec test set
-- examples/*.png               one good and one defective test image per category
+- examples/*.png               one good and one defective test image per category  (local check only: MVTec AD is CC BY-NC-SA, never upload these to the Space)
 
 Large weights are stored as float16 and cast back to float32 inside the graph: half the download, float32 math.
 Every export is checked against the PyTorch model on the example images; validate.py checks the full test set.

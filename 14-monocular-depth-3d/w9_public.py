@@ -19,6 +19,7 @@ Step 3  python w9_public.py --assemble <w9_model_answers.json>
 import argparse
 import io
 import json
+import re
 import shutil
 import sys
 import urllib.parse
@@ -59,6 +60,21 @@ POSTER_TITLES = {
 }
 
 
+ALLOWED_LICENCES = re.compile(r"^(CC0|Public domain|CC BY \d\.\d|CC BY-SA \d\.\d|MIT|Apache-2\.0)$")
+
+
+def normalise_licence(lic):
+    """Licence string in the website's accepted form (CC0, Public domain, CC BY x.y, CC BY-SA x.y, MIT, Apache-2.0)."""
+    s = lic.strip()
+    if s.upper().startswith("CC0"):
+        s = "CC0"
+    elif s.lower() in ("public domain", "pd", "pdm"):
+        s = "Public domain"
+    if not ALLOWED_LICENCES.match(s):
+        raise ValueError(f"licence {lic!r} is not accepted for public display")
+    return s
+
+
 def commons(titles, folder):
     """Download Commons files (1024 px thumbnails) with licence metadata. {key: (rgb, credit)}."""
     folder.mkdir(parents=True, exist_ok=True)
@@ -83,8 +99,6 @@ def commons(titles, folder):
         lic = m.get("LicenseShortName", {}).get("value", "")
         assert "NC" not in lic and "ND" not in lic, f"{title}: {lic} is not permissive"
         artist = m.get("Artist", {}).get("value", "")
-        import re
-
         credit = {
             "source": f"Wikimedia Commons, {re.sub('<[^>]+>', '', artist).strip()}",
             "license": lic,
@@ -233,7 +247,7 @@ def save_jpeg(rgb, path, max_side=1280, max_bytes=150_000):
     if s < 1:
         rgb = cv2.resize(rgb, (int(w * s), int(h * s)), interpolation=cv2.INTER_AREA)
     assert s == 1.0, "images are resized before pairs are built"
-    for q in (90, 85, 80, 75, 70, 60, 50):
+    for q in (90, 85, 80, 75, 70, 60, 50, 40, 30):
         ok, buf = cv2.imencode(".jpg", cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR), [cv2.IMWRITE_JPEG_QUALITY, q])
         if len(buf) <= max_bytes:
             break
@@ -286,6 +300,31 @@ def assemble(answers_path):
         "credits": credits,
     }
     (HERE / "docs" / "w9_public_pairs.json").write_text(json.dumps(doc, indent=1, ensure_ascii=False))
+    # the volunteer study uses exactly these pairs and ids: spec with truth + model answers keyed by public id
+    idmap = {spec["pairs"][k]["id"]: f"p{n:03d}" for n, k in enumerate(order, 1)}
+    study_spec = [
+        {
+            "id": q["id"],
+            "category": q["category"],
+            "image": Path(q["img"]).name,
+            "a": q["a"],
+            "b": q["b"],
+            "truth": q["closer"],
+            "why": q["why"],
+        }
+        for q in out_pairs
+    ]
+    (HERE / "docs" / "w9_pairs.json").write_text(
+        json.dumps({"version": 2, "set": "public", "pairs": study_spec}, indent=1)
+    )
+    remapped = {}
+    for m, mm in ans.items():
+        r = {k2: v for k2, v in mm.items() if k2 not in ("answers", "by_transform")}
+        r["answers"] = {idmap[k2]: v for k2, v in mm["answers"].items()}
+        if "by_transform" in mm:
+            r["by_transform"] = {tr: {idmap[k2]: v for k2, v in a2.items()} for tr, a2 in mm["by_transform"].items()}
+        remapped[m] = r
+    (HERE / "docs" / "w9_model_answers.json").write_text(json.dumps({"set": "public", "models": remapped}))
     # volunteer study bundle over the same open-licensed pairs (static: index.html + pairs.js + img/)
     study = OUT / "study"
     if study.exists():

@@ -1,4 +1,5 @@
-"""W9 · Human vs machine: build the "which point is closer?" study (pairs + images + static web page).
+"""W9 · Human vs machine, NYU model study (local only: NYU frames are research-use and are never published).
+The volunteer study and the website game use the open-licensed set built by w9_public.py instead.
 
 ~300 point pairs, stratified by category, each with a physically justified answer:
   normal       NYU test images, both points on ordinary surfaces, raw sensor depth differs by >= 15 %
@@ -12,7 +13,7 @@
   illusion     hand-annotated pairs on open-licensed illusion photos (configs/w9_illusion_pairs.json)
 
 Outputs:
-  docs/w9_pairs.json                         pair spec (ids, coordinates, truth, why): committed, no image data
+  docs/w9_nyu_pairs.json                     pair spec (ids, coordinates, truth, why): committed, no image data
   <cv-data>/depth/outputs/w9_study/          index.html + pairs.js + img/*.jpg, ready to host or zip for volunteers
                                              (NYU frames are not committed to the public repo, licence: research use)
 Usage:
@@ -270,7 +271,7 @@ def main():
     pairs = [pairs[k] for k in order]
     counts = {c: sum(p["category"] == c for p in pairs) for c in [*QUOTA, "illusion"]}
     spec = {"version": 1, "n_pairs": len(pairs), "counts": counts, "illusion_credits": credits, "pairs": pairs}
-    (HERE / "docs" / "w9_pairs.json").write_text(json.dumps(spec, indent=1))
+    (HERE / "docs" / "w9_nyu_pairs.json").write_text(json.dumps(spec, indent=1))
 
     if OUT.exists():
         shutil.rmtree(OUT)

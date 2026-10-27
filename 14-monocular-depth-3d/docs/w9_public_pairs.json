@@ -1,0 +1,2497 @@
+{
+ "version": 1,
+ "models": [
+  {
+   "id": "dav2l",
+   "name": "Depth Anything V2 Large"
+  },
+  {
+   "id": "dav2b",
+   "name": "Depth Anything V2 Base"
+  },
+  {
+   "id": "dav2s",
+   "name": "Depth Anything V2 Small"
+  },
+  {
+   "id": "marigold",
+   "name": "Marigold LCM"
+  },
+  {
+   "id": "dpt",
+   "name": "DPT-Hybrid (MiDaS 3.0)"
+  },
+  {
+   "id": "depthpro",
+   "name": "Depth Pro"
+  },
+  {
+   "id": "moge2",
+   "name": "MoGe-2"
+  },
+  {
+   "id": "dav2metric",
+   "name": "Depth Anything V2 Metric Indoor"
+  }
+ ],
+ "pairs": [
+  {
+   "id": "p001",
+   "img": "w9_public_img/p001.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    91,
+    267
+   ],
+   "b": [
+    272,
+    263
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "b",
+    "marigold": "a",
+    "dpt": "b",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p002",
+   "img": "w9_public_img/p002.jpg",
+   "w": 959,
+   "h": 1280,
+   "a": [
+    287,
+    320
+   ],
+   "b": [
+    287,
+    652
+   ],
+   "closer": "b",
+   "category": "mirror",
+   "why": "A is on the mirror on the back wall; the basin rim B projects from that wall toward the camera.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p003",
+   "img": "w9_public_img/p003.jpg",
+   "w": 959,
+   "h": 1280,
+   "a": [
+    191,
+    396
+   ],
+   "b": [
+    891,
+    422
+   ],
+   "closer": "b",
+   "category": "mirror",
+   "why": "The mirror is on the back wall; B is on the side wall that runs toward the camera, so it is nearer.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p004",
+   "img": "w9_public_img/p004.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    550,
+    398
+   ],
+   "b": [
+    591,
+    171
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p005",
+   "img": "w9_public_img/p005.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    125,
+    146
+   ],
+   "b": [
+    238,
+    220
+   ],
+   "closer": "b",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p006",
+   "img": "w9_public_img/p006.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    490,
+    245
+   ],
+   "b": [
+    533,
+    402
+   ],
+   "closer": "b",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p007",
+   "img": "w9_public_img/p006.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    439,
+    343
+   ],
+   "b": [
+    188,
+    431
+   ],
+   "closer": "b",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p008",
+   "img": "w9_public_img/p008.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    294,
+    181
+   ],
+   "b": [
+    164,
+    153
+   ],
+   "closer": "b",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p009",
+   "img": "w9_public_img/p009.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    371,
+    237
+   ],
+   "b": [
+    374,
+    418
+   ],
+   "closer": "b",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p010",
+   "img": "w9_public_img/p010.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    256,
+    328
+   ],
+   "b": [
+    178,
+    360
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p011",
+   "img": "w9_public_img/p009.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    145,
+    421
+   ],
+   "b": [
+    382,
+    90
+   ],
+   "closer": "a",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p012",
+   "img": "w9_public_img/p012.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    377,
+    331
+   ],
+   "b": [
+    184,
+    266
+   ],
+   "closer": "b",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p013",
+   "img": "w9_public_img/p013.jpg",
+   "w": 959,
+   "h": 1280,
+   "a": [
+    505,
+    633
+   ],
+   "b": [
+    426,
+    551
+   ],
+   "closer": "a",
+   "category": "illusion",
+   "why": "Hollow faces at Puzzling World: the nose is recessed into the panel, the panel corner is on the panel surface.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p014",
+   "img": "w9_public_img/p014.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    180,
+    196
+   ],
+   "b": [
+    244,
+    190
+   ],
+   "closer": "a",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p015",
+   "img": "w9_public_img/p015.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    130,
+    279
+   ],
+   "b": [
+    316,
+    326
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p016",
+   "img": "w9_public_img/p016.jpg",
+   "w": 959,
+   "h": 1280,
+   "a": [
+    431,
+    934
+   ],
+   "b": [
+    191,
+    243
+   ],
+   "closer": "a",
+   "category": "mirror",
+   "why": "A is on the small wall mirror; the basin rim B projects from the wall below it toward the camera.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "a",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p017",
+   "img": "w9_public_img/p017.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    593,
+    359
+   ],
+   "b": [
+    331,
+    218
+   ],
+   "closer": "a",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "b",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p018",
+   "img": "w9_public_img/p018.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    44,
+    159
+   ],
+   "b": [
+    610,
+    308
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p019",
+   "img": "w9_public_img/p019.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    502,
+    183
+   ],
+   "b": [
+    172,
+    113
+   ],
+   "closer": "b",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p020",
+   "img": "w9_public_img/p008.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    75,
+    243
+   ],
+   "b": [
+    257,
+    220
+   ],
+   "closer": "a",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p021",
+   "img": "w9_public_img/p021.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    554,
+    351
+   ],
+   "b": [
+    288,
+    384
+   ],
+   "closer": "b",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p022",
+   "img": "w9_public_img/p017.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    602,
+    322
+   ],
+   "b": [
+    315,
+    171
+   ],
+   "closer": "a",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "b",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p023",
+   "img": "w9_public_img/p023.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    399,
+    65
+   ],
+   "b": [
+    528,
+    246
+   ],
+   "closer": "b",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p024",
+   "img": "w9_public_img/p024.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    557,
+    424
+   ],
+   "b": [
+    126,
+    62
+   ],
+   "closer": "a",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p025",
+   "img": "w9_public_img/p025.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    309,
+    399
+   ],
+   "b": [
+    294,
+    135
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p026",
+   "img": "w9_public_img/p026.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    404,
+    182
+   ],
+   "b": [
+    512,
+    181
+   ],
+   "closer": "b",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p027",
+   "img": "w9_public_img/p027.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    387,
+    202
+   ],
+   "b": [
+    160,
+    267
+   ],
+   "closer": "b",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p028",
+   "img": "w9_public_img/p028.jpg",
+   "w": 960,
+   "h": 1280,
+   "a": [
+    823,
+    471
+   ],
+   "b": [
+    549,
+    541
+   ],
+   "closer": "a",
+   "category": "illusion",
+   "why": "Concave mask: the nose tip lies behind the board surface; the board point is on the side nearer the camera.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p029",
+   "img": "w9_public_img/p003.jpg",
+   "w": 959,
+   "h": 1280,
+   "a": [
+    306,
+    588
+   ],
+   "b": [
+    306,
+    358
+   ],
+   "closer": "a",
+   "category": "mirror",
+   "why": "Point A is on the mirror (it shows a window behind the photographer); the basin rim B sticks out from that same wall toward the camera.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p030",
+   "img": "w9_public_img/p030.jpg",
+   "w": 1280,
+   "h": 720,
+   "a": [
+    1216,
+    288
+   ],
+   "b": [
+    883,
+    144
+   ],
+   "closer": "a",
+   "category": "illusion",
+   "why": "The boot is paint on flat paving: its 'top' is higher in the image than the brick point, so it is farther.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "b",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p031",
+   "img": "w9_public_img/p031.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    59,
+    57
+   ],
+   "b": [
+    538,
+    436
+   ],
+   "closer": "b",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p032",
+   "img": "w9_public_img/p032.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    66,
+    101
+   ],
+   "b": [
+    140,
+    412
+   ],
+   "closer": "b",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p033",
+   "img": "w9_public_img/p033.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    332,
+    206
+   ],
+   "b": [
+    440,
+    454
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p034",
+   "img": "w9_public_img/p028.jpg",
+   "w": 960,
+   "h": 1280,
+   "a": [
+    825,
+    768
+   ],
+   "b": [
+    576,
+    371
+   ],
+   "closer": "a",
+   "category": "illusion",
+   "why": "Concave mask: the eye region is recessed behind the board; the board point is on the near side.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p035",
+   "img": "w9_public_img/p010.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    218,
+    339
+   ],
+   "b": [
+    151,
+    69
+   ],
+   "closer": "a",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p036",
+   "img": "w9_public_img/p006.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    312,
+    423
+   ],
+   "b": [
+    481,
+    252
+   ],
+   "closer": "a",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p037",
+   "img": "w9_public_img/p037.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    168,
+    265
+   ],
+   "b": [
+    576,
+    184
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p038",
+   "img": "w9_public_img/p009.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    387,
+    219
+   ],
+   "b": [
+    62,
+    407
+   ],
+   "closer": "b",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p039",
+   "img": "w9_public_img/p039.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    263,
+    403
+   ],
+   "b": [
+    513,
+    392
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p040",
+   "img": "w9_public_img/p019.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    121,
+    207
+   ],
+   "b": [
+    464,
+    275
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p041",
+   "img": "w9_public_img/p041.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    201,
+    209
+   ],
+   "b": [
+    294,
+    333
+   ],
+   "closer": "a",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "b",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p042",
+   "img": "w9_public_img/p042.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    266,
+    74
+   ],
+   "b": [
+    36,
+    28
+   ],
+   "closer": "b",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p043",
+   "img": "w9_public_img/p015.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    256,
+    54
+   ],
+   "b": [
+    44,
+    296
+   ],
+   "closer": "b",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p044",
+   "img": "w9_public_img/p044.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    150,
+    105
+   ],
+   "b": [
+    476,
+    28
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p045",
+   "img": "w9_public_img/p042.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    348,
+    134
+   ],
+   "b": [
+    65,
+    396
+   ],
+   "closer": "b",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p046",
+   "img": "w9_public_img/p001.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    479,
+    407
+   ],
+   "b": [
+    522,
+    449
+   ],
+   "closer": "b",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p047",
+   "img": "w9_public_img/p047.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    524,
+    319
+   ],
+   "b": [
+    49,
+    86
+   ],
+   "closer": "a",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p048",
+   "img": "w9_public_img/p006.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    473,
+    421
+   ],
+   "b": [
+    539,
+    185
+   ],
+   "closer": "a",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p049",
+   "img": "w9_public_img/p049.jpg",
+   "w": 1280,
+   "h": 960,
+   "a": [
+    704,
+    556
+   ],
+   "b": [
+    704,
+    816
+   ],
+   "closer": "b",
+   "category": "mirror",
+   "why": "A is on the polished floor just in front of the camera (it reflects the far end of the hall); B is at the far end of the hall.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p050",
+   "img": "w9_public_img/p014.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    185,
+    255
+   ],
+   "b": [
+    423,
+    298
+   ],
+   "closer": "a",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p051",
+   "img": "w9_public_img/p013.jpg",
+   "w": 959,
+   "h": 1280,
+   "a": [
+    616,
+    810
+   ],
+   "b": [
+    546,
+    684
+   ],
+   "closer": "b",
+   "category": "illusion",
+   "why": "Hollow face (row 3): nose recessed behind the panel surface.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p052",
+   "img": "w9_public_img/p052.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    337,
+    73
+   ],
+   "b": [
+    76,
+    417
+   ],
+   "closer": "b",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p053",
+   "img": "w9_public_img/p053.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    166,
+    183
+   ],
+   "b": [
+    115,
+    234
+   ],
+   "closer": "b",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p054",
+   "img": "w9_public_img/p017.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    618,
+    300
+   ],
+   "b": [
+    391,
+    60
+   ],
+   "closer": "a",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "b",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p055",
+   "img": "w9_public_img/p055.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    520,
+    198
+   ],
+   "b": [
+    262,
+    155
+   ],
+   "closer": "b",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p056",
+   "img": "w9_public_img/p056.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    573,
+    426
+   ],
+   "b": [
+    270,
+    79
+   ],
+   "closer": "b",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p057",
+   "img": "w9_public_img/p041.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    150,
+    193
+   ],
+   "b": [
+    231,
+    201
+   ],
+   "closer": "a",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p058",
+   "img": "w9_public_img/p058.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    405,
+    440
+   ],
+   "b": [
+    564,
+    145
+   ],
+   "closer": "a",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p059",
+   "img": "w9_public_img/p059.jpg",
+   "w": 960,
+   "h": 720,
+   "a": [
+    796,
+    266
+   ],
+   "b": [
+    364,
+    194
+   ],
+   "closer": "a",
+   "category": "illusion",
+   "why": "The parrots are paint on flat ground: the parrot head is higher in the image than the asphalt point, so on a flat ground it is farther.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p060",
+   "img": "w9_public_img/p060.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    405,
+    158
+   ],
+   "b": [
+    118,
+    165
+   ],
+   "closer": "b",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p061",
+   "img": "w9_public_img/p009.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    492,
+    95
+   ],
+   "b": [
+    619,
+    423
+   ],
+   "closer": "b",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p062",
+   "img": "w9_public_img/p053.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    185,
+    356
+   ],
+   "b": [
+    125,
+    186
+   ],
+   "closer": "b",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p063",
+   "img": "w9_public_img/p063.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    484,
+    363
+   ],
+   "b": [
+    215,
+    126
+   ],
+   "closer": "a",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p064",
+   "img": "w9_public_img/p012.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    274,
+    264
+   ],
+   "b": [
+    81,
+    108
+   ],
+   "closer": "b",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p065",
+   "img": "w9_public_img/p006.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    91,
+    402
+   ],
+   "b": [
+    541,
+    263
+   ],
+   "closer": "a",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p066",
+   "img": "w9_public_img/p066.jpg",
+   "w": 1280,
+   "h": 853,
+   "a": [
+    838,
+    511
+   ],
+   "b": [
+    473,
+    528
+   ],
+   "closer": "b",
+   "category": "illusion",
+   "why": "Same two people, points on their legs: the left person is in the near corner.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p067",
+   "img": "w9_public_img/p067.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    242,
+    411
+   ],
+   "b": [
+    40,
+    412
+   ],
+   "closer": "b",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p068",
+   "img": "w9_public_img/p066.jpg",
+   "w": 1280,
+   "h": 853,
+   "a": [
+    844,
+    341
+   ],
+   "b": [
+    480,
+    213
+   ],
+   "closer": "b",
+   "category": "illusion",
+   "why": "Ames room: the person who looks smaller stands in the far corner of a trapezoidal room; her feet are also higher in the image on a floor built to look level.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p069",
+   "img": "w9_public_img/p069.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    325,
+    222
+   ],
+   "b": [
+    250,
+    127
+   ],
+   "closer": "b",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p070",
+   "img": "w9_public_img/p047.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    353,
+    84
+   ],
+   "b": [
+    509,
+    305
+   ],
+   "closer": "b",
+   "category": "normal",
+   "why": "Laser-scan depth (iBims-1).",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p071",
+   "img": "w9_public_img/p005.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    124,
+    171
+   ],
+   "b": [
+    277,
+    394
+   ],
+   "closer": "b",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p072",
+   "img": "w9_public_img/p049.jpg",
+   "w": 1280,
+   "h": 960,
+   "a": [
+    857,
+    528
+   ],
+   "b": [
+    512,
+    864
+   ],
+   "closer": "b",
+   "category": "mirror",
+   "why": "A is on the polished floor near the camera; B is on a person standing far down the hall.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p073",
+   "img": "w9_public_img/p073.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    545,
+    267
+   ],
+   "b": [
+    249,
+    71
+   ],
+   "closer": "a",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p074",
+   "img": "w9_public_img/p074.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    562,
+    144
+   ],
+   "b": [
+    560,
+    418
+   ],
+   "closer": "a",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p075",
+   "img": "w9_public_img/p075.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    565,
+    379
+   ],
+   "b": [
+    194,
+    434
+   ],
+   "closer": "a",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p076",
+   "img": "w9_public_img/p017.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    613,
+    426
+   ],
+   "b": [
+    287,
+    51
+   ],
+   "closer": "a",
+   "category": "glass",
+   "why": "Glass depth = plane fitted to the laser depth of its frame (the scanner sees through glass).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "b",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  },
+  {
+   "id": "p077",
+   "img": "w9_public_img/p026.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    344,
+    219
+   ],
+   "b": [
+    517,
+    211
+   ],
+   "closer": "b",
+   "category": "poster",
+   "why": "A flat picture on a flat wall: depth = wall plane fitted to the laser scan; the picture adds no depth.",
+   "models": {
+    "dav2l": "b",
+    "dav2b": "b",
+    "dav2s": "b",
+    "marigold": "b",
+    "dpt": "b",
+    "depthpro": "b",
+    "moge2": "b",
+    "dav2metric": "b"
+   }
+  },
+  {
+   "id": "p078",
+   "img": "w9_public_img/p078.jpg",
+   "w": 640,
+   "h": 480,
+   "a": [
+    135,
+    454
+   ],
+   "b": [
+    139,
+    291
+   ],
+   "closer": "a",
+   "category": "textureless",
+   "why": "Laser-scan depth on texture-free surfaces (iBims-1).",
+   "models": {
+    "dav2l": "a",
+    "dav2b": "a",
+    "dav2s": "a",
+    "marigold": "a",
+    "dpt": "a",
+    "depthpro": "a",
+    "moge2": "a",
+    "dav2metric": "a"
+   }
+  }
+ ],
+ "credits": [
+  {
+   "img": "w9_public_img/p001.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p002.jpg",
+   "source": "Wikimedia Commons, Wolfmann",
+   "license": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Hotel_room_toilet_(bathroom)_with_hand_wash_sink,_mirror,_waste_bin,_toilet,_etc.,_in_Bergen,_Norway_2018-03-16_A._Also_wall_and_floor_tiles.jpg"
+  },
+  {
+   "img": "w9_public_img/p003.jpg",
+   "source": "Wikimedia Commons, Wolfmann",
+   "license": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Bathroom_in_hotel_in_Bergen,_Norway._2016-03-16._Hand_wash_basin_sink,_mirror,_toilet,_etc._Also_wall_and_floor_tiles.jpg"
+  },
+  {
+   "img": "w9_public_img/p004.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p005.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541",
+   "includes": {
+    "source": "Wikimedia Commons, Limnesh Augustine",
+    "license": "CC BY-SA 4.0",
+    "url": "https://commons.wikimedia.org/wiki/File:3D_street_painting.jpg"
+   }
+  },
+  {
+   "img": "w9_public_img/p006.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p008.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541",
+   "includes": {
+    "source": "Wikimedia Commons, DimiTalen",
+    "license": "CC0",
+    "url": "https://commons.wikimedia.org/wiki/File:Film_crew_in_trompe_l%27oeil_mural,_Cin%C3%A9ma_Vox,_Chamonix-Mont-Blanc,_2007.jpg"
+   }
+  },
+  {
+   "img": "w9_public_img/p009.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p010.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p012.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p013.jpg",
+   "source": "Wikimedia Commons, Alex Proimos from Sydney, Australia",
+   "license": "CC BY 2.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Stuart_Landsboroughs_Puzzling_World,_Wanaka,_New_Zealand_(Magic_Faces)_(3423396757).jpg"
+  },
+  {
+   "img": "w9_public_img/p014.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541",
+   "includes": {
+    "source": "Wikimedia Commons, Lars van der Heide",
+    "license": "CC BY-SA 4.0",
+    "url": "https://commons.wikimedia.org/wiki/File:Den_Helder_-_Julianaplein,_3D_street_art_2020.jpg"
+   }
+  },
+  {
+   "img": "w9_public_img/p015.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p016.jpg",
+   "source": "Wikimedia Commons, Wolfmann",
+   "license": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Mirror,_hand_wash_basin_sink,_brick_walls_etc._in_school_toilet,_Stord,_Norway_2018-03-08_IMG_5863.jpg"
+  },
+  {
+   "img": "w9_public_img/p017.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p018.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p019.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p021.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p023.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p024.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p025.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p026.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541",
+   "includes": {
+    "source": "Wikimedia Commons, Limnesh Augustine",
+    "license": "CC BY-SA 4.0",
+    "url": "https://commons.wikimedia.org/wiki/File:3D_street_painting.jpg"
+   }
+  },
+  {
+   "img": "w9_public_img/p027.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p028.jpg",
+   "source": "Wikimedia Commons, No machine-readable author provided. Skagedal assumed (based on copyright claims).",
+   "license": "Public domain",
+   "url": "https://commons.wikimedia.org/wiki/File:Bjorn_Borg_Hollow_Face-concave.jpg"
+  },
+  {
+   "img": "w9_public_img/p030.jpg",
+   "source": "Wikimedia Commons, Lars van der Heide",
+   "license": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Den_Helder_-_Julianaplein,_3D_street_art_2020.jpg"
+  },
+  {
+   "img": "w9_public_img/p031.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p032.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p033.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p037.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p039.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p041.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541",
+   "includes": {
+    "source": "Wikimedia Commons, John Pugh",
+    "license": "CC BY-SA 4.0",
+    "url": "https://commons.wikimedia.org/wiki/File:Colonnade,_trompe_l%27oeil_mural_by_John_Pugh.jpg"
+   }
+  },
+  {
+   "img": "w9_public_img/p042.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p044.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p047.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p049.jpg",
+   "source": "Wikimedia Commons, Stuart Caie",
+   "license": "CC BY 2.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Interior_of_the_Gresham_Palace.jpg"
+  },
+  {
+   "img": "w9_public_img/p052.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541",
+   "includes": {
+    "source": "Wikimedia Commons, Lars van der Heide",
+    "license": "CC BY-SA 4.0",
+    "url": "https://commons.wikimedia.org/wiki/File:Den_Helder_-_Julianaplein,_3D_street_art_2020.jpg"
+   }
+  },
+  {
+   "img": "w9_public_img/p053.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541",
+   "includes": {
+    "source": "Wikimedia Commons, John Pugh",
+    "license": "CC BY-SA 4.0",
+    "url": "https://commons.wikimedia.org/wiki/File:Colonnade,_trompe_l%27oeil_mural_by_John_Pugh.jpg"
+   }
+  },
+  {
+   "img": "w9_public_img/p055.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p056.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p058.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p059.jpg",
+   "source": "Wikimedia Commons, Limnesh Augustine",
+   "license": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:3D_street_painting.jpg"
+  },
+  {
+   "img": "w9_public_img/p060.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p063.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p066.jpg",
+   "source": "Wikimedia Commons, mosso",
+   "license": "CC BY 2.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Ames_room_forced_perspective.jpg"
+  },
+  {
+   "img": "w9_public_img/p067.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p069.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541",
+   "includes": {
+    "source": "Wikimedia Commons, John Pugh",
+    "license": "CC BY-SA 4.0",
+    "url": "https://commons.wikimedia.org/wiki/File:Colonnade,_trompe_l%27oeil_mural_by_John_Pugh.jpg"
+   }
+  },
+  {
+   "img": "w9_public_img/p073.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541",
+   "includes": {
+    "source": "Wikimedia Commons, DimiTalen",
+    "license": "CC0",
+    "url": "https://commons.wikimedia.org/wiki/File:Film_crew_in_trompe_l%27oeil_mural,_Cin%C3%A9ma_Vox,_Chamonix-Mont-Blanc,_2007.jpg"
+   }
+  },
+  {
+   "img": "w9_public_img/p074.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541",
+   "includes": {
+    "source": "Wikimedia Commons, Limnesh Augustine",
+    "license": "CC BY-SA 4.0",
+    "url": "https://commons.wikimedia.org/wiki/File:3D_street_painting.jpg"
+   }
+  },
+  {
+   "img": "w9_public_img/p075.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  },
+  {
+   "img": "w9_public_img/p078.jpg",
+   "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
+   "license": "CC BY 4.0",
+   "url": "https://mediatum.ub.tum.de/1455541"
+  }
+ ]
+}

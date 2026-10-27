@@ -75,3 +75,25 @@ def test_error_consistency_kappa():
     b = [True, False, True, False]
     assert an.error_kappa(a, b) == pytest.approx(0.0)
     assert an.error_kappa([True, False], [False, True]) == pytest.approx(-1.0)
+
+
+def test_game_sessions_are_kept_as_their_own_group(tmp_path):
+    import json
+
+    game = {"session": "g1", "n": 12, "source": "portfolio-game", "plan": {"exposure": "free", "transform": "none"},
+            "answers": [{"id": "p001", "choice": "a", "ms": 900, "exposure": "free", "transform": "none"}]}  # fmt: skip
+    full = {"session": "s1", "answers": [{"id": f"p{i:03d}", "choice": "b", "ms": 800} for i in range(300)]}
+    short = {"session": "s2", "answers": [{"id": "p001", "choice": "b", "ms": 800}]}
+    for name, s in (("g.json", game), ("answers_s1.json", full), ("answers_s2.json", short)):
+        (tmp_path / name).write_text(json.dumps(s))
+    study, games = an.load_humans(tmp_path, 250)
+    assert [r["session"] for r in study] == ["s1"] and [r["session"] for r in games] == ["g1"]
+
+
+def test_public_licences_are_normalised():
+    import re
+
+    pub = load_defs("14", "w9_public.py", ["ALLOWED_LICENCES", "normalise_licence"], {"re": re})
+    assert pub.normalise_licence("CC BY-SA 4.0") == "CC BY-SA 4.0" and pub.normalise_licence("CC0 1.0") == "CC0"
+    with pytest.raises(ValueError):
+        pub.normalise_licence("CC BY-NC 4.0")

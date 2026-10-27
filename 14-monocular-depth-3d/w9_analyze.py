@@ -1,6 +1,7 @@
 """W9 analysis: human vs model accuracy on the "which point is closer?" pairs.
 
-Inputs: docs/w9_pairs.json (truth), docs/w9_model_answers.json (Kaggle job), and a folder of volunteer answer files
+Inputs: docs/w9_pairs.json (truth; the open-licensed public set by default, docs/w9_nyu_pairs.json for the NYU
+model study), docs/w9_model_answers.json (Kaggle job), and a folder of volunteer answer files
 (answers_<session>.json, downloaded from the study page). Without answer files only the model side is reported
 and the human side is marked "pending"; human data is never simulated.
 
@@ -112,15 +113,25 @@ def per_category(pairs, correct):
 
 
 def load_humans(folder, min_answers):
-    raters = []
-    for f in sorted(Path(folder).glob("answers_*.json")):
-        s = json.loads(f.read_text())
-        ch = {a["id"]: a["choice"] for a in s.get("answers", [])}
-        if len(ch) >= min_answers:
-            ms = [a["ms"] for a in s["answers"] if isinstance(a.get("ms"), (int, float))]
-            trials = [a for a in s["answers"] if a.get("id") and a.get("choice")]
-            raters.append({"session": s.get("session", f.stem), "choices": ch, "ms": ms, "trials": trials})
-    return raters
+    """Full study sessions (>= min_answers) and website-game sessions (source "portfolio-game", ~12 answers each,
+    kept as their own group). Returns (study_raters, game_raters)."""
+    study, game = [], []
+    for f in sorted(Path(folder).glob("*.json")):
+        try:
+            s = json.loads(f.read_text())
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            continue
+        if not isinstance(s, dict) or "answers" not in s:
+            continue
+        trials = [a for a in s["answers"] if a.get("id") and a.get("choice") in ("a", "b")]
+        ch = {a["id"]: a["choice"] for a in trials}
+        ms = [a["ms"] for a in trials if isinstance(a.get("ms"), (int, float))]
+        r = {"session": s.get("session", f.stem), "choices": ch, "ms": ms, "trials": trials}
+        if s.get("source") == "portfolio-game":
+            game.append(r)
+        elif len(ch) >= min_answers:
+            study.append(r)
+    return study, game
 
 
 def main():
@@ -180,7 +191,24 @@ def main():
     }
 
     if a.answers:
-        raters = load_humans(a.answers, a.min_answers)
+        raters, game = load_humans(a.answers, a.min_answers)
+        if game:
+            gt = [(r["session"], tr) for r in game for tr in r["trials"] if tr["id"] in truth]
+            res["portfolio_game"] = {
+                "sessions": len(game),
+                "trials": len(gt),
+                "note": "website game: ~12 pairs per anonymous session, pooled over trials; not merged with study sessions",
+                "accuracy": {
+                    cat: bootstrap_mean(
+                        [tr["choice"] == truth[tr["id"]] for _, tr in gt if cat == "all" or cat_of[tr["id"]] == cat]
+                    )
+                    for cat in ["all", *CATEGORIES]
+                },
+                "by_exposure": {
+                    ex: bootstrap_mean([tr["choice"] == truth[tr["id"]] for _, tr in gt if tr.get("exposure") == ex])
+                    for ex in ("free", "flash")
+                },
+            }
         if len(raters) >= 2:
             choices = [r["choices"] for r in raters]
             per_rater = [per_category(pairs, {k: v == truth[k] for k, v in c.items()})["all"][0] for c in choices]

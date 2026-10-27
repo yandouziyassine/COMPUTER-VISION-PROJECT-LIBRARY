@@ -1,0 +1,155 @@
+{
+ "train_images": 795,
+ "mirror_train_images": 89,
+ "variants": {
+  "pretrained": {
+   "mirror_absrel_vs_plane": 0.3588,
+   "mirror_planarity": 0.012,
+   "absrel_non_mirror": 0.051,
+   "mirror_images": 41,
+   "absrel_by_class": {
+    "wall": 0.0462,
+    "floor": 0.0435,
+    "ceiling": 0.0762,
+    "cabinet": 0.0551,
+    "bed": 0.0643,
+    "chair": 0.0837,
+    "sofa": 0.0566,
+    "table": 0.0734,
+    "door": 0.0897,
+    "window": 0.0877,
+    "picture": 0.0562,
+    "television": 0.0775,
+    "monitor": 0.0924
+   }
+  },
+  "plain": {
+   "mirror_absrel_vs_plane": 0.5798,
+   "mirror_planarity": 0.0356,
+   "absrel_non_mirror": 0.0528,
+   "mirror_images": 41,
+   "absrel_by_class": {
+    "wall": 0.0529,
+    "floor": 0.0472,
+    "ceiling": 0.0786,
+    "cabinet": 0.0576,
+    "bed": 0.0578,
+    "chair": 0.0839,
+    "sofa": 0.0674,
+    "table": 0.0789,
+    "door": 0.0798,
+    "window": 0.0856,
+    "picture": 0.0664,
+    "television": 0.0911,
+    "monitor": 0.0954
+   },
+   "mirror_change_vs_pretrained": [
+    0.221,
+    0.1062,
+    0.3323
+   ],
+   "non_mirror_change_vs_pretrained": [
+    0.0018,
+    0.0002,
+    0.0033
+   ],
+   "worst_class_change_pct": 18.9
+  },
+  "ignore": {
+   "mirror_absrel_vs_plane": 0.3867,
+   "mirror_planarity": 0.0259,
+   "absrel_non_mirror": 0.0522,
+   "mirror_images": 41,
+   "absrel_by_class": {
+    "wall": 0.0509,
+    "floor": 0.05,
+    "ceiling": 0.0798,
+    "cabinet": 0.057,
+    "bed": 0.0524,
+    "chair": 0.0829,
+    "sofa": 0.0621,
+    "table": 0.0774,
+    "door": 0.084,
+    "window": 0.0817,
+    "picture": 0.0621,
+    "television": 0.0899,
+    "monitor": 0.104
+   },
+   "mirror_change_vs_pretrained": [
+    0.0279,
+    -0.0164,
+    0.0702
+   ],
+   "non_mirror_change_vs_pretrained": [
+    0.0012,
+    -0.0003,
+    0.0027
+   ],
+   "worst_class_change_pct": 15.9
+  },
+  "plane": {
+   "mirror_absrel_vs_plane": 0.3575,
+   "mirror_planarity": 0.0189,
+   "absrel_non_mirror": 0.0527,
+   "mirror_images": 41,
+   "absrel_by_class": {
+    "wall": 0.0533,
+    "floor": 0.0459,
+    "ceiling": 0.0866,
+    "cabinet": 0.0589,
+    "bed": 0.055,
+    "chair": 0.0769,
+    "sofa": 0.059,
+    "table": 0.0791,
+    "door": 0.086,
+    "window": 0.0812,
+    "picture": 0.0619,
+    "television": 0.0828,
+    "monitor": 0.1064
+   },
+   "mirror_change_vs_pretrained": [
+    -0.0013,
+    -0.0954,
+    0.0636
+   ],
+   "non_mirror_change_vs_pretrained": [
+    0.0017,
+    0.0003,
+    0.0029
+   ],
+   "worst_class_change_pct": 15.2
+  },
+  "lora": {
+   "mirror_absrel_vs_plane": 0.3278,
+   "mirror_planarity": 0.0148,
+   "absrel_non_mirror": 0.0482,
+   "mirror_images": 41,
+   "absrel_by_class": {
+    "wall": 0.0476,
+    "floor": 0.0412,
+    "ceiling": 0.0778,
+    "cabinet": 0.0513,
+    "bed": 0.0501,
+    "chair": 0.077,
+    "sofa": 0.0544,
+    "table": 0.0724,
+    "door": 0.0833,
+    "window": 0.0792,
+    "picture": 0.0569,
+    "television": 0.0929,
+    "monitor": 0.0851
+   },
+   "mirror_change_vs_pretrained": [
+    -0.0309,
+    -0.0803,
+    0.004
+   ],
+   "non_mirror_change_vs_pretrained": [
+    -0.0028,
+    -0.0039,
+    -0.0017
+   ],
+   "worst_class_change_pct": 19.8
+  }
+ }
+}

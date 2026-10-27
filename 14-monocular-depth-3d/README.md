@@ -28,7 +28,10 @@ vision-science literature.
 | **Knowing when it's wrong** | Confidence is reported, not measured here | Model disagreement flags errors (Spearman 0.33). Removing the 10 % most uncertain pixels cuts AbsRel from 0.043 to 0.035, vs 0.026 for a perfect ranking (W6) |
 | **Cues a single photo lacks** | Real-world depth uses binocular disparity, motion parallax and vergence (Cutting & Vishton 1995) | None of these exist in one photo, for models **or** for people looking at a photo. That is why the human study uses the same photos |
 
-**Fixing the one surface that breaks everything (W8).** <!--W8-->
+**Fixing the one surface that breaks everything (W8).** I fine-tuned DA-V2 Small to put mirrors on their surface instead of inside the reflected room. It did **not**
+halve the mirror error (the target). The best variant, LoRA with a plane target, cut it by 9 % (CI −22 % to +1 %)
+while improving everything else by 5 %. Plain fine-tuning on sensor depth made mirrors 62 % *worse*: the sensor
+teaches the reflection. Details in section 7.
 
 ## 1 · Setup: protocol, models, datasets (W1–W3)
 
@@ -239,7 +242,32 @@ shading, Nature · Thorpe, Fize & Marlot (1996), Speed of processing in the huma
 
 ## 7 · Fixing mirrors (W8)
 
-<!--W8DETAIL-->
+![W8](docs/w8_mirror.png)
+
+DA-V2 Small was fine-tuned on the NYU labeled training split: 795 images, 89 of them with mirrors, oversampled 4×.
+The schedule is 5 epochs with a scale-and-shift-invariant L1 loss in disparity, on a Kaggle T4, about 7 minutes per
+variant ([`w8_mirror_finetune.py`](w8_mirror_finetune.py), [`docs/w8_mirror.json`](docs/w8_mirror.json)). The test
+set is 41 NYU test mirrors whose frame gives a plane. Results are aligned on non-mirror pixels, and changes are
+paired over images with 95 % CIs:
+
+| Variant | Mirror AbsRel vs mirror plane | Change vs pretrained | Mirror planarity (RMS / depth) | All other pixels | Worst class change |
+|---|---|---|---|---|---|
+| Pretrained | 0.359 | — | 0.012 | 0.051 | — |
+| Plain fine-tune (sensor depth everywhere) | 0.580 | **+0.221** [+0.106, +0.332] | 0.036 | 0.053 | +19 % (sofa) |
+| Ignore mirror pixels in the loss | 0.387 | +0.028 [−0.016, +0.070] | 0.026 | 0.052 | +16 % (TV) |
+| Mirror-plane target | 0.358 | −0.001 [−0.095, +0.064] | 0.019 | 0.053 | +15 % (wall) |
+| **Mirror-plane target, LoRA r = 8** | **0.328** | −0.031 [−0.080, +0.004] | 0.015 | **0.048** | +20 % (TV), all other classes ≤ +3 % |
+
+- The sensor's own failure is what a model learns: training on Kinect depth inside mirrors teaches the reflected
+  room.
+- Removing that signal (ignore) or replacing it with the plane only brings mirrors back to where the pretrained
+  model already was. Full fine-tuning on 795 images also costs 5–15 % on walls and ceilings.
+- LoRA keeps the pretrained features and is the only variant that improves both mirrors (not significantly) and
+  everything else (significantly: −0.003 [−0.004, −0.002]). It still makes TVs 20 % worse, the other dark
+  reflective surface.
+- **Verdict:** 89 mirror images are not enough to teach "mirror = a flat surface". The target of halving the mirror
+  error with ≤ 2 % regression elsewhere was **not met**. The next attempt would need many more mirror examples
+  (synthetic, e.g. Hypersim, whose depth is the mirror surface) or an explicit mirror mask as input.
 
 ## Threats to validity
 

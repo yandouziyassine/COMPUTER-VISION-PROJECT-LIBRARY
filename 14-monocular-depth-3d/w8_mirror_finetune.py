@@ -254,5 +254,76 @@ def main():
         f.unlink()  # weights are not kept as kernel output (never redistributed)
 
 
+def report(path):
+    """Paired bootstrap CIs (over test images) of each variant vs the pretrained model; writes docs/w8_mirror.json/.png."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    r = json.loads(Path(path).read_text())
+    rng = np.random.default_rng(0)
+
+    def paired(a, b):
+        d = np.asarray(a) - np.asarray(b)
+        m = d[rng.integers(0, len(d), (1000, len(d)))].mean(axis=1)
+        return [
+            round(float(d.mean()), 4),
+            round(float(np.quantile(m, 0.025)), 4),
+            round(float(np.quantile(m, 0.975)), 4),
+        ]
+
+    base = r["pretrained"]
+    out = {"train_images": r["train_images"], "mirror_train_images": r["mirror_train_images"], "variants": {}}
+    for v in ["pretrained", *[k for k in VARIANTS if k in r]]:
+        x = r[v]
+        e = {
+            "mirror_absrel_vs_plane": round(x["mirror_absrel_vs_plane"], 4),
+            "mirror_planarity": round(x["mirror_planarity"], 4),
+            "absrel_non_mirror": round(x["absrel_non_mirror"], 4),
+            "mirror_images": x["mirror_images"],
+            "absrel_by_class": {k: round(val, 4) for k, val in x["absrel_by_class"].items()},
+        }
+        if v != "pretrained":
+            e["mirror_change_vs_pretrained"] = paired(x["per_image_mirror_absrel"], base["per_image_mirror_absrel"])
+            e["non_mirror_change_vs_pretrained"] = paired(x["per_image_non_mirror"], base["per_image_non_mirror"])
+            e["worst_class_change_pct"] = round(
+                max(
+                    100 * (x["absrel_by_class"][k] / base["absrel_by_class"][k] - 1)
+                    for k in x["absrel_by_class"]
+                    if k in base["absrel_by_class"]
+                ),
+                1,
+            )
+        out["variants"][v] = e
+    docs = Path(__file__).resolve().parent / "docs"
+    (docs / "w8_mirror.json").write_text(json.dumps(out, indent=1))
+    names = list(out["variants"])
+    fig, axes = plt.subplots(1, 3, figsize=(13, 3.6))
+    for ax, key, title in zip(
+        axes,
+        ["mirror_absrel_vs_plane", "mirror_planarity", "absrel_non_mirror"],
+        [
+            "mirror AbsRel vs mirror plane (lower = better)",
+            "mirror planarity error (lower = flatter)",
+            "AbsRel on all other pixels",
+        ],
+    ):
+        ax.bar(
+            names, [out["variants"][n][key] for n in names], color=["gray"] + [f"C{i}" for i in range(len(names) - 1)]
+        )
+        ax.set_title(title, fontsize=9)
+        ax.tick_params(axis="x", rotation=30)
+    fig.suptitle(
+        f"W8: fine-tuning DA-V2 Small on NYU ({out['mirror_train_images']} training images with mirrors), 41 test mirrors"
+    )
+    fig.tight_layout()
+    fig.savefig(docs / "w8_mirror.png", dpi=110)
+    return out
+
+
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 2 and sys.argv[1] == "--report":
+        report(sys.argv[2])
+    else:
+        main()

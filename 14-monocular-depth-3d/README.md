@@ -153,7 +153,24 @@ Uncertainty is measured as the spread of five aligned relative models, and the p
 ([`w6_uncertainty.py`](w6_uncertainty.py)). Removing the 10 % most uncertain pixels cuts AbsRel from 0.043 to
 0.035; a perfect ranking would reach 0.026. AUSE is 0.0135 and the Spearman correlation between uncertainty and
 error is 0.33. **Mirrors light up**: median uncertainty is 3× that of other surfaces, and 59 % of mirror pixels are
-in the top 10 % (glass 15 %, everything else 10 %). <!--W6E-->
+in the top 10 % (glass 15 %, everything else 10 %).
+
+**Marigold's own uncertainty is a weak signal.** Its 10-seed spread (218 NYU images) barely ranks its errors:
+Spearman 0.19 and AUSE 0.028. Only 13 % of mirror pixels land in its top 10 %, vs 59 % for cross-model
+disagreement: different seeds of one diffusion model agree with each other even where they are all wrong.
+
+**E2: an uncertainty-weighted ensemble does not help.** I combined DA-V2 Large and Marigold in log depth, each
+weighted by its own uncertainty, on the same 218 images:
+
+| Prediction | AbsRel | vs DA-V2 Large alone |
+|---|---|---|
+| DA-V2 Large | **0.0406** | — |
+| Marigold LCM | 0.0592 | +0.019 [+0.015, +0.022] |
+| Plain average | 0.0447 | +0.004 [+0.002, +0.006] |
+| Uncertainty-weighted average | 0.0448 | +0.004 [+0.002, +0.006] |
+
+The better model alone wins. Marigold's seed spread is too poorly calibrated to tell the combination when to
+trust it.
 
 ## 5 · Illusions at scale (W7)
 
@@ -199,9 +216,13 @@ squashed. v1's poster numbers predate this fix.
   follow from certain geometry: a hollow mask is concave, paint on a flat floor lies on the floor, and the Ames
   room's layout is known.
 
-Two mirror pairs were dropped after review because their geometry was not certain. A larger 300-pair NYU set
-(including 50 mirror pairs with the mirror surface fitted from the frame) is used for the model side only, because
-NYU frames cannot be published.
+Two mirror pairs were dropped after review because their geometry was not certain.
+
+A larger 300-pair NYU set is used for the model side only, because NYU frames cannot be published
+([`docs/w9_nyu_pairs.json`](docs/w9_nyu_pairs.json), [`docs/w9_nyu_results.json`](docs/w9_nyu_results.json)).
+It has 50 mirror pairs (mirror surface fitted from the frame) and 82 poster pairs. On it, models answer
+82–96 % of mirror pairs and 80–99 % of poster pairs correctly. MoGe-2 (80 %) and Depth Pro (87 %) are the most
+fooled by posters, consistent with W7. On illusions they score 50–88 %.
 
 **Model side** (accuracy, 95 % CI over pairs; the model majority uses the five relative models):
 

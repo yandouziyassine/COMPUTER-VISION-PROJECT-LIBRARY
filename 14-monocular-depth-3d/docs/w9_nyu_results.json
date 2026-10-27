@@ -1,0 +1,1392 @@
+{
+ "n_pairs": 300,
+ "counts": {
+  "normal": 70,
+  "textureless": 50,
+  "mirror": 50,
+  "glass": 40,
+  "poster": 82,
+  "illusion": 8
+ },
+ "models": {
+  "da2-small": {
+   "normal": [
+    0.9857,
+    0.9571,
+    1.0
+   ],
+   "textureless": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "mirror": [
+    0.88,
+    0.78,
+    0.96
+   ],
+   "glass": [
+    0.975,
+    0.9,
+    1.0
+   ],
+   "poster": [
+    0.9878,
+    0.9634,
+    1.0
+   ],
+   "illusion": [
+    0.75,
+    0.375,
+    1.0
+   ],
+   "all": [
+    0.9633,
+    0.94,
+    0.9833
+   ]
+  },
+  "da2-base": {
+   "normal": [
+    0.9857,
+    0.9571,
+    1.0
+   ],
+   "textureless": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "mirror": [
+    0.9,
+    0.8,
+    0.98
+   ],
+   "glass": [
+    0.975,
+    0.9,
+    1.0
+   ],
+   "poster": [
+    0.9634,
+    0.9146,
+    1.0
+   ],
+   "illusion": [
+    0.75,
+    0.375,
+    1.0
+   ],
+   "all": [
+    0.96,
+    0.9367,
+    0.98
+   ]
+  },
+  "da2-large": {
+   "normal": [
+    0.9857,
+    0.9571,
+    1.0
+   ],
+   "textureless": [
+    0.98,
+    0.94,
+    1.0
+   ],
+   "mirror": [
+    0.92,
+    0.84,
+    0.98
+   ],
+   "glass": [
+    0.975,
+    0.9,
+    1.0
+   ],
+   "poster": [
+    0.9756,
+    0.939,
+    1.0
+   ],
+   "illusion": [
+    0.75,
+    0.375,
+    1.0
+   ],
+   "all": [
+    0.9633,
+    0.94,
+    0.9833
+   ]
+  },
+  "dpt-hybrid": {
+   "normal": [
+    0.9571,
+    0.9,
+    1.0
+   ],
+   "textureless": [
+    0.98,
+    0.94,
+    1.0
+   ],
+   "mirror": [
+    0.82,
+    0.7,
+    0.92
+   ],
+   "glass": [
+    0.975,
+    0.9,
+    1.0
+   ],
+   "poster": [
+    0.9024,
+    0.8415,
+    0.9634
+   ],
+   "illusion": [
+    0.5,
+    0.125,
+    0.875
+   ],
+   "all": [
+    0.9133,
+    0.88,
+    0.9434
+   ]
+  },
+  "da2-metric-indoor": {
+   "normal": [
+    0.9714,
+    0.9286,
+    1.0
+   ],
+   "textureless": [
+    0.98,
+    0.94,
+    1.0
+   ],
+   "mirror": [
+    0.92,
+    0.84,
+    0.98
+   ],
+   "glass": [
+    0.975,
+    0.9,
+    1.0
+   ],
+   "poster": [
+    0.9268,
+    0.8659,
+    0.9756
+   ],
+   "illusion": [
+    0.875,
+    0.625,
+    1.0
+   ],
+   "all": [
+    0.95,
+    0.92,
+    0.9733
+   ]
+  },
+  "depth-pro": {
+   "normal": [
+    0.9857,
+    0.9571,
+    1.0
+   ],
+   "textureless": [
+    0.98,
+    0.94,
+    1.0
+   ],
+   "mirror": [
+    0.92,
+    0.84,
+    0.98
+   ],
+   "glass": [
+    0.975,
+    0.9,
+    1.0
+   ],
+   "poster": [
+    0.8659,
+    0.7805,
+    0.939
+   ],
+   "illusion": [
+    0.625,
+    0.375,
+    0.875
+   ],
+   "all": [
+    0.93,
+    0.9,
+    0.9567
+   ]
+  },
+  "moge2-large": {
+   "normal": [
+    0.9857,
+    0.9571,
+    1.0
+   ],
+   "textureless": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "mirror": [
+    0.96,
+    0.9,
+    1.0
+   ],
+   "glass": [
+    0.975,
+    0.9,
+    1.0
+   ],
+   "poster": [
+    0.8049,
+    0.7195,
+    0.8902
+   ],
+   "illusion": [
+    0.75,
+    0.375,
+    1.0
+   ],
+   "all": [
+    0.9267,
+    0.8967,
+    0.9533
+   ]
+  },
+  "marigold-lcm": {
+   "normal": [
+    0.9571,
+    0.9,
+    1.0
+   ],
+   "textureless": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "mirror": [
+    0.9,
+    0.8,
+    0.98
+   ],
+   "glass": [
+    0.975,
+    0.9,
+    1.0
+   ],
+   "poster": [
+    0.9634,
+    0.9146,
+    1.0
+   ],
+   "illusion": [
+    0.5,
+    0.125,
+    0.875
+   ],
+   "all": [
+    0.9467,
+    0.92,
+    0.9733
+   ]
+  }
+ },
+ "humans": "pending: no answers collected yet",
+ "model_majority": {
+  "members": [
+   "da2-large",
+   "marigold-lcm",
+   "da2-base",
+   "da2-small",
+   "dpt-hybrid"
+  ],
+  "normal": [
+   0.9857,
+   0.9571,
+   1.0
+  ],
+  "textureless": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "mirror": [
+   0.88,
+   0.78,
+   0.96
+  ],
+  "glass": [
+   0.975,
+   0.9,
+   1.0
+  ],
+  "poster": [
+   0.9756,
+   0.939,
+   1.0
+  ],
+  "illusion": [
+   0.75,
+   0.375,
+   1.0
+  ],
+  "all": [
+   0.96,
+   0.9367,
+   0.98
+  ]
+ },
+ "error_consistency_models": {
+  "all": {
+   "da2-small|da2-base": [
+    0.864,
+    0.69,
+    1.0
+   ],
+   "da2-small|da2-large": [
+    0.811,
+    0.566,
+    0.966
+   ],
+   "da2-small|dpt-hybrid": [
+    0.402,
+    0.173,
+    0.6
+   ],
+   "da2-small|da2-metric-indoor": [
+    0.598,
+    0.296,
+    0.811
+   ],
+   "da2-small|depth-pro": [
+    0.54,
+    0.301,
+    0.741
+   ],
+   "da2-small|moge2-large": [
+    0.395,
+    0.155,
+    0.607
+   ],
+   "da2-small|marigold-lcm": [
+    0.574,
+    0.293,
+    0.775
+   ],
+   "da2-base|da2-large": [
+    0.864,
+    0.656,
+    1.0
+   ],
+   "da2-base|dpt-hybrid": [
+    0.388,
+    0.161,
+    0.576
+   ],
+   "da2-base|da2-metric-indoor": [
+    0.651,
+    0.358,
+    0.848
+   ],
+   "da2-base|depth-pro": [
+    0.649,
+    0.418,
+    0.819
+   ],
+   "da2-base|moge2-large": [
+    0.442,
+    0.192,
+    0.647
+   ],
+   "da2-base|marigold-lcm": [
+    0.551,
+    0.277,
+    0.741
+   ],
+   "da2-large|dpt-hybrid": [
+    0.345,
+    0.118,
+    0.543
+   ],
+   "da2-large|da2-metric-indoor": [
+    0.759,
+    0.511,
+    0.925
+   ],
+   "da2-large|depth-pro": [
+    0.672,
+    0.462,
+    0.84
+   ],
+   "da2-large|moge2-large": [
+    0.395,
+    0.149,
+    0.605
+   ],
+   "da2-large|marigold-lcm": [
+    0.497,
+    0.227,
+    0.708
+   ],
+   "dpt-hybrid|da2-metric-indoor": [
+    0.349,
+    0.131,
+    0.528
+   ],
+   "dpt-hybrid|depth-pro": [
+    0.285,
+    0.084,
+    0.461
+   ],
+   "dpt-hybrid|moge2-large": [
+    0.366,
+    0.169,
+    0.544
+   ],
+   "dpt-hybrid|marigold-lcm": [
+    0.49,
+    0.271,
+    0.674
+   ],
+   "da2-metric-indoor|depth-pro": [
+    0.587,
+    0.358,
+    0.753
+   ],
+   "da2-metric-indoor|moge2-large": [
+    0.454,
+    0.208,
+    0.644
+   ],
+   "da2-metric-indoor|marigold-lcm": [
+    0.49,
+    0.214,
+    0.688
+   ],
+   "depth-pro|moge2-large": [
+    0.374,
+    0.153,
+    0.551
+   ],
+   "depth-pro|marigold-lcm": [
+    0.396,
+    0.158,
+    0.59
+   ],
+   "moge2-large|marigold-lcm": [
+    0.383,
+    0.15,
+    0.569
+   ]
+  },
+  "normal": {
+   "da2-small|da2-base": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|da2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|dpt-hybrid": [
+    0.489,
+    0.0,
+    1.0
+   ],
+   "da2-small|da2-metric-indoor": [
+    0.66,
+    0.0,
+    1.0
+   ],
+   "da2-small|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|marigold-lcm": [
+    0.489,
+    0.0,
+    1.0
+   ],
+   "da2-base|da2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|dpt-hybrid": [
+    0.489,
+    0.0,
+    1.0
+   ],
+   "da2-base|da2-metric-indoor": [
+    0.66,
+    0.0,
+    1.0
+   ],
+   "da2-base|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|marigold-lcm": [
+    0.489,
+    0.0,
+    1.0
+   ],
+   "da2-large|dpt-hybrid": [
+    0.489,
+    0.0,
+    1.0
+   ],
+   "da2-large|da2-metric-indoor": [
+    0.66,
+    0.0,
+    1.0
+   ],
+   "da2-large|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|marigold-lcm": [
+    0.489,
+    0.0,
+    1.0
+   ],
+   "dpt-hybrid|da2-metric-indoor": [
+    0.379,
+    -0.037,
+    0.892
+   ],
+   "dpt-hybrid|depth-pro": [
+    0.489,
+    0.0,
+    1.0
+   ],
+   "dpt-hybrid|moge2-large": [
+    0.489,
+    0.0,
+    1.0
+   ],
+   "dpt-hybrid|marigold-lcm": [
+    0.303,
+    -0.052,
+    0.793
+   ],
+   "da2-metric-indoor|depth-pro": [
+    0.66,
+    0.0,
+    1.0
+   ],
+   "da2-metric-indoor|moge2-large": [
+    0.66,
+    0.0,
+    1.0
+   ],
+   "da2-metric-indoor|marigold-lcm": [
+    0.379,
+    -0.037,
+    1.0
+   ],
+   "depth-pro|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "depth-pro|marigold-lcm": [
+    0.489,
+    0.0,
+    1.0
+   ],
+   "moge2-large|marigold-lcm": [
+    0.489,
+    0.0,
+    1.0
+   ]
+  },
+  "textureless": {
+   "da2-small|da2-base": null,
+   "da2-small|da2-large": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-small|dpt-hybrid": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-small|da2-metric-indoor": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-small|depth-pro": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-small|moge2-large": null,
+   "da2-small|marigold-lcm": null,
+   "da2-base|da2-large": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-base|dpt-hybrid": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-base|da2-metric-indoor": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-base|depth-pro": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-base|moge2-large": null,
+   "da2-base|marigold-lcm": null,
+   "da2-large|dpt-hybrid": [
+    -0.02,
+    -0.05,
+    0.0
+   ],
+   "da2-large|da2-metric-indoor": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|moge2-large": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-large|marigold-lcm": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "dpt-hybrid|da2-metric-indoor": [
+    -0.02,
+    -0.05,
+    0.0
+   ],
+   "dpt-hybrid|depth-pro": [
+    -0.02,
+    -0.05,
+    0.0
+   ],
+   "dpt-hybrid|moge2-large": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "dpt-hybrid|marigold-lcm": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-metric-indoor|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-metric-indoor|moge2-large": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "da2-metric-indoor|marigold-lcm": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "depth-pro|moge2-large": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "depth-pro|marigold-lcm": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "moge2-large|marigold-lcm": null
+  },
+  "mirror": {
+   "da2-small|da2-base": [
+    0.898,
+    0.638,
+    1.0
+   ],
+   "da2-small|da2-large": [
+    0.779,
+    0.359,
+    1.0
+   ],
+   "da2-small|dpt-hybrid": [
+    0.455,
+    0.081,
+    0.735
+   ],
+   "da2-small|da2-metric-indoor": [
+    0.779,
+    0.359,
+    1.0
+   ],
+   "da2-small|depth-pro": [
+    0.779,
+    0.359,
+    1.0
+   ],
+   "da2-small|moge2-large": [
+    0.468,
+    0.0,
+    0.847
+   ],
+   "da2-small|marigold-lcm": [
+    0.694,
+    0.233,
+    1.0
+   ],
+   "da2-base|da2-large": [
+    0.878,
+    0.485,
+    1.0
+   ],
+   "da2-base|dpt-hybrid": [
+    0.344,
+    -0.061,
+    0.652
+   ],
+   "da2-base|da2-metric-indoor": [
+    0.878,
+    0.485,
+    1.0
+   ],
+   "da2-base|depth-pro": [
+    0.878,
+    0.485,
+    1.0
+   ],
+   "da2-base|moge2-large": [
+    0.545,
+    0.0,
+    1.0
+   ],
+   "da2-base|marigold-lcm": [
+    0.556,
+    -0.027,
+    0.912
+   ],
+   "da2-large|dpt-hybrid": [
+    0.221,
+    -0.092,
+    0.556
+   ],
+   "da2-large|da2-metric-indoor": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|moge2-large": [
+    0.648,
+    0.0,
+    1.0
+   ],
+   "da2-large|marigold-lcm": [
+    0.39,
+    -0.064,
+    0.79
+   ],
+   "dpt-hybrid|da2-metric-indoor": [
+    0.221,
+    -0.092,
+    0.556
+   ],
+   "dpt-hybrid|depth-pro": [
+    0.221,
+    -0.092,
+    0.556
+   ],
+   "dpt-hybrid|moge2-large": [
+    -0.07,
+    -0.142,
+    0.0
+   ],
+   "dpt-hybrid|marigold-lcm": [
+    0.18,
+    -0.119,
+    0.508
+   ],
+   "da2-metric-indoor|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-metric-indoor|moge2-large": [
+    0.648,
+    0.0,
+    1.0
+   ],
+   "da2-metric-indoor|marigold-lcm": [
+    0.39,
+    -0.064,
+    0.79
+   ],
+   "depth-pro|moge2-large": [
+    0.648,
+    0.0,
+    1.0
+   ],
+   "depth-pro|marigold-lcm": [
+    0.39,
+    -0.064,
+    0.79
+   ],
+   "moge2-large|marigold-lcm": [
+    0.545,
+    0.0,
+    1.0
+   ]
+  },
+  "glass": {
+   "da2-small|da2-base": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|da2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|dpt-hybrid": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|da2-metric-indoor": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|marigold-lcm": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|da2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|dpt-hybrid": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|da2-metric-indoor": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|marigold-lcm": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|dpt-hybrid": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|da2-metric-indoor": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|marigold-lcm": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "dpt-hybrid|da2-metric-indoor": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "dpt-hybrid|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "dpt-hybrid|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "dpt-hybrid|marigold-lcm": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-metric-indoor|depth-pro": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-metric-indoor|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-metric-indoor|marigold-lcm": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "depth-pro|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "depth-pro|marigold-lcm": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "moge2-large|marigold-lcm": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "poster": {
+   "da2-small|da2-base": [
+    0.491,
+    0.0,
+    1.0
+   ],
+   "da2-small|da2-large": [
+    0.661,
+    0.0,
+    1.0
+   ],
+   "da2-small|dpt-hybrid": [
+    -0.022,
+    -0.058,
+    0.0
+   ],
+   "da2-small|da2-metric-indoor": [
+    0.27,
+    0.0,
+    0.661
+   ],
+   "da2-small|depth-pro": [
+    0.148,
+    0.0,
+    0.471
+   ],
+   "da2-small|moge2-large": [
+    0.097,
+    0.0,
+    0.291
+   ],
+   "da2-small|marigold-lcm": [
+    -0.019,
+    -0.043,
+    0.0
+   ],
+   "da2-base|da2-large": [
+    0.794,
+    0.0,
+    1.0
+   ],
+   "da2-base|dpt-hybrid": [
+    0.136,
+    -0.07,
+    0.474
+   ],
+   "da2-base|da2-metric-indoor": [
+    0.416,
+    -0.034,
+    0.794
+   ],
+   "da2-base|depth-pro": [
+    0.394,
+    0.0,
+    0.705
+   ],
+   "da2-base|moge2-large": [
+    0.159,
+    -0.044,
+    0.391
+   ],
+   "da2-base|marigold-lcm": [
+    0.308,
+    -0.044,
+    0.794
+   ],
+   "da2-large|dpt-hybrid": [
+    0.168,
+    -0.051,
+    0.515
+   ],
+   "da2-large|da2-metric-indoor": [
+    0.481,
+    0.0,
+    0.851
+   ],
+   "da2-large|depth-pro": [
+    0.278,
+    0.0,
+    0.588
+   ],
+   "da2-large|moge2-large": [
+    0.071,
+    -0.063,
+    0.278
+   ],
+   "da2-large|marigold-lcm": [
+    0.382,
+    -0.03,
+    1.0
+   ],
+   "dpt-hybrid|da2-metric-indoor": [
+    0.376,
+    -0.048,
+    0.708
+   ],
+   "dpt-hybrid|depth-pro": [
+    -0.009,
+    -0.153,
+    0.226
+   ],
+   "dpt-hybrid|moge2-large": [
+    0.425,
+    0.148,
+    0.673
+   ],
+   "dpt-hybrid|marigold-lcm": [
+    0.52,
+    0.0,
+    0.851
+   ],
+   "da2-metric-indoor|depth-pro": [
+    0.285,
+    -0.048,
+    0.587
+   ],
+   "da2-metric-indoor|moge2-large": [
+    0.288,
+    0.018,
+    0.547
+   ],
+   "da2-metric-indoor|marigold-lcm": [
+    0.65,
+    0.0,
+    1.0
+   ],
+   "depth-pro|moge2-large": [
+    0.075,
+    -0.138,
+    0.301
+   ],
+   "depth-pro|marigold-lcm": [
+    0.091,
+    -0.081,
+    0.364
+   ],
+   "moge2-large|marigold-lcm": [
+    0.159,
+    -0.045,
+    0.421
+   ]
+  },
+  "illusion": {
+   "da2-small|da2-base": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|da2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|dpt-hybrid": [
+    0.5,
+    0.0,
+    1.0
+   ],
+   "da2-small|da2-metric-indoor": [
+    0.6,
+    0.0,
+    1.0
+   ],
+   "da2-small|depth-pro": [
+    0.714,
+    0.0,
+    1.0
+   ],
+   "da2-small|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-small|marigold-lcm": [
+    0.5,
+    0.0,
+    1.0
+   ],
+   "da2-base|da2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|dpt-hybrid": [
+    0.5,
+    0.0,
+    1.0
+   ],
+   "da2-base|da2-metric-indoor": [
+    0.6,
+    0.0,
+    1.0
+   ],
+   "da2-base|depth-pro": [
+    0.714,
+    0.0,
+    1.0
+   ],
+   "da2-base|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-base|marigold-lcm": [
+    0.5,
+    0.0,
+    1.0
+   ],
+   "da2-large|dpt-hybrid": [
+    0.5,
+    0.0,
+    1.0
+   ],
+   "da2-large|da2-metric-indoor": [
+    0.6,
+    0.0,
+    1.0
+   ],
+   "da2-large|depth-pro": [
+    0.714,
+    0.0,
+    1.0
+   ],
+   "da2-large|moge2-large": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-large|marigold-lcm": [
+    0.5,
+    0.0,
+    1.0
+   ],
+   "dpt-hybrid|da2-metric-indoor": [
+    0.25,
+    0.0,
+    0.75
+   ],
+   "dpt-hybrid|depth-pro": [
+    0.75,
+    0.25,
+    1.0
+   ],
+   "dpt-hybrid|moge2-large": [
+    0.5,
+    0.0,
+    1.0
+   ],
+   "dpt-hybrid|marigold-lcm": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "da2-metric-indoor|depth-pro": [
+    0.385,
+    0.0,
+    1.0
+   ],
+   "da2-metric-indoor|moge2-large": [
+    0.6,
+    0.0,
+    1.0
+   ],
+   "da2-metric-indoor|marigold-lcm": [
+    0.25,
+    0.0,
+    0.75
+   ],
+   "depth-pro|moge2-large": [
+    0.714,
+    0.0,
+    1.0
+   ],
+   "depth-pro|marigold-lcm": [
+    0.75,
+    0.25,
+    1.0
+   ],
+   "moge2-large|marigold-lcm": [
+    0.5,
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "models_by_transform": {
+  "da2-small": {
+   "none": [
+    0.9633,
+    0.94,
+    0.9833
+   ]
+  },
+  "da2-base": {
+   "none": [
+    0.96,
+    0.9367,
+    0.98
+   ]
+  },
+  "da2-large": {
+   "none": [
+    0.9633,
+    0.94,
+    0.9833
+   ]
+  },
+  "dpt-hybrid": {
+   "none": [
+    0.9133,
+    0.88,
+    0.9434
+   ]
+  },
+  "da2-metric-indoor": {
+   "none": [
+    0.95,
+    0.92,
+    0.9733
+   ]
+  },
+  "depth-pro": {
+   "none": [
+    0.93,
+    0.9,
+    0.9567
+   ]
+  },
+  "moge2-large": {
+   "none": [
+    0.9267,
+    0.8967,
+    0.9533
+   ]
+  },
+  "marigold-lcm": {
+   "none": [
+    0.9467,
+    0.92,
+    0.9733
+   ]
+  }
+ },
+ "kinect_sensor_on_mirror_glass": {
+  "pairs_with_sensor_reading": 46,
+  "accuracy": [
+   0.9348,
+   0.8478,
+   1.0
+  ]
+ }
+}

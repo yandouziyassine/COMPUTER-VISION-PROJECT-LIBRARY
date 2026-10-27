@@ -132,6 +132,18 @@ planned (login, dataset size, GPU or API key).
 
 ## Log
 
+- **2026-10-27 · 14 v2 W4–W9 + E**: README rewritten as "Human vs machine 3D vision". Done:
+  - W4: attribute mixed model (mirror ×2.4–3.0).
+  - W5: focal sweep (metric scale follows the assumed camera).
+  - W6: uncertainty (mirrors flagged 6× more often).
+  - W7: posters at scale (Depth Pro / MoGe-2 fooled +3–5 pp by photo content, DA-V2 not).
+  - W8: mirror fine-tune (target not met; LoRA −9 %).
+  - W9: public 76-pair open-licensed set (website game) + study page with 200 ms flash and cue ablations; analysis
+    with error consistency.
+  - E1: MoGe official code reproduces Depth Pro / MoGe-2 within 0.002.
+
+  Human answers are pending (no human data collected). About 20 Kaggle T4 hours used in total.
+
 - **2026-10-26 · 14 v2 stage 1 (W1–W3)**: protocol (`configs/protocol.yaml`, `protocol.py`, tests), 4 new models
   (DA-V2 Large, Depth Pro, MoGe-2, Marigold LCM) and 4 new datasets (KITTI Eigen, ETH3D, DIODE val, iBims-1)
   evaluated on a Kaggle T4 (~9 h). Gate: DA-V2 L and Marigold LCM reproduce published NYU within 0.003; Depth Pro

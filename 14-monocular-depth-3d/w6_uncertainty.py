@@ -50,7 +50,10 @@ def weighted_log_mean(logs, sigmas, eps=1e-3):
 
 def kaggle_marigold():
     """Marigold LCM, 10 seeds, with its ensemble uncertainty, on every 3rd NYU test image."""
-    subprocess.run([sys.executable, "-m", "pip", "install", "-q", "transformers==4.53.0", "diffusers==0.34.0", "accelerate"], check=True)
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "-q", "transformers==4.53.0", "diffusers==0.34.0", "accelerate"],
+        check=True,
+    )
     src = Path("/tmp/repo")
     if not src.exists():
         subprocess.run(

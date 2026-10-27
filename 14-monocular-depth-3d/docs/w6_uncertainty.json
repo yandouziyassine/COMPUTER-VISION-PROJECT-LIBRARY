@@ -16,5 +16,49 @@
    "mirror": 0.587,
    "glass": 0.15
   }
+ },
+ "ensemble": {
+  "pixels": 872000,
+  "absrel_all": 0.0593,
+  "absrel_at_90pct_coverage": 0.0542,
+  "absrel_at_90pct_oracle": 0.0381,
+  "ause": 0.0283,
+  "spearman_unc_err": 0.186,
+  "median_uncertainty": {
+   "other": 0.0117,
+   "mirror": 0.0182,
+   "glass": 0.0145
+  },
+  "share_flagged_top10pct": {
+   "other": 0.098,
+   "mirror": 0.13,
+   "glass": 0.225
+  }
+ },
+ "e2_ensemble": {
+  "images": 218,
+  "absrel": {
+   "da2-large": 0.0406,
+   "marigold-lcm": 0.0592,
+   "mean": 0.0447,
+   "uncertainty-weighted": 0.0448
+  },
+  "paired_change_vs_da2_large": {
+   "marigold-lcm": [
+    0.0186,
+    0.015,
+    0.0223
+   ],
+   "mean": [
+    0.0041,
+    0.0023,
+    0.0061
+   ],
+   "uncertainty-weighted": [
+    0.0042,
+    0.0021,
+    0.0064
+   ]
+  }
  }
 }

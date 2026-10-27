@@ -36,7 +36,9 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 | 14 v2 | KITTI Eigen test (652 frames + projected LiDAR, Geiger et al. / Uhrig et al.) | ⚠️ CC BY-NC-SA 3.0 | Streamed on Kaggle from the Marigold authors' public evaluation archive (646 MB), never stored or redistributed; no signed agreement involved |
 | 14 v2 | DIODE val (771 images, Vasiljevic et al. 2019) | ✅ MIT | Streamed on Kaggle from the Marigold evaluation archive (6 GB) |
 | 14 v2 | ETH3D high-res multi-view training DSLR images + laser depth (454) | ⚠️ CC BY-NC-SA 4.0 | Streamed on Kaggle from the Marigold evaluation archive (46 GB), only 1/4-resolution arrays kept |
-| 14 v2 | iBims-1 core set (100 images, Koch et al. 2018, TUM mediaTUM) | ✅ CC BY 4.0 | 170 MB, public FTP listed on mediaTUM |
+| 14 v2 | iBims-1 core set (100 images, Koch et al. 2018, TUM mediaTUM) | ✅ CC BY 4.0 | 170 MB, public FTP listed on mediaTUM. Frames are shown in the public W9 pair set (`14-monocular-depth-3d/docs/w9_public_img/`) with attribution |
+| 14 v2 | W9 mirror and illusion photos (11, Wikimedia Commons) | ✅ Public domain / CC BY 2.0 / CC BY-SA 4.0 | Credits per image in `14-monocular-depth-3d/docs/w9_public_pairs.json`; poster composites on iBims-1 walls include CC BY-SA / CC0 Commons photos (share-alike applies to those composites) |
+| 14 v2 | MoGe evaluation benchmarks (HF `Ruicheng/monocular-geometry-evaluation`: NYUv2, KITTI) | ❓ not stated | Re-processed research datasets; downloaded on Kaggle only to run MoGe's official evaluation (E1), never displayed or redistributed |
 | 14 v2 | Booster (Ramirez et al., CVPR 2022, Univ. Bologna) | ⚠️ CC BY-NC 4.0 | **Not used yet**: the monocular test split (1.7 GB) has no public ground truth (online benchmark); the labeled set is a 19 GB zip whose server did not answer range requests. Decision recorded 2026-10-25 |
 
 ## Pretrained models

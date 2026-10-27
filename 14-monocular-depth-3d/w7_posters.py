@@ -152,10 +152,7 @@ def run():
     from poster_test import poster_quad
 
     root = Path("/tmp/cv-data/depth/nyu")
-    root.mkdir(parents=True, exist_ok=True)
-    for url, fn in [(D.NYU_URL, "nyu_depth_v2_labeled.mat"), (D.NYU_SPLIT_URL, "splits.mat")]:
-        if not (root / fn).exists():
-            subprocess.run(["curl", "-sL", "-o", str(root / fn), url], check=True)
+    D.fetch_nyu(root)
     pics = []
     for k in COCO_IDS:
         try:

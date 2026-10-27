@@ -54,10 +54,7 @@ def stage(name, ds_cfg):
     out.mkdir(parents=True, exist_ok=True)
     root = Path(os.environ["CV_DATA"]) / "depth" / name
     if name == "nyu":
-        root.mkdir(parents=True, exist_ok=True)
-        for url, fn in [(D.NYU_URL, "nyu_depth_v2_labeled.mat"), (D.NYU_SPLIT_URL, "splits.mat")]:
-            if not (root / fn).exists():
-                sh("curl", "-sL", "-o", str(root / fn), url)
+        D.fetch_nyu(root)
     t0, n = time.time(), 0
     for k, (img_id, rgb, gt, extra) in enumerate(D.LOADERS[name](ds_cfg, root)):
         kw = {} if extra is None else {"extra": extra}

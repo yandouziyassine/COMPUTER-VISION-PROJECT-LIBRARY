@@ -24,6 +24,26 @@ IBIMS_FTP = "ftp://m1455541:m1455541@dataserv.ub.tum.de/ibims1_core_mat.zip"  # 
 ETH3D_HW = (4032, 6048)
 
 
+def fetch_nyu(root):
+    """Download the NYU labeled .mat and splits.mat into `root` with retries (the NYU server is slow and
+    sometimes drops connections)."""
+    import subprocess
+    import time
+
+    root = Path(root)
+    root.mkdir(parents=True, exist_ok=True)
+    for url, fn in [(NYU_URL, "nyu_depth_v2_labeled.mat"), (NYU_SPLIT_URL, "splits.mat")]:
+        for attempt in range(8):
+            r = subprocess.run(
+                ["curl", "-sL", "-C", "-", "--connect-timeout", "60", "--retry", "5", "-o", str(root / fn), url]
+            )
+            if r.returncode == 0:
+                break
+            time.sleep(30 * (attempt + 1))
+        else:
+            raise RuntimeError(f"could not download {url}")
+
+
 def _lines(url):
     return [ln.split() for ln in urllib.request.urlopen(url).read().decode().splitlines() if ln.strip()]
 

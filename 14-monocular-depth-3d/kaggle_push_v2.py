@@ -20,13 +20,14 @@ def main():
     ap.add_argument("--models", nargs="+", default=list(M.MODELS))
     ap.add_argument("--commit", required=True)
     ap.add_argument("--limit", type=int)
+    ap.add_argument("--transforms", nargs="*", default=None, help="W9 cue ablations (none rot180 gray blur)")
     ap.add_argument(
         "--script", default="kaggle_infer_v2.py", help="job script (kaggle_infer_v2.py or w9_kaggle_models.py)"
     )
     ap.add_argument("--dataset", nargs="*", default=[], help="private Kaggle datasets to attach (owner/slug)")
     ap.add_argument("--out", default=str(Path(__file__).resolve().parents[2] / "kaggle14"))
     a = ap.parse_args()
-    job = {"commit": a.commit, "datasets": a.datasets, "models": a.models, "limit": a.limit}
+    job = {"commit": a.commit, "datasets": a.datasets, "models": a.models, "limit": a.limit, "transforms": a.transforms}
     folder = Path(a.out) / a.name
     folder.mkdir(parents=True, exist_ok=True)
     src = Path(__file__).with_name(a.script).read_text(encoding="utf-8")

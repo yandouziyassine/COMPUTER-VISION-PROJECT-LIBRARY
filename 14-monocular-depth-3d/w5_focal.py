@@ -125,5 +125,76 @@ def main():
         Path("/kaggle/working/w5_focal.json").write_text(json.dumps(out))
 
 
+def report(path):
+    """Summarise the Kaggle output: per model x mode x zoom, mean AbsRel (bootstrap CI over images), median scale
+    ratio and, for 'own', the focal length the model estimated relative to the true one."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    d = json.loads(Path(path).read_text())
+    rows = d["rows"]
+    rng = np.random.default_rng(0)
+
+    def ci(x):
+        x = np.asarray(x)
+        m = x[rng.integers(0, len(x), (1000, len(x)))].mean(axis=1)
+        return [
+            round(float(x.mean()), 4),
+            round(float(np.quantile(m, 0.025)), 4),
+            round(float(np.quantile(m, 0.975)), 4),
+        ]
+
+    res = {"images": d["images"], "zooms": d["zooms"], "fx0": d["fx0"], "models": {}}
+    for model in dict.fromkeys(r["model"] for r in rows):
+        res["models"][model] = {}
+        for mode in ("own", "true", "wrong"):
+            per_zoom = {}
+            for z in d["zooms"]:
+                r = [x for x in rows if x["model"] == model and x["mode"] == mode and x["zoom"] == z]
+                if not r:
+                    continue
+                e = {
+                    "absrel": ci([x["absrel"] for x in r]),
+                    "median_scale": round(float(np.median([x["scale"] for x in r])), 3),
+                }
+                if mode == "own" and r[0]["fx_used"] is not None:
+                    e["focal_estimate_ratio"] = round(float(np.median([x["fx_used"] / x["fx_true"] for x in r])), 3)
+                per_zoom[str(z)] = e
+            if per_zoom:
+                res["models"][model][mode] = per_zoom
+    out = Path(__file__).resolve().parent / "docs"
+    (out / "w5_focal.json").write_text(json.dumps(res, indent=1))
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
+    styles = {"own": "-", "true": "--", "wrong": ":"}
+    for k, (model, modes) in enumerate(res["models"].items()):
+        for mode, pz in modes.items():
+            zs = [float(z) for z in pz]
+            axes[0].plot(
+                zs,
+                [pz[z]["median_scale"] for z in pz],
+                styles[mode],
+                marker="o",
+                color=f"C{k}",
+                label=f"{model} · {mode} focal",
+            )
+            axes[1].plot(zs, [pz[z]["absrel"][0] for z in pz], styles[mode], marker="o", color=f"C{k}")
+    axes[0].axhline(1, color="gray", lw=0.8)
+    axes[0].set_ylabel("median predicted / true depth (1 = right scale)")
+    axes[1].set_ylabel("AbsRel, no alignment")
+    for ax in axes:
+        ax.set_xlabel("simulated focal length (x original); < 1 = wider lens (black border), > 1 = zoom")
+        ax.set_xscale("log", base=2)
+    axes[0].legend(fontsize=7)
+    fig.suptitle(f"Metric depth vs camera focal length, NYU ({res['images']} images)")
+    fig.tight_layout()
+    fig.savefig(out / "w5_focal.png", dpi=110)
+    return res
+
+
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 2 and sys.argv[1] == "--report":
+        report(sys.argv[2])
+    else:
+        main()

@@ -1,5 +1,9 @@
 {
  "version": 1,
+ "excluded": {
+  "p003": "B may lie on the shower glass rather than the side wall: answer not certain",
+  "p016": "the brick wall is oblique, so the mirror may be nearer than the basin: answer not certain"
+ },
  "models": [
   {
    "id": "dav2l",
@@ -87,33 +91,6 @@
     "depthpro": "b",
     "moge2": "b",
     "dav2metric": "b"
-   }
-  },
-  {
-   "id": "p003",
-   "img": "w9_public_img/p003.jpg",
-   "w": 959,
-   "h": 1280,
-   "a": [
-    191,
-    396
-   ],
-   "b": [
-    891,
-    422
-   ],
-   "closer": "b",
-   "category": "mirror",
-   "why": "The mirror is on the back wall; B is on the side wall that runs toward the camera, so it is nearer.",
-   "models": {
-    "dav2l": "a",
-    "dav2b": "a",
-    "dav2s": "a",
-    "marigold": "a",
-    "dpt": "b",
-    "depthpro": "b",
-    "moge2": "b",
-    "dav2metric": "a"
    }
   },
   {
@@ -438,33 +415,6 @@
     "depthpro": "a",
     "moge2": "a",
     "dav2metric": "a"
-   }
-  },
-  {
-   "id": "p016",
-   "img": "w9_public_img/p016.jpg",
-   "w": 959,
-   "h": 1280,
-   "a": [
-    431,
-    934
-   ],
-   "b": [
-    191,
-    243
-   ],
-   "closer": "a",
-   "category": "mirror",
-   "why": "A is on the small wall mirror; the basin rim B projects from the wall below it toward the camera.",
-   "models": {
-    "dav2l": "b",
-    "dav2b": "b",
-    "dav2s": "b",
-    "marigold": "b",
-    "dpt": "a",
-    "depthpro": "b",
-    "moge2": "b",
-    "dav2metric": "b"
    }
   },
   {
@@ -793,7 +743,7 @@
   },
   {
    "id": "p029",
-   "img": "w9_public_img/p003.jpg",
+   "img": "w9_public_img/p029.jpg",
    "w": 959,
    "h": 1280,
    "a": [
@@ -2156,12 +2106,6 @@
    "url": "https://commons.wikimedia.org/wiki/File:Hotel_room_toilet_(bathroom)_with_hand_wash_sink,_mirror,_waste_bin,_toilet,_etc.,_in_Bergen,_Norway_2018-03-16_A._Also_wall_and_floor_tiles.jpg"
   },
   {
-   "img": "w9_public_img/p003.jpg",
-   "source": "Wikimedia Commons, Wolfmann",
-   "license": "CC BY-SA 4.0",
-   "url": "https://commons.wikimedia.org/wiki/File:Bathroom_in_hotel_in_Bergen,_Norway._2016-03-16._Hand_wash_basin_sink,_mirror,_toilet,_etc._Also_wall_and_floor_tiles.jpg"
-  },
-  {
    "img": "w9_public_img/p004.jpg",
    "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
    "license": "CC BY 4.0",
@@ -2237,12 +2181,6 @@
    "url": "https://mediatum.ub.tum.de/1455541"
   },
   {
-   "img": "w9_public_img/p016.jpg",
-   "source": "Wikimedia Commons, Wolfmann",
-   "license": "CC BY-SA 4.0",
-   "url": "https://commons.wikimedia.org/wiki/File:Mirror,_hand_wash_basin_sink,_brick_walls_etc._in_school_toilet,_Stord,_Norway_2018-03-08_IMG_5863.jpg"
-  },
-  {
    "img": "w9_public_img/p017.jpg",
    "source": "iBims-1, Koch et al. 2018, TUM (mediaTUM 1455541)",
    "license": "CC BY 4.0",
@@ -2306,6 +2244,12 @@
    "source": "Wikimedia Commons, No machine-readable author provided. Skagedal assumed (based on copyright claims).",
    "license": "Public domain",
    "url": "https://commons.wikimedia.org/wiki/File:Bjorn_Borg_Hollow_Face-concave.jpg"
+  },
+  {
+   "img": "w9_public_img/p029.jpg",
+   "source": "Wikimedia Commons, Wolfmann",
+   "license": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Bathroom_in_hotel_in_Bergen,_Norway._2016-03-16._Hand_wash_basin_sink,_mirror,_toilet,_etc._Also_wall_and_floor_tiles.jpg"
   },
   {
    "img": "w9_public_img/p030.jpg",

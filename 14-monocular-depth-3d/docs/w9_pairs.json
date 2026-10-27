@@ -33,21 +33,6 @@
    "why": "A is on the mirror on the back wall; the basin rim B projects from that wall toward the camera."
   },
   {
-   "id": "p003",
-   "category": "mirror",
-   "image": "p003.jpg",
-   "a": [
-    191,
-    396
-   ],
-   "b": [
-    891,
-    422
-   ],
-   "truth": "b",
-   "why": "The mirror is on the back wall; B is on the side wall that runs toward the camera, so it is nearer."
-  },
-  {
    "id": "p004",
    "category": "normal",
    "image": "p004.jpg",
@@ -226,21 +211,6 @@
    ],
    "truth": "a",
    "why": "Laser-scan depth (iBims-1)."
-  },
-  {
-   "id": "p016",
-   "category": "mirror",
-   "image": "p016.jpg",
-   "a": [
-    431,
-    934
-   ],
-   "b": [
-    191,
-    243
-   ],
-   "truth": "a",
-   "why": "A is on the small wall mirror; the basin rim B projects from the wall below it toward the camera."
   },
   {
    "id": "p017",
@@ -425,7 +395,7 @@
   {
    "id": "p029",
    "category": "mirror",
-   "image": "p003.jpg",
+   "image": "p029.jpg",
    "a": [
     306,
     588

@@ -53,6 +53,11 @@ MODEL_IDS = {
     "moge2-large": ("moge2", "MoGe-2"),
     "da2-metric-indoor": ("dav2metric", "Depth Anything V2 Metric Indoor"),
 }
+# Pairs dropped after review because their answer is not geometry-certain (ids kept stable for the website).
+EXCLUDE = {
+    "p003": "B may lie on the shower glass rather than the side wall: answer not certain",
+    "p016": "the brick wall is oblique, so the mirror may be nearer than the basin: answer not certain",
+}
 POSTER_CONTENT = ["colonnade", "film_crew", "street_boots", "street_parrots"]
 POSTER_TITLES = {
     "colonnade": "File:Colonnade, trompe l'oeil mural by John Pugh.jpg",
@@ -268,6 +273,8 @@ def assemble(answers_path):
     for n, k in enumerate(order, 1):
         p = spec["pairs"][k]
         pid = f"p{n:03d}"
+        if pid in EXCLUDE:
+            continue
         src = OUT / "img" / p["image"]
         im = cv2.imread(str(src))
         h, w = im.shape[:2]
@@ -295,13 +302,14 @@ def assemble(answers_path):
         )
     doc = {
         "version": 1,
+        "excluded": EXCLUDE,
         "models": [{"id": i, "name": nm} for m, (i, nm) in MODEL_IDS.items() if m in ans],
         "pairs": out_pairs,
         "credits": credits,
     }
     (HERE / "docs" / "w9_public_pairs.json").write_text(json.dumps(doc, indent=1, ensure_ascii=False))
     # the volunteer study uses exactly these pairs and ids: spec with truth + model answers keyed by public id
-    idmap = {spec["pairs"][k]["id"]: f"p{n:03d}" for n, k in enumerate(order, 1)}
+    idmap = {spec["pairs"][k]["id"]: f"p{n:03d}" for n, k in enumerate(order, 1) if f"p{n:03d}" not in EXCLUDE}
     study_spec = [
         {
             "id": q["id"],
@@ -320,9 +328,11 @@ def assemble(answers_path):
     remapped = {}
     for m, mm in ans.items():
         r = {k2: v for k2, v in mm.items() if k2 not in ("answers", "by_transform")}
-        r["answers"] = {idmap[k2]: v for k2, v in mm["answers"].items()}
+        r["answers"] = {idmap[k2]: v for k2, v in mm["answers"].items() if k2 in idmap}
         if "by_transform" in mm:
-            r["by_transform"] = {tr: {idmap[k2]: v for k2, v in a2.items()} for tr, a2 in mm["by_transform"].items()}
+            r["by_transform"] = {
+                tr: {idmap[k2]: v for k2, v in a2.items() if k2 in idmap} for tr, a2 in mm["by_transform"].items()
+            }
         remapped[m] = r
     (HERE / "docs" / "w9_model_answers.json").write_text(json.dumps({"set": "public", "models": remapped}))
     # volunteer study bundle over the same open-licensed pairs (static: index.html + pairs.js + img/)

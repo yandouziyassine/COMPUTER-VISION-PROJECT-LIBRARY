@@ -20,3 +20,10 @@ def test_sparsification_starts_at_the_mean_and_falls_for_a_good_ranking():
     err = np.linspace(0, 1, 1000)
     curve = w6.sparsification(err, err)
     assert curve[0] == pytest.approx(err.mean()) and np.all(np.diff(curve) <= 1e-12)
+
+
+def test_inverse_variance_mean_trusts_the_confident_map():
+    a, b = np.zeros((2, 2)), np.ones((2, 2))
+    out = w6.weighted_log_mean([a, b], [np.full((2, 2), 0.01), np.full((2, 2), 1.0)])
+    assert np.allclose(out, 0, atol=1e-3)
+    assert np.allclose(w6.weighted_log_mean([a, b], [np.ones((2, 2))] * 2), 0.5)

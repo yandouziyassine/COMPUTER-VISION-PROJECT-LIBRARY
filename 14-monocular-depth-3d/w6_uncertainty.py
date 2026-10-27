@@ -42,9 +42,15 @@ def ause(err, unc, fractions=FRACTIONS):
     return float(np.sum((gap[1:] + gap[:-1]) / 2 * np.diff(fractions)))
 
 
+def weighted_log_mean(logs, sigmas, eps=1e-3):
+    """Inverse-variance average of log-depth maps: sum(l / s^2) / sum(1 / s^2)."""
+    w = [1.0 / (np.asarray(s, np.float64) ** 2 + eps**2) for s in sigmas]
+    return sum(wi * li for wi, li in zip(w, logs)) / sum(w)
+
+
 def kaggle_marigold():
     """Marigold LCM, 10 seeds, with its ensemble uncertainty, on every 3rd NYU test image."""
-    subprocess.run([sys.executable, "-m", "pip", "install", "-q", "diffusers==0.34.0", "accelerate"], check=True)
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", "transformers==4.53.0", "diffusers==0.34.0", "accelerate"], check=True)
     src = Path("/tmp/repo")
     if not src.exists():
         subprocess.run(
@@ -110,6 +116,7 @@ def analyze(preds_dir, marigold_dir):
         "glass": [data.class_id(n) for n in ("window", "glass")],
     }
     acc = {"disagreement": {"err": [], "unc": [], "surf": []}, "ensemble": {"err": [], "unc": [], "surf": []}}
+    ens = {"da2-large": [], "marigold-lcm": [], "mean": [], "uncertainty-weighted": []}
     rng = np.random.default_rng(0)
     for i in data.test_indices():
         key = f"nyu_{i:04d}"
@@ -135,6 +142,19 @@ def analyze(preds_dir, marigold_dir):
             acc["ensemble"]["err"].append(np.abs(d[v, u] - gt[v, u]) / gt[v, u])
             acc["ensemble"]["unc"].append(mari[f"{key}_unc"].astype(np.float32)[v, u])
             acc["ensemble"]["surf"].append(surf[v, u])
+            # E2: combine DA-V2 Large and Marigold in log depth, weighted by each one's own uncertainty
+            raw_m = mari[f"{key}_pred"].astype(np.float32)
+            sig_m = mari[f"{key}_unc"].astype(np.float32) / np.maximum(raw_m, 1e-3)  # relative seed spread
+            sig_d = logs.std(axis=0)  # cross-model disagreement for DA-V2 Large
+            l_d, l_m = logs[RELATIVE.index("da2-large")], np.log(np.maximum(d, 1e-3))
+            cands = {
+                "da2-large": l_d,
+                "marigold-lcm": l_m,
+                "mean": (l_d + l_m) / 2,
+                "uncertainty-weighted": weighted_log_mean([l_d, l_m], [sig_d, sig_m]),
+            }
+            for name, lg in cands.items():
+                ens[name].append(P.image_metrics(np.exp(lg), gt, mask)["absrel"])
     res = {}
     curves = {}
     for name, a in acc.items():
@@ -163,8 +183,22 @@ def analyze(preds_dir, marigold_dir):
             },
         }
         print(name, res[name], flush=True)
+    if ens["mean"]:
+        b = np.array(ens["da2-large"])
+        res["e2_ensemble"] = {
+            "images": len(b),
+            "absrel": {k: round(float(np.mean(v)), 4) for k, v in ens.items()},
+            "paired_change_vs_da2_large": {k: _paired_ci(np.array(v) - b) for k, v in ens.items() if k != "da2-large"},
+        }
+        print("E2", res["e2_ensemble"], flush=True)
     (DOCS / "w6_uncertainty.json").write_text(json.dumps(res, indent=1))
     figure(curves)
+
+
+def _paired_ci(d, resamples=1000, seed=0):
+    rng = np.random.default_rng(seed)
+    m = d[rng.integers(0, len(d), (resamples, len(d)))].mean(axis=1)
+    return [round(float(d.mean()), 4), round(float(np.quantile(m, 0.025)), 4), round(float(np.quantile(m, 0.975)), 4)]
 
 
 def _spearman(a, b):

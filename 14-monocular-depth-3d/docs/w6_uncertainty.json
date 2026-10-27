@@ -1,0 +1,20 @@
+{
+ "disagreement": {
+  "pixels": 2616000,
+  "absrel_all": 0.0429,
+  "absrel_at_90pct_coverage": 0.0351,
+  "absrel_at_90pct_oracle": 0.0264,
+  "ause": 0.0135,
+  "spearman_unc_err": 0.326,
+  "median_uncertainty": {
+   "other": 0.0318,
+   "mirror": 0.1014,
+   "glass": 0.0371
+  },
+  "share_flagged_top10pct": {
+   "other": 0.096,
+   "mirror": 0.587,
+   "glass": 0.15
+  }
+ }
+}

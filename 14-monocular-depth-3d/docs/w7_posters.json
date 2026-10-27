@@ -1,0 +1,845 @@
+{
+ "walls": 121,
+ "per_model": {
+  "da2-small": {
+   "conditions": {
+    "frame/matched/photo": {
+     "illusion_score": [
+      0.0033,
+      -0.0014,
+      0.0101
+     ],
+     "share_worse": 0.446,
+     "n": 121
+    },
+    "frame/matched/scrambled": {
+     "illusion_score": [
+      0.0012,
+      -0.0024,
+      0.0067
+     ],
+     "share_worse": 0.463,
+     "n": 121
+    },
+    "frame/upright/photo": {
+     "illusion_score": [
+      0.0038,
+      -0.0003,
+      0.0088
+     ],
+     "share_worse": 0.521,
+     "n": 121
+    },
+    "frame/upright/scrambled": {
+     "illusion_score": [
+      0.0014,
+      -0.0014,
+      0.005
+     ],
+     "share_worse": 0.537,
+     "n": 121
+    },
+    "noframe/matched/photo": {
+     "illusion_score": [
+      0.0051,
+      -0.0,
+      0.0105
+     ],
+     "share_worse": 0.38,
+     "n": 121
+    },
+    "noframe/matched/scrambled": {
+     "illusion_score": [
+      0.0018,
+      -0.0012,
+      0.0052
+     ],
+     "share_worse": 0.504,
+     "n": 121
+    },
+    "noframe/upright/photo": {
+     "illusion_score": [
+      0.0028,
+      -0.0003,
+      0.0064
+     ],
+     "share_worse": 0.521,
+     "n": 121
+    },
+    "noframe/upright/scrambled": {
+     "illusion_score": [
+      0.0016,
+      -0.0003,
+      0.0036
+     ],
+     "share_worse": 0.57,
+     "n": 121
+    }
+   },
+   "factor_tests": {
+    "frame": {
+     "frame_minus_noframe": [
+      -0.0004,
+      -0.0021,
+      0.0015
+     ],
+     "wilcoxon_p": 0.2438271492087708,
+     "pairs": 484
+    },
+    "perspective": {
+     "matched_minus_upright": [
+      0.0005,
+      -0.0014,
+      0.0024
+     ],
+     "wilcoxon_p": 0.2713934251770421,
+     "pairs": 484
+    },
+    "content": {
+     "photo_minus_scrambled": [
+      0.0022,
+      0.0004,
+      0.0042
+     ],
+     "wilcoxon_p": 0.0480909946963,
+     "pairs": 484
+    }
+   }
+  },
+  "da2-base": {
+   "conditions": {
+    "frame/matched/photo": {
+     "illusion_score": [
+      -0.0014,
+      -0.003,
+      0.0004
+     ],
+     "share_worse": 0.364,
+     "n": 121
+    },
+    "frame/matched/scrambled": {
+     "illusion_score": [
+      -0.0009,
+      -0.0023,
+      0.0006
+     ],
+     "share_worse": 0.364,
+     "n": 121
+    },
+    "frame/upright/photo": {
+     "illusion_score": [
+      0.0045,
+      -0.0001,
+      0.0116
+     ],
+     "share_worse": 0.587,
+     "n": 121
+    },
+    "frame/upright/scrambled": {
+     "illusion_score": [
+      0.0005,
+      -0.0006,
+      0.0016
+     ],
+     "share_worse": 0.587,
+     "n": 121
+    },
+    "noframe/matched/photo": {
+     "illusion_score": [
+      0.0024,
+      -0.0014,
+      0.0075
+     ],
+     "share_worse": 0.455,
+     "n": 121
+    },
+    "noframe/matched/scrambled": {
+     "illusion_score": [
+      -0.0017,
+      -0.0031,
+      -0.0004
+     ],
+     "share_worse": 0.413,
+     "n": 121
+    },
+    "noframe/upright/photo": {
+     "illusion_score": [
+      0.0094,
+      0.0007,
+      0.0232
+     ],
+     "share_worse": 0.521,
+     "n": 121
+    },
+    "noframe/upright/scrambled": {
+     "illusion_score": [
+      0.0008,
+      -0.0004,
+      0.0021
+     ],
+     "share_worse": 0.521,
+     "n": 121
+    }
+   },
+   "factor_tests": {
+    "frame": {
+     "frame_minus_noframe": [
+      -0.0021,
+      -0.0044,
+      -0.0004
+     ],
+     "wilcoxon_p": 0.005476480458989878,
+     "pairs": 484
+    },
+    "perspective": {
+     "matched_minus_upright": [
+      -0.0042,
+      -0.0081,
+      -0.0013
+     ],
+     "wilcoxon_p": 1.116632136641287e-09,
+     "pairs": 484
+    },
+    "content": {
+     "photo_minus_scrambled": [
+      0.0041,
+      0.001,
+      0.0078
+     ],
+     "wilcoxon_p": 0.42859402575469696,
+     "pairs": 484
+    }
+   }
+  },
+  "da2-large": {
+   "conditions": {
+    "frame/matched/photo": {
+     "illusion_score": [
+      0.0005,
+      -0.0014,
+      0.0027
+     ],
+     "share_worse": 0.43,
+     "n": 121
+    },
+    "frame/matched/scrambled": {
+     "illusion_score": [
+      0.0009,
+      -0.0015,
+      0.0046
+     ],
+     "share_worse": 0.43,
+     "n": 121
+    },
+    "frame/upright/photo": {
+     "illusion_score": [
+      0.0015,
+      -0.0004,
+      0.0035
+     ],
+     "share_worse": 0.512,
+     "n": 121
+    },
+    "frame/upright/scrambled": {
+     "illusion_score": [
+      0.0003,
+      -0.0008,
+      0.0014
+     ],
+     "share_worse": 0.496,
+     "n": 121
+    },
+    "noframe/matched/photo": {
+     "illusion_score": [
+      0.0014,
+      -0.0014,
+      0.0051
+     ],
+     "share_worse": 0.43,
+     "n": 121
+    },
+    "noframe/matched/scrambled": {
+     "illusion_score": [
+      0.0071,
+      -0.0004,
+      0.0173
+     ],
+     "share_worse": 0.405,
+     "n": 121
+    },
+    "noframe/upright/photo": {
+     "illusion_score": [
+      0.0017,
+      -0.0004,
+      0.0042
+     ],
+     "share_worse": 0.488,
+     "n": 121
+    },
+    "noframe/upright/scrambled": {
+     "illusion_score": [
+      0.0013,
+      -0.0007,
+      0.0041
+     ],
+     "share_worse": 0.421,
+     "n": 121
+    }
+   },
+   "factor_tests": {
+    "frame": {
+     "frame_minus_noframe": [
+      -0.0021,
+      -0.0049,
+      0.0
+     ],
+     "wilcoxon_p": 0.24003712091356888,
+     "pairs": 484
+    },
+    "perspective": {
+     "matched_minus_upright": [
+      0.0013,
+      -0.001,
+      0.0039
+     ],
+     "wilcoxon_p": 0.03217542083139066,
+     "pairs": 484
+    },
+    "content": {
+     "photo_minus_scrambled": [
+      -0.0011,
+      -0.004,
+      0.0009
+     ],
+     "wilcoxon_p": 0.05122346153635782,
+     "pairs": 484
+    }
+   }
+  },
+  "dpt-hybrid": {
+   "conditions": {
+    "frame/matched/photo": {
+     "illusion_score": [
+      0.0072,
+      0.0013,
+      0.0145
+     ],
+     "share_worse": 0.562,
+     "n": 121
+    },
+    "frame/matched/scrambled": {
+     "illusion_score": [
+      0.0063,
+      0.0008,
+      0.0131
+     ],
+     "share_worse": 0.521,
+     "n": 121
+    },
+    "frame/upright/photo": {
+     "illusion_score": [
+      0.0086,
+      0.003,
+      0.0152
+     ],
+     "share_worse": 0.587,
+     "n": 121
+    },
+    "frame/upright/scrambled": {
+     "illusion_score": [
+      0.0082,
+      0.0024,
+      0.0155
+     ],
+     "share_worse": 0.587,
+     "n": 121
+    },
+    "noframe/matched/photo": {
+     "illusion_score": [
+      0.0072,
+      0.001,
+      0.0136
+     ],
+     "share_worse": 0.57,
+     "n": 121
+    },
+    "noframe/matched/scrambled": {
+     "illusion_score": [
+      0.0059,
+      0.0008,
+      0.0118
+     ],
+     "share_worse": 0.587,
+     "n": 121
+    },
+    "noframe/upright/photo": {
+     "illusion_score": [
+      0.0093,
+      0.004,
+      0.0157
+     ],
+     "share_worse": 0.612,
+     "n": 121
+    },
+    "noframe/upright/scrambled": {
+     "illusion_score": [
+      0.0093,
+      0.0029,
+      0.0175
+     ],
+     "share_worse": 0.587,
+     "n": 121
+    }
+   },
+   "factor_tests": {
+    "frame": {
+     "frame_minus_noframe": [
+      -0.0003,
+      -0.002,
+      0.0015
+     ],
+     "wilcoxon_p": 0.8630583227522466,
+     "pairs": 484
+    },
+    "perspective": {
+     "matched_minus_upright": [
+      -0.0022,
+      -0.0041,
+      -0.0003
+     ],
+     "wilcoxon_p": 0.007539728418901616,
+     "pairs": 484
+    },
+    "content": {
+     "photo_minus_scrambled": [
+      0.0007,
+      -0.001,
+      0.0024
+     ],
+     "wilcoxon_p": 0.6159977133896348,
+     "pairs": 484
+    }
+   }
+  },
+  "da2-metric-indoor": {
+   "conditions": {
+    "frame/matched/photo": {
+     "illusion_score": [
+      0.0021,
+      -0.003,
+      0.0077
+     ],
+     "share_worse": 0.43,
+     "n": 121
+    },
+    "frame/matched/scrambled": {
+     "illusion_score": [
+      0.0091,
+      -0.0003,
+      0.0219
+     ],
+     "share_worse": 0.463,
+     "n": 121
+    },
+    "frame/upright/photo": {
+     "illusion_score": [
+      0.007,
+      0.0024,
+      0.0123
+     ],
+     "share_worse": 0.554,
+     "n": 121
+    },
+    "frame/upright/scrambled": {
+     "illusion_score": [
+      0.0126,
+      0.0052,
+      0.0212
+     ],
+     "share_worse": 0.612,
+     "n": 121
+    },
+    "noframe/matched/photo": {
+     "illusion_score": [
+      0.0146,
+      0.0022,
+      0.0302
+     ],
+     "share_worse": 0.455,
+     "n": 121
+    },
+    "noframe/matched/scrambled": {
+     "illusion_score": [
+      0.0323,
+      0.0046,
+      0.0715
+     ],
+     "share_worse": 0.521,
+     "n": 121
+    },
+    "noframe/upright/photo": {
+     "illusion_score": [
+      0.0087,
+      0.002,
+      0.0175
+     ],
+     "share_worse": 0.545,
+     "n": 121
+    },
+    "noframe/upright/scrambled": {
+     "illusion_score": [
+      0.015,
+      0.0058,
+      0.0272
+     ],
+     "share_worse": 0.587,
+     "n": 121
+    }
+   },
+   "factor_tests": {
+    "frame": {
+     "frame_minus_noframe": [
+      -0.0099,
+      -0.018,
+      -0.0026
+     ],
+     "wilcoxon_p": 0.19261734454745894,
+     "pairs": 484
+    },
+    "perspective": {
+     "matched_minus_upright": [
+      0.0037,
+      -0.0037,
+      0.0133
+     ],
+     "wilcoxon_p": 2.1730402110380574e-07,
+     "pairs": 484
+    },
+    "content": {
+     "photo_minus_scrambled": [
+      -0.0091,
+      -0.0213,
+      -0.0004
+     ],
+     "wilcoxon_p": 0.0008121316968057727,
+     "pairs": 484
+    }
+   }
+  },
+  "depth-pro": {
+   "conditions": {
+    "frame/matched/photo": {
+     "illusion_score": [
+      0.0331,
+      0.0167,
+      0.0517
+     ],
+     "share_worse": 0.694,
+     "n": 121
+    },
+    "frame/matched/scrambled": {
+     "illusion_score": [
+      0.0086,
+      0.0026,
+      0.0162
+     ],
+     "share_worse": 0.62,
+     "n": 121
+    },
+    "frame/upright/photo": {
+     "illusion_score": [
+      0.0411,
+      0.0163,
+      0.0876
+     ],
+     "share_worse": 0.727,
+     "n": 121
+    },
+    "frame/upright/scrambled": {
+     "illusion_score": [
+      0.0088,
+      0.0042,
+      0.014
+     ],
+     "share_worse": 0.686,
+     "n": 121
+    },
+    "noframe/matched/photo": {
+     "illusion_score": [
+      0.0311,
+      0.0135,
+      0.0513
+     ],
+     "share_worse": 0.595,
+     "n": 121
+    },
+    "noframe/matched/scrambled": {
+     "illusion_score": [
+      0.0098,
+      0.0033,
+      0.0192
+     ],
+     "share_worse": 0.612,
+     "n": 121
+    },
+    "noframe/upright/photo": {
+     "illusion_score": [
+      0.0485,
+      0.0174,
+      0.1025
+     ],
+     "share_worse": 0.736,
+     "n": 121
+    },
+    "noframe/upright/scrambled": {
+     "illusion_score": [
+      0.0101,
+      0.0043,
+      0.0173
+     ],
+     "share_worse": 0.686,
+     "n": 121
+    }
+   },
+   "factor_tests": {
+    "frame": {
+     "frame_minus_noframe": [
+      -0.002,
+      -0.0089,
+      0.0047
+     ],
+     "wilcoxon_p": 0.54400082069678,
+     "pairs": 484
+    },
+    "perspective": {
+     "matched_minus_upright": [
+      -0.0065,
+      -0.0195,
+      0.004
+     ],
+     "wilcoxon_p": 0.007539728418901616,
+     "pairs": 484
+    },
+    "content": {
+     "photo_minus_scrambled": [
+      0.0291,
+      0.016,
+      0.0446
+     ],
+     "wilcoxon_p": 5.638094172090087e-11,
+     "pairs": 484
+    }
+   }
+  },
+  "moge2-large": {
+   "conditions": {
+    "frame/matched/photo": {
+     "illusion_score": [
+      0.0513,
+      0.0319,
+      0.0747
+     ],
+     "share_worse": 0.579,
+     "n": 121
+    },
+    "frame/matched/scrambled": {
+     "illusion_score": [
+      0.0148,
+      0.0059,
+      0.0272
+     ],
+     "share_worse": 0.521,
+     "n": 121
+    },
+    "frame/upright/photo": {
+     "illusion_score": [
+      0.0505,
+      0.0314,
+      0.0725
+     ],
+     "share_worse": 0.711,
+     "n": 121
+    },
+    "frame/upright/scrambled": {
+     "illusion_score": [
+      0.0246,
+      0.0135,
+      0.0379
+     ],
+     "share_worse": 0.636,
+     "n": 121
+    },
+    "noframe/matched/photo": {
+     "illusion_score": [
+      0.052,
+      0.0323,
+      0.0729
+     ],
+     "share_worse": 0.645,
+     "n": 121
+    },
+    "noframe/matched/scrambled": {
+     "illusion_score": [
+      0.0172,
+      0.0066,
+      0.0289
+     ],
+     "share_worse": 0.488,
+     "n": 121
+    },
+    "noframe/upright/photo": {
+     "illusion_score": [
+      0.0367,
+      0.0211,
+      0.0552
+     ],
+     "share_worse": 0.62,
+     "n": 121
+    },
+    "noframe/upright/scrambled": {
+     "illusion_score": [
+      0.0123,
+      0.0055,
+      0.0208
+     ],
+     "share_worse": 0.595,
+     "n": 121
+    }
+   },
+   "factor_tests": {
+    "frame": {
+     "frame_minus_noframe": [
+      0.0057,
+      0.0007,
+      0.0108
+     ],
+     "wilcoxon_p": 0.03621767490657147,
+     "pairs": 484
+    },
+    "perspective": {
+     "matched_minus_upright": [
+      0.0028,
+      -0.0036,
+      0.0093
+     ],
+     "wilcoxon_p": 0.0937186386977799,
+     "pairs": 484
+    },
+    "content": {
+     "photo_minus_scrambled": [
+      0.0304,
+      0.023,
+      0.0375
+     ],
+     "wilcoxon_p": 1.2337665803444064e-10,
+     "pairs": 484
+    }
+   }
+  },
+  "marigold-lcm": {
+   "conditions": {
+    "frame/matched/photo": {
+     "illusion_score": [
+      0.006,
+      0.0003,
+      0.0128
+     ],
+     "share_worse": 0.562,
+     "n": 121
+    },
+    "frame/matched/scrambled": {
+     "illusion_score": [
+      0.0026,
+      -0.0025,
+      0.0081
+     ],
+     "share_worse": 0.471,
+     "n": 121
+    },
+    "frame/upright/photo": {
+     "illusion_score": [
+      0.0274,
+      0.0107,
+      0.0528
+     ],
+     "share_worse": 0.579,
+     "n": 121
+    },
+    "frame/upright/scrambled": {
+     "illusion_score": [
+      0.0055,
+      0.0006,
+      0.0113
+     ],
+     "share_worse": 0.562,
+     "n": 121
+    },
+    "noframe/matched/photo": {
+     "illusion_score": [
+      0.0157,
+      0.0079,
+      0.0244
+     ],
+     "share_worse": 0.653,
+     "n": 121
+    },
+    "noframe/matched/scrambled": {
+     "illusion_score": [
+      0.0024,
+      -0.0009,
+      0.0055
+     ],
+     "share_worse": 0.554,
+     "n": 121
+    },
+    "noframe/upright/photo": {
+     "illusion_score": [
+      0.044,
+      0.023,
+      0.0696
+     ],
+     "share_worse": 0.678,
+     "n": 121
+    },
+    "noframe/upright/scrambled": {
+     "illusion_score": [
+      0.0078,
+      0.0024,
+      0.0138
+     ],
+     "share_worse": 0.587,
+     "n": 121
+    }
+   },
+   "factor_tests": {
+    "frame": {
+     "frame_minus_noframe": [
+      -0.0071,
+      -0.0122,
+      -0.0023
+     ],
+     "wilcoxon_p": 9.840765079769511e-07,
+     "pairs": 484
+    },
+    "perspective": {
+     "matched_minus_upright": [
+      -0.0145,
+      -0.0237,
+      -0.0072
+     ],
+     "wilcoxon_p": 0.07919821596476936,
+     "pairs": 484
+    },
+    "content": {
+     "photo_minus_scrambled": [
+      0.0187,
+      0.011,
+      0.0281
+     ],
+     "wilcoxon_p": 1.1583128783069746e-06,
+     "pairs": 484
+    }
+   }
+  }
+ }
+}

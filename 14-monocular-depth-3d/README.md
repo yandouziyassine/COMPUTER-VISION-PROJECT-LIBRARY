@@ -72,10 +72,24 @@ Metric models, raw meters / after one median scale per image:
 |---|---|---|---|---|
 | DA-V2 Large (DA-V2 paper, Table 2) | 0.045 | 0.0428 | −0.0022 | ✅ pass |
 | Marigold LCM 10 × 1 (Marigold journal paper) | 0.058 | 0.0596 | +0.0016 | ✅ pass |
-| Depth Pro, metric, no GT focal (MoGe-2 paper, Table B.4) | 0.107 | 0.0919 | −0.015 | ❌ not reproduced |
-| MoGe-2, metric, no GT focal (MoGe-2 paper, Table B.4) | 0.0733 | 0.0902 | +0.017 | ❌ not reproduced |
+| Depth Pro, metric, no GT focal (MoGe-2 paper, Table B.4) | 0.107 | 0.0919 (ours) / **0.1069** (MoGe's code, E1) | −0.015 / −0.0001 | ❌ ours / ✅ paper's protocol |
+| MoGe-2, metric, no GT focal (MoGe-2 paper, Table B.4) | 0.0733 | 0.0902 (ours) / **0.0730** (MoGe's code, E1) | +0.017 / −0.0003 | ❌ ours / ✅ paper's protocol |
 
-<!--E1-->
+**E1: is the gate failure our code or the protocol?** I ran MoGe's *official* evaluation code (pinned commit) on
+its own processed NYUv2 and KITTI, with the same model wrappers ([`e1_moge_official_eval.py`](e1_moge_official_eval.py),
+[`docs/e1_moge_eval.json`](docs/e1_moge_eval.json)). Metric depth, no GT intrinsics:
+
+| Model | NYUv2: ours via MoGe code / paper | KITTI: ours via MoGe code / paper |
+|---|---|---|
+| MoGe-2 ViT-L | **0.0730** / 0.0733 (gap −0.0003 ✅) | **0.1795** / 0.181 (−0.0015 ✅) |
+| Depth Pro | **0.1069** / 0.107 (−0.0001 ✅) | **0.2346** / 0.235 (−0.0004 ✅) |
+| MoGe-2 ViT-L with GT intrinsics | 0.0643 / 0.0646 (✅) | 0.0872 / 0.0864 (✅) |
+
+Both models reproduce the paper within 0.002 under the paper's own protocol, so the wrappers are correct. The
+difference in our protocol comes from data processing: raw Kinect depth with the Eigen crop here, vs MoGe's
+re-processed NYUv2. **Gate outcome: passed under the original protocol.** The tables above use ours, and the protocol alone
+changes the picture: on NYU, Depth Pro improves (0.107 → 0.092) while MoGe-2 gets worse (0.073 → 0.090), so a
+cross-paper ranking of metric models is only as good as its data processing.
 
 - **NYU is now scored on the raw sensor depth**, as Marigold's public evaluation code does. v1 used the hole-filled
   depth, which is interpolation exactly where the sensor failed. That choice alone moved DA-V2 Small from 0.062 to
@@ -277,7 +291,8 @@ paired over images with 95 % CIs:
   uncertain.
 - **The alignment choice changes the numbers.** Disparity vs depth least squares can move AbsRel by a factor of 2
   (DA-V2 Small: 0.051 vs 0.13 on NYU). Each model is scored in its own output space, as its authors do.
-- **The gate failed for Depth Pro and MoGe-2**, so their numbers here are our protocol's, not the papers'.
+- **Depth Pro and MoGe-2 failed the gate under our protocol but pass under the paper's protocol (E1).** The
+  difference is data processing, so their numbers here are comparable within this study, not with the papers.
 - **Licences.** NYU, KITTI, ETH3D and Booster are research / non-commercial. They are evaluated, never displayed or
   redistributed. Every published image is CC BY / CC BY-SA / public domain ([DATA_LICENSES.md](../DATA_LICENSES.md)).
 - **Small samples.** The public pair set has 4 mirror and 8 illusion pairs, so its CIs are wide. The NYU set (50

@@ -1,0 +1,85 @@
+{
+ "moge_commit": "74fbce054ebed49800de42d0ad0e83495065719a",
+ "source": "microsoft/MoGe moge/scripts/eval_baseline.py, metric group 'metric', data Ruicheng/monocular-geometry-evaluation",
+ "published": "MoGe-2 paper (arXiv 2507.02546) Table B.4",
+ "runs": {
+  "moge2-vitl": {
+   "NYUv2": {
+    "absrel": 0.073,
+    "delta1": 0.9612,
+    "published": 0.0733,
+    "gap": -0.0003,
+    "within_0.003": true
+   },
+   "KITTI": {
+    "absrel": 0.1795,
+    "delta1": 0.6359,
+    "published": 0.181,
+    "gap": -0.0015,
+    "within_0.003": true
+   }
+  },
+  "moge2-vitl-gt-intrinsics": {
+   "NYUv2": {
+    "absrel": 0.0643,
+    "delta1": 0.9681,
+    "published": 0.0646,
+    "gap": -0.0003,
+    "within_0.003": true
+   },
+   "KITTI": {
+    "absrel": 0.0872,
+    "delta1": 0.9365,
+    "published": 0.0864,
+    "gap": 0.0008,
+    "within_0.003": true
+   }
+  },
+  "moge2-vitl-normal": {
+   "NYUv2": {
+    "absrel": 0.0689,
+    "delta1": 0.9674
+   },
+   "KITTI": {
+    "absrel": 0.1757,
+    "delta1": 0.6483
+   }
+  },
+  "moge2-vitl-normal-gt-intrinsics": {
+   "NYUv2": {
+    "absrel": 0.0597,
+    "delta1": 0.9728
+   },
+   "KITTI": {
+    "absrel": 0.0858,
+    "delta1": 0.9379
+   }
+  },
+  "depth-pro": {
+   "NYUv2": {
+    "absrel": 0.1069,
+    "delta1": 0.9187,
+    "published": 0.107,
+    "gap": -0.0001,
+    "within_0.003": true
+   },
+   "KITTI": {
+    "absrel": 0.2346,
+    "delta1": 0.3848,
+    "published": 0.235,
+    "gap": -0.0004,
+    "within_0.003": true
+   }
+  },
+  "depth-pro-gt-intrinsics": {
+   "NYUv2": {
+    "absrel": 0.0926,
+    "delta1": 0.935
+   },
+   "KITTI": {
+    "absrel": 0.1075,
+    "delta1": 0.888
+   }
+  }
+ }
+}

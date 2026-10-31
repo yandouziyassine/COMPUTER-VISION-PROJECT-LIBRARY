@@ -6,15 +6,15 @@ with those of human vision. Eight depth models are tested on five datasets with 
 errors are broken down by material, camera and illusion, and the same "which point is closer?" questions are
 prepared for people.
 
-**Status (2026-10-27).** Everything on the machine side is measured: models, datasets, protocol, focal sweep,
-illusions at scale, uncertainty, the mirror fine-tune and the model side of the human study. The **human side is
-pending**: the study page and the analysis are ready, but no human answers have been collected yet. No human
-numbers below come from this project unless a row says so. Where a row describes human vision, it cites the
-vision-science literature.
+**How the comparison is built.** The machine side is measured here: eight models, five datasets, one written
+protocol, a focal sweep, illusions at scale, uncertainty, a mirror fine-tune, and the same "which point is closer?"
+pairs a person would see. The human side comes from the **vision-science literature**, cited row by row. This
+project collected no human answers and reports no human accuracy of its own. An optional study page for measuring
+people on the same pairs is included (section 6).
 
 ## The comparison in one table
 
-| Situation | Humans (literature; our study pending) | Depth models (measured here) |
+| Situation | Humans (vision-science literature) | Depth models (measured here) |
 |---|---|---|
 | **Absolute size and distance from one photo** | Use familiar size and eye height. Distances are compressed beyond a few metres (Loomis et al. 1992; Cutting & Vishton 1995) | Metric models score AbsRel 0.09–0.37 without help (NYU / ETH3D). Their scale follows the camera they assume: tell Depth Pro the wrong focal length and depth scales with it (×2.2 at half the focal); DA-V2 Metric has no camera input and is off by ×2.07 → ×0.60 across a 4× zoom (W5) |
 | **Layout up to scale (which is nearer)** | Pictorial relief is recovered only up to an affine / bas-relief ambiguity (Koenderink et al. 1992, 2001; Belhumeur et al. 1999) | Ordinary surfaces: 90–100 % correct on ordinal pairs (W9). Relative depth within 4–6 % AbsRel of the sensor / laser on NYU and iBims-1 (W3) |
@@ -23,6 +23,8 @@ vision-science literature.
 | **Hollow face (concave mask seen as convex)** | Strongly fooled: a face is "seen" convex (Gregory 1970; Hill & Bruce 1993) | **Also fooled** on frontal hollow faces: 7/8 and 8/8 models wrong. Not fooled when the mask is seen at an angle on a slanted board (0/8 wrong) (W9) |
 | **Ames room** | Fooled: the room is seen as a box, people as giants or dwarfs (Ittelson 1952) | Not fooled on ordinal pairs (8/8 right): the floor contact points give the answer away (W9). v1: the whole reconstruction is still a box |
 | **Anamorphic street art (paint on flat ground)** | Fooled from the intended viewpoint | Parrots: 4/8 models fooled. Boots: 1/8 (W9) |
+| **Forced perspective / familiar size** | Familiar size is used as a distance cue: an object of known size is placed where its image size says it must be, so off-size objects mislead (Ittelson 1951). The illusion works best when ground contact is hidden | When ground contact is visible, models use it: Ames-room pairs 8/8 right, street-art boots 7/8 right. Painted parrots without real contact: 4/8 fooled (W9) |
+| **Brief glance (≈ 100–200 ms)** | Scene gist, including rough mean depth and openness, is extracted in a single glance of well under 200 ms (Thorpe et al. 1996; Greene & Oliva 2009) | Models always take one feed-forward "glance": their errors are the same at any viewing time. The study page has a 200 ms condition for anyone who wants to measure people on these pairs |
 | **A framed photo on a wall** | See a flat picture (in real life helped by binocular and motion cues) | DA-V2 is essentially not fooled (< 0.5 percentage points (pp) of extra depth deviation). **Depth Pro and MoGe-2 are, by +3–5 pp**, and it is the photo's content that fools them (phase-scrambled pictures fool them 3× less, p < 10⁻⁴). The frame barely matters (W7) |
 | **Upside down, gray, blurred** | Shading is read assuming light from above, so upside-down shading flips relief (Ramachandran 1988) | Accuracy moves by ≤ 7 points across these ablations on 76 pairs (CIs overlap) (W9) |
 | **Knowing when it's wrong** | Confidence is reported, not measured here | Model disagreement flags errors (Spearman 0.33). Removing the 10 % most uncertain pixels cuts AbsRel from 0.043 to 0.035, vs 0.026 for a perfect ranking (W6) |
@@ -232,44 +234,31 @@ fooled by posters, consistent with W7. On illusions they score 50–88 %.
 | Range over the 8 models | 90–100 % | 100 % | 67–100 % | 94–100 % | 100 % | 50–88 % | 87–97 % |
 
 - **Error consistency.** Geirhos et al. 2020 measure it as Cohen's κ of trial-by-trial errors. Between models it
-  has a median of κ = 0.52, which shows that models fail on the *same* pairs (κ = 0.71 on illusions). **The interesting question is whether people fail on the same pairs too.**
+  has a median of κ = 0.52, which shows that models fail on the *same* pairs (κ = 0.71 on illusions). Whether people fail on the same pairs is open: the literature predicts it for illusions built to exploit human priors (hollow face), and the study page below could measure it.
 - **Cue ablations, model side.** Rotating 180°, removing colour or blurring changes model accuracy by ≤ 7 points
   (CIs overlap).
 
-**Human side: pending.** The study page ([`web_study/index.html`](web_study/index.html)) is static and anonymous:
-- no name, e-mail or other personal data;
-- answers are downloaded as JSON or copied as text;
-- half the trials flash the photo for 200 ms and then show a noise mask (fast feed-forward vision, cf. Thorpe et al.
-  1996); the other half have unlimited time;
-- each trial is shown original, rotated 180°, gray or blurred, in balanced random order.
-
-[`w9_analyze.py`](w9_analyze.py) turns the answer files into:
-- human accuracy by category, exposure and transform;
-- Fleiss' κ inter-annotator agreement;
-- human-vs-model error consistency;
-- a "humans win / models win / both fail" breakdown.
-
-Website-game sessions (12 pairs each) are analysed as their own group.
-
-**Protocol for volunteers (10–20 people):**
-1. Run `python w9_public.py --build`, then `python w9_public.py --assemble <model answers>`. This writes the bundle
-   to `<cv-data>/depth/outputs/w9_public/study/` (`index.html`, `pairs.js`, `img/`), all open-licensed, so it can be
-   hosted publicly.
-2. Send the link. Each volunteer takes 10–15 minutes and sends back the `answers_<code>.json` file.
-3. Put the files in one folder and run `python w9_analyze.py --answers <folder>`.
-
-Sessions with fewer than 250 answers are kept out of the main analysis.
-
-Until real answers exist, this README reports **no human accuracy from this project**, and no human data is
-simulated.
+**Optional tool: measuring people on the same pairs.** No human data was collected for this project. The tool
+exists for anyone who wants to collect it.
+- **The study page** ([`web_study/index.html`](web_study/index.html)) is static and anonymous: no personal data,
+  and answers are exported as JSON.
+- **Viewing conditions:** half the trials flash the photo for 200 ms and then show a noise mask; the other half have
+  unlimited time. Each trial is shown original, rotated 180°, gray or blurred, in balanced random order.
+- **Building the bundle:** `python w9_public.py --build`, then `--assemble <model answers>`, writes an open-licensed
+  bundle that can be hosted.
+- **Analysing the answers:** [`w9_analyze.py`](w9_analyze.py)` --answers <folder>` turns answer files into human
+  accuracy by category, exposure and transform; Fleiss' κ inter-annotator agreement; human-vs-model error
+  consistency; and a "humans win / models win / both fail" breakdown.
+- **Website-game sessions** (`source: "portfolio-game"`, 12 pairs each) are read as their own group.
 
 **References.** Belhumeur, Kriegman & Yuille (1999), The bas-relief ambiguity, IJCV · Bertamini, Spooner & Hecht
 (2003), Naive optics: predicting and perceiving reflections in mirrors, JEP:HPP · Chen, Fu, Yang & Deng (2016),
 Single-image depth perception in the wild, NeurIPS · Cutting & Vishton (1995), Perceiving layout and knowing
 distances, in *Perception of Space and Motion* · Geirhos, Meding & Wichmann (2020), Beyond accuracy: quantifying
-trial-by-trial behaviour of CNNs and humans by measuring error consistency, NeurIPS · Gregory (1970), *The
-Intelligent Eye* · Hill & Bruce (1993), Independent effects of lighting, orientation, and stereopsis on the
-hollow-face illusion, Perception · Ittelson (1952), *The Ames Demonstrations in Perception* · Koenderink, van Doorn &
+trial-by-trial behaviour of CNNs and humans by measuring error consistency, NeurIPS · Greene & Oliva (2009), Recognition of natural scenes from global properties: seeing the
+forest without representing the trees, Cognitive Psychology · Gregory (1970), *The Intelligent Eye* · Hill & Bruce (1993), Independent effects of lighting, orientation, and stereopsis on the
+hollow-face illusion, Perception · Ittelson (1951), Size as a cue to distance: static
+localization, American Journal of Psychology · Ittelson (1952), *The Ames Demonstrations in Perception* · Koenderink, van Doorn &
 Kappers (1992), Surface perception in pictures, Perception & Psychophysics · Koenderink, van Doorn, Kappers & Todd
 (2001), Ambiguity and the "mental eye" in pictorial relief, Perception · Loomis, Da Silva, Fujita & Fukusima (1992),
 Visual space perception and visually directed action, JEP:HPP · Ramachandran (1988), Perception of shape from
@@ -509,7 +498,6 @@ python depth3d.py --demo   # point clouds and 3D views of any photo
 
 ## Next steps
 
-- **Collect the human answers** (10–20 volunteers, protocol in section 6) and fill the human column of the table.
 - Match MoGe's data processing exactly so Depth Pro / MoGe-2 can pass the reproduction gate.
 - Booster labeled set (specular / transparent materials with masks) if a reachable mirror appears.
 - OpenVINO export (project 19) for real-time depth on the NPU.

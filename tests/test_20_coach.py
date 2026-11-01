@@ -296,3 +296,27 @@ def test_tables_have_labels_and_match_ids():
     assert list(s["y"]) == [0] and s["X"].shape == (1, len(D.F.SHOT_FEATURES))
 
 
+from coach import models as ML  # noqa: E402
+
+
+def synthetic_table(n=1200, seed=0):
+    rng = np.random.default_rng(seed)
+    X = rng.normal(size=(n, 3))
+    p = 1 / (1 + np.exp(-(1.5 * X[:, 0] - 1.0 * X[:, 1])))
+    return {"X": X, "y": (rng.random(n) < p).astype(int), "match": np.repeat(list("ABCDEF"), n // 6)}
+
+
+def test_logistic_export_matches_sklearn():
+    t = synthetic_table()
+    model = ML.fit_logistic(t["X"], t["y"])
+    w = ML.export_logistic(model, ["a", "b", "c"])
+    z = (t["X"] - np.array(w["mean"])) / np.array(w["scale"]) @ np.array(w["coef"]) + w["intercept"]
+    assert np.allclose(1 / (1 + np.exp(-z)), model.predict_proba(t["X"])[:, 1], atol=1e-9)
+
+
+def test_leave_one_match_out_beats_base_rate():
+    r = ML.lomo(synthetic_table(), {"logistic": ML.fit_logistic, "base_rate": ML.fit_base_rate})
+    assert r["logistic"]["auc"] > 0.75 and r["logistic"]["log_loss"] < r["base_rate"]["log_loss"]
+    assert len(r["logistic"]["per_match"]) == 6 and len(r["logistic"]["reliability"]) == 10
+
+

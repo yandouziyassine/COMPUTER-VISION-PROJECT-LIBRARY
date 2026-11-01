@@ -4,8 +4,10 @@
 
 Frame rate: the 25 fps source is subsampled by a whole step (fps=10 -> step 2 -> 12.5 fps, written in match.json).
 Binary layout (little-endian int16): for each frame, P players then the ball, each (x, y) in cm; NaN -> -32768.
-match.json holds players (id index, team, shirt, name), team names/colours, frames per half, fps, owner/alive per
-frame (as strings of digits), passes and shots with frame indices, and the data credit.
+match.json (UTF-8) holds players (team, shirt, name; the list index is the player's slot in match.bin), team
+names/colours, frames per half, fps, owner/alive per frame (as strings of digits), passes and shots with frame indices
+(None when sync could not place them), and the data credit. models.json holds the weights of the pass (logistic),
+value (ridge, with its basis definition) and shot (logistic) models, trained WITHOUT the exported match.
 """
 
 import argparse
@@ -14,8 +16,10 @@ from pathlib import Path
 
 import numpy as np
 
+from . import advice as A
 from . import datasets as D
 from . import models as ML
+from . import pitch_control as PC
 from .match import load
 from .prepare import MATCHES, OUT
 
@@ -53,21 +57,38 @@ def pack_match(m, out: Path, fps: int = 10):
         "events": events,
         "credit": CREDIT,
     }
-    (out / "match.json").write_text(json.dumps(meta, ensure_ascii=False))
+    (out / "match.json").write_text(json.dumps(meta, ensure_ascii=False), encoding="utf-8")
 
 
-def export_models(out: Path):
-    matches = [load(OUT / mid) for mid in MATCHES]
-    weights = {}
-    for name, build, feats in (
-        ("pass", D.pass_table, D.F.PASS_FEATURES),
-        ("value", D.value_table, D.F.VALUE_FEATURES),
-        ("shot", D.shot_table, D.F.SHOT_FEATURES),
-    ):
-        t = D.stack([build(m) for m in matches])
-        weights[name] = ML.export_logistic(ML.fit_logistic(t["X"], t["y"]), feats)
-    weights["pitch_control"] = {"reaction": 0.7, "vmax": 5.0, "sigma": 0.45}
-    (out / "models.json").write_text(json.dumps(weights, indent=2))
+def export_models(out: Path, matches, exclude=None):
+    """Fit on every match but `exclude` (the replay match must stay unseen) and write models.json."""
+    train = [m for m in matches if m.match_id != exclude]
+    tables = {
+        "pass": D.stack([D.pass_table(m) for m in train]),
+        "value": D.stack([D.value_table(m) for m in train]),
+        "shot": D.drop_penalties(D.stack([D.shot_table(m) for m in train])),
+    }
+    p, v, s = tables["pass"], tables["value"], tables["shot"]
+    weights = {
+        "trained_without": exclude,
+        "trained_on": [m.match_id for m in train],
+        "pass": ML.export_logistic(ML.fit_logistic(p["X"], p["y"], p["weight"]), D.F.PASS_FEATURES),
+        "value": {
+            **ML.export_ridge(ML.fit_ridge(v["X"], v["y"]), D.F.VALUE_FEATURES),
+            "horizon_s": D.HORIZON,
+            "target": "net expected goals (provider xG for minus against) within horizon_s, team in possession",
+            "basis": D.F.VALUE_BASIS,
+        },
+        "shot": ML.export_logistic(ML.fit_logistic(s["X"], s["y"]), D.F.SHOT_FEATURES),
+        "pitch_control": {"reaction": PC.REACTION, "vmax": PC.VMAX, "sigma": PC.SIGMA},
+        "advice": {
+            "carry_dist": A.CARRY_DIST,
+            "carry_angles_deg": list(A.CARRY_ANGLES),
+            "shot_range": A.SHOT_RANGE,
+            "score": "p * V(target) + (1 - p) * (-V_opp(loss point)) - V(now); shot: xG - V(now)",
+        },
+    }
+    (out / "models.json").write_text(json.dumps(weights, indent=2), encoding="utf-8")
 
 
 def main():
@@ -76,7 +97,7 @@ def main():
     ap.add_argument("--site", type=Path, required=True)
     args = ap.parse_args()
     pack_match(load(OUT / args.match), args.site)
-    export_models(args.site)
+    export_models(args.site, [load(OUT / mid) for mid in MATCHES], exclude=args.match)
     print("wrote", sorted(p.name for p in args.site.iterdir()))
 
 

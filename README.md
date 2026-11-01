@@ -39,7 +39,7 @@ pixels to foundation models, each pointing to the projects where the concept is 
 | 08 | [Traffic Analytics](08-traffic-analytics/) | 19 vehicles tracked, speeds in km/h, 3.4 FPS at 4K | ByteTrack tracking, line counting, homography | ★★ |
 | 09 | [Retail Shelf Monitor](09-retail-shelf-monitor/) | mAP50 0.927 on shelves of 100–700 products; count error 10 % (full-data GPU retrain) | Dense small-object detection, counting, CPU-subset vs full-data comparison | ★★ |
 | 10 | [Face Recognition](10-face-recognition/) | 99.35 % on LFW (official 10-fold protocol) | Face alignment, embeddings, TAR@FAR, ethics & limits | ★★★ |
-| 11 | [Polyp Segmentation](11-medical-segmentation/) | Dice 0.897 / IoU 0.833 | U-Net, Dice + BCE loss | ★★ |
+| 11 | [Polyp Segmentation](11-medical-segmentation/) | Dice 0.886 (0.892 TTA); other hospital 0.825; screening sensitivity 0.972 | U-Net, Dice + BCE loss, cross-center test | ★★ |
 | 12 | [Satellite Land-Cover](12-satellite-land-cover/) | 98.1 % fine-tuned vs 47.4 % zero-shot | Remote sensing, domain shift | ★★ |
 | 13 | [Anomaly Detection (PatchCore)](13-anomaly-detection-patchcore/) | Image AUROC 1.000 / 0.999 / 0.977 | Paper reimplemented from scratch | ★★★ |
 | 14 | [Monocular Depth: where 3D vision fails](14-monocular-depth-3d/) | AbsRel 0.058 on NYU; mirrors 7× worse than walls; distances from one photo ±10 % with one known length | 4-model benchmark, failure map by surface, poster illusion test, metric measurement app | ★★★ |

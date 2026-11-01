@@ -22,6 +22,7 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 | 09 | SKU-110K (Goldman et al., CVPR 2019; HF `finedet/sku110k`) | ⚠️ CC BY-NC 2.0 | Non-commercial |
 | 10 | LFW, Labeled Faces in the Wild (UMass Amherst) | ⚠️ research benchmark | No explicit license; photos of public figures. Don't redistribute images |
 | 11 | Kvasir-SEG (Simula, Jha et al. MMM 2020) | ⚠️ research / education | Cite the paper |
+| 11 | CVC-ClinicDB (Bernal et al., CMIG 2015), via HF mirror berkaytrhn/cvc-clinicdb (official link gone) | ⚠️ research / education only, no commercial use (images © Hospital Clinic Barcelona, masks © CVC) | Evaluation only, no images published; cite the paper |
 | 12 | EuroSAT RGB (Helber et al. 2019; HF `timm/eurosat-rgb`) | ✅ MIT | |
 | 13 | MVTec AD (HF mirror `foersben/mvtec-ad`) | ⚠️ CC BY-NC-SA 4.0 | Non-commercial, share-alike |
 | 15, 18 | UR Fall Detection Dataset (Kwolek & Kepski 2014) | ⚠️ research use | Cite the paper |

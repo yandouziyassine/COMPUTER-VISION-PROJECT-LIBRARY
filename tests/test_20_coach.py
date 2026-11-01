@@ -71,3 +71,72 @@ def test_frame_at_time_and_velocity():
     assert M.frame_at(h, 1000.0) == 0 and M.frame_at(h, 1000.41) == 10 and M.frame_at(h, 9e9) == len(h.t) - 1
     v = M.velocity(h.ball[:, :2], 25.0)
     assert np.allclose(v[5:-5, 0], 20 / (49 / 25.0), atol=1e-4)  # 20 m in 49 frames
+
+
+from coach import dfl  # noqa: E402
+
+INFO = """<?xml version="1.0" encoding="UTF-8"?><PutDataRequest><MatchInformation>
+<General MatchId="DFL-MAT-T" HomeTeamName="Home FC" GuestTeamName="Away FC"/>
+<Environment PitchX="105.00" PitchY="68.00"/><Teams>
+<Team TeamId="H" Role="home" TeamName="Home FC" PlayerShirtMainColor="#FF0000"><Players>
+<Player PersonId="h1" ShirtNumber="9" Shortname="H. Nine" PlayingPosition="STZ" Starting="true"/></Players></Team>
+<Team TeamId="G" Role="guest" TeamName="Away FC" PlayerShirtMainColor="#FFFFFF"><Players>
+<Player PersonId="g1" ShirtNumber="4" Shortname="G. Four" PlayingPosition="IVL" Starting="true"/></Players></Team>
+</Teams></MatchInformation></PutDataRequest>"""
+
+POS = """<?xml version="1.0" encoding="UTF-8"?><PutDataRequest><Positions>
+<FrameSet GameSection="firstHalf" TeamId="H" PersonId="h1">
+<Frame N="10000" T="2022-08-26T16:32:09.720+00:00" X="-1.00" Y="2.00"/>
+<Frame N="10001" T="2022-08-26T16:32:09.760+00:00" X="-1.10" Y="2.00"/></FrameSet>
+<FrameSet GameSection="firstHalf" TeamId="G" PersonId="g1">
+<Frame N="10001" T="2022-08-26T16:32:09.760+00:00" X="5.00" Y="-3.00"/></FrameSet>
+<FrameSet GameSection="firstHalf" TeamId="BALL" PersonId="ball">
+<Frame N="10000" T="2022-08-26T16:32:09.720+00:00" X="0.00" Y="0.00" Z="0.10" BallPossession="1" BallStatus="1"/>
+<Frame N="10001" T="2022-08-26T16:32:09.760+00:00" X="0.50" Y="0.00" Z="0.10" BallPossession="2" BallStatus="0"/>
+</FrameSet></Positions></PutDataRequest>"""
+
+EVENTS = """<?xml version="1.0" encoding="UTF-8"?><PutDataRequest>
+<Event EventTime="2022-08-26T18:32:09.760+02:00" X-Position="51.50" Y-Position="36.00">
+ <Play Player="h1" Recipient="h1" Team="H" Evaluation="unsuccessful"><Pass/></Play></Event>
+<Event EventTime="2022-08-26T18:32:09.760+02:00" CalculatedFrame="10001" X-Position="95.00" Y-Position="30.00">
+ <ShotAtGoal Team="G" TypeOfShot="rightLeg"><SuccessfulShot/></ShotAtGoal></Event>
+<Event EventTime="2022-08-26T18:32:09.700+02:00" X-Position="52.50" Y-Position="34.00">
+ <KickOff GameSection="firstHalf" TeamRight="G" TeamLeft="H"><Play Player="h1" Team="H" Evaluation="successfullyCompleted"><Pass/></Play></KickOff></Event>
+</PutDataRequest>"""
+
+
+def test_parse_match_information(tmp_path):
+    (tmp_path / "info.xml").write_text(INFO, encoding="utf-8")
+    info = dfl.parse_info(tmp_path / "info.xml")
+    assert info["teams"] == {"H": 0, "G": 1} and info["players"]["g1"] == {
+        "team": 1,
+        "shirt": 4,
+        "name": "G. Four",
+        "position": "IVL",
+    }
+    assert info["meta"]["home"] == "Home FC" and info["meta"]["colors"] == ["#FF0000", "#FFFFFF"]
+
+
+def test_parse_positions_aligns_frames_and_fills_nan(tmp_path):
+    (tmp_path / "info.xml").write_text(INFO, encoding="utf-8")
+    (tmp_path / "pos.xml").write_text(POS, encoding="utf-8")
+    info = dfl.parse_info(tmp_path / "info.xml")
+    ids, halves = dfl.parse_positions(tmp_path / "pos.xml", info)
+    h = halves[0]
+    assert ids == ["h1", "g1"] and list(h.n) == [10000, 10001]
+    assert np.isnan(h.xy[0, 1]).all() and np.allclose(h.xy[1, 1], [5, -3])
+    assert list(h.owner) == [0, 1] and list(h.alive) == [True, False]
+    assert abs(h.t[1] - h.t[0] - 0.04) < 1e-6
+
+
+def test_parse_events_passes_shots_and_kickoff_sides(tmp_path):
+    (tmp_path / "info.xml").write_text(INFO, encoding="utf-8")
+    (tmp_path / "ev.xml").write_text(EVENTS, encoding="utf-8")
+    info = dfl.parse_info(tmp_path / "info.xml")
+    ev = dfl.parse_events(tmp_path / "ev.xml", info)
+    passes = [e for e in ev if e["type"] == "pass"]
+    shots = [e for e in ev if e["type"] == "shot"]
+    assert len(passes) == 2 and passes[0]["set_piece"] == "KickOff" and passes[0]["recipient"] is None  # time order
+    assert passes[1]["success"] is False and passes[1]["recipient"] == "h1"
+    assert shots[0]["goal"] is True and shots[0]["team"] == 1 and shots[0]["frame"] == 10001
+    assert passes[1]["t"] == pytest.approx(dfl.epoch("2022-08-26T16:32:09.760+00:00"))

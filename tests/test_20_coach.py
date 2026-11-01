@@ -140,3 +140,22 @@ def test_parse_events_passes_shots_and_kickoff_sides(tmp_path):
     assert passes[1]["success"] is False and passes[1]["recipient"] == "h1"
     assert shots[0]["goal"] is True and shots[0]["team"] == 1 and shots[0]["frame"] == 10001
     assert passes[1]["t"] == pytest.approx(dfl.epoch("2022-08-26T16:32:09.760+00:00"))
+
+
+from coach import geometry as G  # noqa: E402
+
+
+def test_attack_direction_from_team_positions():
+    m = tiny_match()  # home players at x = -10 and 5, guests at 10 and -5 → home mean -2.5 < guest mean 2.5
+    assert G.attack_dirs(m.halves[0], m.team) == (1, -1)
+
+
+def test_normalise_flips_when_team_attacks_left():
+    pts = np.array([[10.0, 5.0]])
+    assert np.allclose(G.normalise(pts, -1), [[-10.0, -5.0]]) and np.allclose(G.normalise(pts, 1), pts)
+
+
+def test_goal_distance_and_angle():
+    d, a = G.goal_geometry(np.array([[52.5 - 11.0, 0.0], [52.5, 10.0]]))
+    assert d[0] == pytest.approx(11.0) and a[0] == pytest.approx(2 * np.arctan(3.66 / 11.0))
+    assert a[1] == pytest.approx(0.0, abs=1e-9)  # on the goal line, outside the posts: no angle

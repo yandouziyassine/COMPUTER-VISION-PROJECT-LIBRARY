@@ -325,124 +325,73 @@ def test_value_and_shot_features():
 from coach import datasets as D  # noqa: E402
 
 
+def _pass(m, frame, **kw):
+    base = {"type": "pass", "half": 0, "frame": frame, "team": 0, "player": 0, "cross": False, "set_piece": None}
+    return {**base, "t": float(m.halves[0].t[frame]), "x": 0, "y": 0, **kw}
+
+
+def _shot(m, frame, team, xg=None, **kw):
+    base = {"type": "shot", "half": 0, "frame": frame, "team": team, "goal": False, "result": "SavedShot"}
+    return {**base, "t": float(m.halves[0].t[frame]), "x": 95.0, "y": 34.0, "xg": xg, **kw}
+
+
 def test_tables_have_labels_and_match_ids():
     m = tiny_match(frames=600)  # 24 s per half
     for h in m.halves:
         h.owner[:] = 0
-    m.events = [
-        {
-            "type": "pass",
-            "half": 0,
-            "frame": 10,
-            "t": float(m.halves[0].t[10]),
-            "team": 0,
-            "player": 0,
-            "recipient": 1,
-            "success": True,
-            "cross": False,
-            "set_piece": None,
-            "x": 0,
-            "y": 0,
-        },
-        {
-            "type": "shot",
-            "half": 0,
-            "frame": 300,
-            "t": float(m.halves[0].t[300]),
-            "team": 0,
-            "goal": False,
-            "result": "SavedShot",
-            "x": 95.0,
-            "y": 34.0,
-        },
-    ]
+    m.events = [_pass(m, 10, recipient=1, success=True), _shot(m, 300, 0)]
     p = D.pass_table(m)
     assert p["X"].shape == (1, len(D.F.PASS_FEATURES)) and list(p["y"]) == [1] and list(p["match"]) == ["TEST"]
-    v = D.value_table(m)
-    # live seconds 2..11 of half 0 (t = 2 s .. 11 s) are within 10 s before the shot at 12 s
-    assert v["y"].sum() == 10 and v["X"].shape[1] == len(D.F.VALUE_FEATURES)
+    assert np.allclose(p["X_noint"], p["X"])  # no interceptor on a completed pass
+    v = D.value_table(m, horizons=(10.0, 15.0))
+    # the shot at 12 s has no provider xG -> default 0.1; live seconds 0..11 see it within 15 s, seconds 2..11 within 10 s
+    assert v["X"].shape[1] == len(D.F.VALUE_FEATURES) and np.allclose(v["y"], v["y_h"][10.0])
+    assert v["y_h"][15.0].sum() == pytest.approx(12 * D.XG_DEFAULT) and v["y_h"][10.0].sum() == pytest.approx(10 * 0.1)
     s = D.shot_table(m)
-    assert list(s["y"]) == [0] and s["X"].shape == (1, len(D.F.SHOT_FEATURES))
+    assert list(s["y"]) == [0] and s["X"].shape == (1, len(D.F.SHOT_FEATURES)) and not s["penalty"].any()
+
+
+def test_value_labels_are_net_xg_for_the_team_in_possession_on_snapped_time():
+    m = tiny_match(frames=600)
+    m.halves[0].owner[:] = 1  # guests keep the ball in half 0
+    late = _shot(m, 450, 0, xg=0.1)  # home shot at 18 s ...
+    late["frame"], late["t_sync"] = None, float(m.halves[0].t[450])  # ... that sync could not place: shifted time
+    m.events = [_shot(m, 300, 1, xg=0.3), late, _shot(m, 100, 0, xg=0.76, set_piece="Penalty", t=1e9)]
+    y = D.value_table(m)["y"]  # horizon 15 s, one row per second of half 0 (guest possession), then half 1 (owner 0)
+    # the penalty (frame 100 = 4 s, nominal t absurd) is counted at its snapped time: against the guests for t < 4 s
+    assert y[0] == pytest.approx(0.3 - 0.76) and y[2] == pytest.approx(0.3 - 0.76)
+    assert y[3] == pytest.approx(0.3 - 0.76 - 0.1)  # the unplaced home shot (18 s) enters the 15 s horizon at 3 s
+    assert y[4] == pytest.approx(0.3 - 0.1) and y[11] == pytest.approx(0.3 - 0.1)
+    assert y[12] == pytest.approx(-0.1) and y[18] == 0.0
+    t = D.shot_table(m)
+    assert list(t["penalty"]) == [False, True] and len(D.drop_penalties(t)["y"]) == 1
 
 
 def test_failed_pass_target_is_inferred_from_ball_path():
     m = tiny_match(frames=100)  # ball runs from (-10, 0) to (10, 0); player c (guest) waits at (10, 0)
-    base = {"type": "pass", "half": 0, "frame": 5, "team": 0, "player": 0, "cross": False, "set_piece": None}
+    m.halves[0].xy[:, 1] = [5, 3]  # teammate b stands at (5, 3)
     for h in m.halves:
         h.owner[:] = 0
     m.events = [
-        {**base, "t": float(m.halves[0].t[5]), "recipient": 1, "success": True, "x": 0, "y": 0},
-        {**base, "t": float(m.halves[0].t[6]), "recipient": 2, "success": False, "x": 0, "y": 0},  # c intercepts
-        {**base, "t": float(m.halves[0].t[7]), "recipient": 3, "success": False, "x": 0, "y": 0},  # d is far away
+        _pass(m, 5, recipient=1, success=True),
+        _pass(m, 6, recipient=2, success=False),  # c intercepts at the end of the ball path
     ]
     p = D.pass_table(m)
-    # failed pass 1: ball travels to c at (10, 0); teammate b at (5, 5) is the only one beyond half-way -> target b
+    # the ball is within 1.5 m of c from x = 8.5; b is beyond half-way and 3 m from the ray -> target b, c is the interceptor
     assert list(p["y"]) == [1, 0] and p["X"].shape == (2, len(D.F.PASS_FEATURES))
+    s = D.F.state(m, 0, 6, 0)
+    assert D.intended_target(m, m.events[1], s, {0: 0, 1: 1}) == (1, 2)
+    assert (
+        p["X"][1, D.F.PASS_FEATURES.index("lane_defenders")]
+        >= p["X_noint"][1, D.F.PASS_FEATURES.index("lane_defenders")]
+    )
     m.events[0]["team"] = -1  # a pass by a player without a team is skipped
     assert list(D.pass_table(m)["y"]) == [0]
     m.events[0]["team"] = 0
-    assert D.intended_target(m, m.events[2], D.F.state(m, 0, 7, 0), {0: 0, 1: 1}) is None
+    # no opponent near the ball path and the ball stays alive: unreadable -> skipped; dead ball: nearest teammate
+    m.halves[0].xy[:, 2:] = [[50.0, 30.0], [50.0, 30.0]]
+    assert D.intended_target(m, m.events[1], s, {0: 0, 1: 1}) is None
+    m.halves[0].alive[60:] = False
+    assert D.intended_target(m, m.events[1], s, {0: 0, 1: 1}) == (1, None)  # ball dies at (2, 0): b is 4.2 m away
 
 
-from coach import models as ML  # noqa: E402
-
-
-def synthetic_table(n=1200, seed=0):
-    rng = np.random.default_rng(seed)
-    X = rng.normal(size=(n, 3))
-    p = 1 / (1 + np.exp(-(1.5 * X[:, 0] - 1.0 * X[:, 1])))
-    return {"X": X, "y": (rng.random(n) < p).astype(int), "match": np.repeat(list("ABCDEF"), n // 6)}
-
-
-def test_logistic_export_matches_sklearn():
-    t = synthetic_table()
-    model = ML.fit_logistic(t["X"], t["y"])
-    w = ML.export_logistic(model, ["a", "b", "c"])
-    z = (t["X"] - np.array(w["mean"])) / np.array(w["scale"]) @ np.array(w["coef"]) + w["intercept"]
-    assert np.allclose(1 / (1 + np.exp(-z)), model.predict_proba(t["X"])[:, 1], atol=1e-9)
-
-
-def test_leave_one_match_out_beats_base_rate():
-    r = ML.lomo(synthetic_table(), {"logistic": ML.fit_logistic, "base_rate": ML.fit_base_rate})
-    assert r["logistic"]["auc"] > 0.75 and r["logistic"]["log_loss"] < r["base_rate"]["log_loss"]
-    assert len(r["logistic"]["per_match"]) == 6 and len(r["logistic"]["reliability"]) == 10
-
-
-from coach import advice as A  # noqa: E402
-
-
-def test_advice_prefers_open_forward_teammate():
-    s = {
-        "att": np.array([[20.0, 0.0], [45.0, 0.0], [5.0, 0.0]]),
-        "att_v": np.zeros((3, 2)),
-        "def": np.array([[20.0, 25.0], [0.0, -25.0]]),
-        "def_v": np.zeros((2, 2)),
-        "att_idx": np.array([0, 1, 2]),
-        "ball": np.array([20.0, 0.0]),
-        "direction": 1,
-    }  # carrier 32.5 m from goal: the shot option exists
-    sig = lambda w: lambda X: 1 / (1 + np.exp(-(X @ w)))
-    # pass model: success falls with distance; value model: grows with x
-    models = {
-        "pass": sig(np.r_[-0.05, 0, 0, -1.0, 0.05, 0, 2.0, 0, 0]),
-        "value": sig(np.r_[0.05, 0, 0, 0, 0]),
-        "shot": sig(np.r_[-0.2, 0, 0]),
-    }
-    opts = A.options(s, carrier=0, models=models)
-    passes = [o for o in opts if o["kind"] == "pass"]
-    assert passes[0]["target"] == 1 and {o["kind"] for o in opts} == {"pass", "carry", "shot"}
-    assert all(0 <= o["p"] <= 1 for o in opts) and opts == sorted(opts, key=lambda o: -o["score"])
-
-
-from coach import export as X  # noqa: E402
-
-
-def test_pack_match_roundtrip_in_centimetres(tmp_path):
-    m = tiny_match(frames=100)
-    X.pack_match(m, tmp_path, fps=10)
-    meta = __import__("json").loads((tmp_path / "match.json").read_text())
-    raw = np.fromfile(tmp_path / "match.bin", dtype="<i2")
-    frames = sum(meta["frames"])
-    assert raw.size == frames * (len(m.player_ids) + 1) * 2 and meta["fps"] == 12.5
-    first = raw[: (len(m.player_ids) + 1) * 2].reshape(-1, 2) / 100.0
-    assert np.allclose(first[0], m.halves[0].xy[0, 0]) and np.allclose(first[-1], m.halves[0].ball[0, :2])

@@ -17,7 +17,32 @@ PASS_FEATURES = (
     "target_x",
     "target_goal_dist",
 )
-VALUE_FEATURES = ("x", "abs_y", "goal_dist", "goal_angle", "in_box")
+# Value model basis (Ridge, so the website can port it): position, goal geometry and three exponentials of the goal
+# distance (scales in metres) that let a linear model follow the steep rise of scoring chances near the goal.
+VALUE_FEATURES = (
+    "x",
+    "abs_y",
+    "goal_dist",
+    "goal_angle",
+    "in_box",
+    "near_goal",
+    "mid_goal",
+    "far_goal",
+    "x_sq",
+    "angle_near",
+)
+VALUE_BASIS = {
+    "x": "x (m, attacking towards +x, goal centre at 52.5)",
+    "abs_y": "|y| (m)",
+    "goal_dist": "distance to the goal centre (m)",
+    "goal_angle": "angle between the posts seen from the point (rad)",
+    "in_box": "1 inside the penalty area (|y| < 20.16 and x > 36), else 0",
+    "near_goal": "exp(-goal_dist / 8)",
+    "mid_goal": "exp(-goal_dist / 20)",
+    "far_goal": "exp(-goal_dist / 50)",
+    "x_sq": "(x / 52.5)^2",
+    "angle_near": "goal_angle * near_goal",
+}
 SHOT_FEATURES = ("goal_dist", "goal_angle", "cone_defenders")
 LANE_WIDTH = 2.0
 BACK = 4  # frames of history for velocities (0.16 s)
@@ -40,6 +65,7 @@ def state(m, half: int, frame: int, team: int) -> dict:
         "def": norm(pos[dfn]),
         "def_v": norm(vel[dfn]),
         "att_idx": np.flatnonzero(att),
+        "def_idx": np.flatnonzero(dfn),
         "ball": norm(h.ball[frame, :2]),
         "direction": direction,
     }
@@ -72,15 +98,39 @@ def pass_features(s, passer: int, target: int) -> dict:
 
 
 def value_features(ball) -> dict:
-    gd, ga = G.goal_geometry(np.asarray(ball)[None])
+    ball = np.asarray(ball, dtype=float)
+    gd, ga = G.goal_geometry(ball[None])
+    gd, ga = float(gd[0]), float(ga[0])
     in_box = abs(ball[1]) < 20.16 and ball[0] > G.HALF_LENGTH - 16.5
+    near = float(np.exp(-gd / 8.0))
     return {
         "x": float(ball[0]),
         "abs_y": float(abs(ball[1])),
-        "goal_dist": float(gd[0]),
-        "goal_angle": float(ga[0]),
+        "goal_dist": gd,
+        "goal_angle": ga,
         "in_box": float(in_box),
+        "near_goal": near,
+        "mid_goal": float(np.exp(-gd / 20.0)),
+        "far_goal": float(np.exp(-gd / 50.0)),
+        "x_sq": float((ball[0] / G.HALF_LENGTH) ** 2),
+        "angle_near": ga * near,
     }
+
+
+def without_defender(s, row: int) -> dict:
+    """Copy of a state with one defender (row of s["def"]) removed."""
+    keep = np.arange(len(s["def"])) != row
+    return {**s, "def": s["def"][keep], "def_v": s["def_v"][keep], "def_idx": s["def_idx"][keep]}
+
+
+def lane_loss_point(s, a, b, reach: float = 10.0):
+    """Where a pass from a to b is most likely lost: the nearest defender's projection on the lane (clipped to its
+    interior), or the lane midpoint when no defender is within `reach` metres of it."""
+    d, t = _segment_dist(s["def"], a, b)
+    k = int(np.argmin(d))
+    if d[k] > reach:
+        return (a + b) / 2
+    return a + float(np.clip(t[k], 0.1, 0.95)) * (b - a)
 
 
 def shot_features(ball, defenders) -> dict:

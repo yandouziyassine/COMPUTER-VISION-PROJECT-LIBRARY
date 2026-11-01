@@ -54,7 +54,7 @@ def pass_table(m) -> dict:
     for e in m.events:
         if e["type"] != "pass" or e.get("frame") is None or e.get("set_piece") or e.get("cross"):
             continue
-        if e["player"] is None or e["recipient"] == e["player"]:
+        if e["team"] < 0 or e["player"] is None or e["recipient"] == e["player"]:
             continue
         s = F.state(m, e["half"], e["frame"], e["team"])
         where = {p: i for i, p in enumerate(s["att_idx"])}

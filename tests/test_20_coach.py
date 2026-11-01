@@ -25,6 +25,9 @@ def tiny_match(frames=50):
         xy[:, 3] = [-5, -5]
         ball = np.zeros((frames, 3), np.float32)
         ball[:, 0] = np.linspace(-10, 10, frames)
+        if h == 1:  # sides swap at half time: home attacks -x
+            xy[..., 0] *= -1
+            ball[:, 0] *= -1
         halves.append(
             M.Half(
                 n=np.arange(frames, dtype=np.int32) + 10000,
@@ -231,6 +234,25 @@ def test_state_normalises_and_drops_absent_players():
     assert np.allclose(s["att"][0], [-10.0, 0.0]) and list(s["att_idx"]) == [2, 3]
 
 
+def test_state_second_half_flips_and_excludes_unknown_team():
+    m = tiny_match()
+    s = F.state(m, 1, 10, team=0)  # home attacks -x in half 1: its players at +10 and -5 become -10 and 5
+    assert np.allclose(s["att"][0], [-10.0, 0.0]) and np.allclose(s["def"][0], [10.0, 0.0])
+    m.team[1] = -1  # tracked but not in the match sheet: neither attacker nor defender
+    s = F.state(m, 0, 10, team=0)
+    assert list(s["att_idx"]) == [0] and s["def"].shape == (2, 2)
+
+
+def test_state_velocity_is_causal_backward_difference():
+    m = tiny_match(frames=50)
+    m.halves[0].xy[:, 0, 0] = -10 + 0.1 * np.arange(50)  # 2.5 m/s towards +x
+    v = F.state(m, 0, 10, team=0)["att_v"][0]
+    assert np.allclose(v, [2.5, 0.0], atol=1e-4)
+    m.halves[0].xy[11:, 0, 1] = 99.0  # the future must not change the state at frame 10
+    assert np.allclose(F.state(m, 0, 10, team=0)["att_v"][0], v)
+    assert np.allclose(F.state(m, 0, 0, team=0)["att_v"][0], 0.0)  # first frame: no history
+
+
 def test_pass_features_lane_and_pressure():
     s = {
         "att": np.array([[0.0, 0.0], [20.0, 0.0]]),
@@ -309,6 +331,9 @@ def test_failed_pass_target_is_inferred_from_ball_path():
     p = D.pass_table(m)
     # failed pass 1: ball travels to c at (10, 0); teammate b at (5, 5) is the only one beyond half-way -> target b
     assert list(p["y"]) == [1, 0] and p["X"].shape == (2, len(D.F.PASS_FEATURES))
+    m.events[0]["team"] = -1  # a pass by a player without a team is skipped
+    assert list(D.pass_table(m)["y"]) == [0]
+    m.events[0]["team"] = 0
     assert D.intended_target(m, m.events[2], D.F.state(m, 0, 7, 0), {0: 0, 1: 1}) is None
 
 

@@ -14,7 +14,9 @@ def fit_logistic(X, y):
 
 
 def fit_boosting(X, y):
-    return HistGradientBoostingClassifier(max_depth=3, learning_rate=0.05, max_iter=300, random_state=0).fit(X, y)
+    return HistGradientBoostingClassifier(
+        max_depth=3, learning_rate=0.05, max_iter=300, random_state=0, early_stopping=False
+    ).fit(X, y)
 
 
 def fit_base_rate(X, y):

@@ -4,7 +4,7 @@ import numpy as np
 
 from . import geometry as G
 from . import pitch_control as PC
-from .match import velocity
+from .match import FPS
 
 PASS_FEATURES = (
     "distance",
@@ -20,17 +20,19 @@ PASS_FEATURES = (
 VALUE_FEATURES = ("x", "abs_y", "goal_dist", "goal_angle", "in_box")
 SHOT_FEATURES = ("goal_dist", "goal_angle", "cone_defenders")
 LANE_WIDTH = 2.0
+BACK = 4  # frames of history for velocities (0.16 s)
 
 
-def state(m, half: int, frame: int, team: int, k: int = 2) -> dict:
+def state(m, half: int, frame: int, team: int) -> dict:
+    """Causal state: velocities are backward differences over BACK frames (same in training and at inference)."""
     h = m.halves[half]
     direction = G.attack_dirs(h, m.team)[team]
-    lo, hi = max(0, frame - k), min(len(h.t), frame + k + 1)
-    vel = np.nan_to_num(velocity(h.xy[lo:hi], k=1)[frame - lo])  # a player just on: no velocity yet
+    back = max(0, frame - BACK)
     pos = h.xy[frame]
+    vel = np.nan_to_num((pos - h.xy[back]) * (FPS / (frame - back))) if frame > back else np.zeros_like(pos)
     present = ~np.isnan(pos[:, 0])
     att = present & (m.team == team)
-    dfn = present & (m.team != team)
+    dfn = present & (m.team == 1 - team)  # players with team -1 (not on the match sheet) are neither
     norm = lambda a: G.normalise(a, direction)
     return {
         "att": norm(pos[att]),

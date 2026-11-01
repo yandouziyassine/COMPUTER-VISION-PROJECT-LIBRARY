@@ -159,3 +159,28 @@ def test_goal_distance_and_angle():
     d, a = G.goal_geometry(np.array([[52.5 - 11.0, 0.0], [52.5, 10.0]]))
     assert d[0] == pytest.approx(11.0) and a[0] == pytest.approx(2 * np.arctan(3.66 / 11.0))
     assert a[1] == pytest.approx(0.0, abs=1e-9)  # on the goal line, outside the posts: no angle
+
+
+from coach import sync  # noqa: E402
+
+
+def test_sync_picks_axis_convention_and_attaches_frames():
+    m = tiny_match()
+    # ball at frame 10 is at x = -10 + 20 * 10 / 49; the event says (X, Y) in 0..105 x 0..68 with Y flipped
+    bx = float(m.halves[0].ball[10, 0])
+    m.events = [
+        {
+            "type": "pass",
+            "t": float(m.halves[0].t[10]),
+            "x": bx + 52.5,
+            "y": 34.0 - 3.0,
+            "team": 0,
+            "player": "a",
+            "recipient": "b",
+            "success": True,
+        }
+    ]
+    m.halves[0].ball[:, 1] = 3.0
+    report = sync.attach_frames(m)
+    assert report["axis"] == "flip_y" and report["median_dist_m"] < 0.5
+    assert m.events[0]["half"] == 0 and m.events[0]["frame"] == 10

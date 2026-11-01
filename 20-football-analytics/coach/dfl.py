@@ -130,19 +130,22 @@ def parse_events(path, info) -> list:
                         "set_piece": set_piece,
                     }
                 )
-            if child.tag == "ShotAtGoal":
-                result = next((c.tag for c in child if c.tag in SHOT_RESULTS), None)
-                frame = ev.get("CalculatedFrame")
+            for shot in child.iter("ShotAtGoal"):  # also nested in <Penalty> / <FreeKick>
+                result = next((c.tag for c in shot if c.tag in SHOT_RESULTS), None)
+                frame, xg = ev.get("CalculatedFrame"), shot.get("xG")
                 out.append(
                     {
                         "type": "shot",
                         "t": t,
                         "x": x,
                         "y": y,
-                        "team": teams.get(child.get("Team"), -1),
+                        "team": teams.get(shot.get("Team"), -1),
+                        "player": shot.get("Player"),
                         "result": result,
                         "goal": result == "SuccessfulShot",
-                        "frame": int(frame) if frame else None,
+                        "set_piece": child.tag if child.tag in ("Penalty", "FreeKick") else None,
+                        "xg": float(xg) if xg else None,  # provider's expected goals
+                        "calc_frame": int(frame) if frame else None,  # provider frame number (not an index)
                     }
                 )
     out.sort(key=lambda e: e["t"])

@@ -102,7 +102,11 @@ EVENTS = """<?xml version="1.0" encoding="UTF-8"?><PutDataRequest>
 <Event EventTime="2022-08-26T18:32:09.760+02:00" X-Position="51.50" Y-Position="36.00">
  <Play Player="h1" Recipient="h1" Team="H" Evaluation="unsuccessful"><Pass/></Play></Event>
 <Event EventTime="2022-08-26T18:32:09.760+02:00" CalculatedFrame="10001" X-Position="95.00" Y-Position="30.00">
- <ShotAtGoal Team="G" TypeOfShot="rightLeg"><SuccessfulShot/></ShotAtGoal></Event>
+ <ShotAtGoal Team="G" Player="g1" xG="0.31" TypeOfShot="rightLeg"><SuccessfulShot/></ShotAtGoal></Event>
+<Event EventTime="2022-08-26T18:32:10.000+02:00" X-Position="94.00" Y-Position="34.00">
+ <Penalty><ShotAtGoal Team="H" Player="h1" xG="0.76"><SavedShot/></ShotAtGoal></Penalty></Event>
+<Event EventTime="2022-08-26T18:32:11.000+02:00" X-Position="80.00" Y-Position="30.00">
+ <FreeKick><ShotAtGoal Team="H" Player="h1"><ShotWide/></ShotAtGoal></FreeKick></Event>
 <Event EventTime="2022-08-26T18:32:09.700+02:00" X-Position="52.50" Y-Position="34.00">
  <KickOff GameSection="firstHalf" TeamRight="G" TeamLeft="H"><Play Player="h1" Team="H" Evaluation="successfullyCompleted"><Pass/></Play></KickOff></Event>
 </PutDataRequest>"""
@@ -141,7 +145,11 @@ def test_parse_events_passes_shots_and_kickoff_sides(tmp_path):
     shots = [e for e in ev if e["type"] == "shot"]
     assert len(passes) == 2 and passes[0]["set_piece"] == "KickOff" and passes[0]["recipient"] is None  # time order
     assert passes[1]["success"] is False and passes[1]["recipient"] == "h1"
-    assert shots[0]["goal"] is True and shots[0]["team"] == 1 and shots[0]["frame"] == 10001
+    assert shots[0]["goal"] is True and shots[0]["team"] == 1 and shots[0]["calc_frame"] == 10001
+    assert shots[0]["xg"] == pytest.approx(0.31) and shots[0]["set_piece"] is None and shots[0]["player"] == "g1"
+    # shots nested in <Penalty> / <FreeKick> are kept and flagged
+    assert [s["set_piece"] for s in shots] == [None, "Penalty", "FreeKick"] and shots[1]["xg"] == 0.76
+    assert shots[1]["result"] == "SavedShot" and shots[2]["xg"] is None and shots[2]["calc_frame"] is None
     assert passes[1]["t"] == pytest.approx(dfl.epoch("2022-08-26T16:32:09.760+00:00"))
 
 

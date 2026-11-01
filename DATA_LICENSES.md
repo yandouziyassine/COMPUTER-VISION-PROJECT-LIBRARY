@@ -24,7 +24,7 @@ Legend: ✅ permissive · ⚠️ non-commercial / research-only / copyleft · �
 | 11 | Kvasir-SEG (Simula, Jha et al. MMM 2020) | ⚠️ research / education | Cite the paper |
 | 11 | CVC-ClinicDB (Bernal et al., CMIG 2015), via HF mirror berkaytrhn/cvc-clinicdb (official link gone) | ⚠️ research / education only, no commercial use (images © Hospital Clinic Barcelona, masks © CVC) | Evaluation only, no images published; cite the paper |
 | 12 | EuroSAT RGB (Helber et al. 2019; HF `timm/eurosat-rgb`) | ✅ MIT | |
-| 13 | MVTec AD (HF mirror `foersben/mvtec-ad`) | ⚠️ CC BY-NC-SA 4.0 | Non-commercial, share-alike |
+| 13 | MVTec AD, all 15 categories (HF mirror `foersben/mvtec-ad`) | ⚠️ CC BY-NC-SA 4.0 | Non-commercial, share-alike; no dataset images published (charts only) |
 | 15, 18 | UR Fall Detection Dataset (Kwolek & Kepski 2014) | ⚠️ research use | Cite the paper |
 | 16, 14, 17, 18 | COCO val2017 images + annotations | ✅ CC BY 4.0 annotations | Images: Flickr, under their original licenses |
 | 18 | VQAv2 questions/answers (visualqa.org) | ✅ CC BY 4.0 | |

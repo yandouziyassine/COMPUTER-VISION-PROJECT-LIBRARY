@@ -15,7 +15,7 @@ Every one has code that ran end to end, real metrics, a README with figures, and
 | 03 | Receipt scanner + OCR | page found 68 % on a table; total 78 % on clean scans (after the amount-parser fix); OCR 11× faster via OpenVINO |
 | 08 | Traffic analytics | 19 vehicles tracked, speeds via homography, 3.4 FPS at 4K on CPU |
 | 11 | Polyp segmentation | Dice 0.886 retrained (0.892 TTA); CVC-ClinicDB cross-center 0.825 (U-Net, CPU) |
-| 13 | PatchCore (from scratch) | image AUROC 1.000 / 0.999 / 0.977, matches the paper |
+| 13 | PatchCore (from scratch) | 15 MVTec categories: image AUROC 0.989 / pixel 0.979, matches the paper (0.990 / 0.981) |
 | 14 | Depth → 3D | one photo → point cloud → new viewpoints |
 | 16 | CLIP image search | R@10 75.2 % on COCO 5k, zero-shot |
 | 17 | Auto-labeling | zero-shot mAP 0.558 vs 0.473 for supervised YOLO11n (but 118× slower) |
@@ -41,7 +41,7 @@ planned (login, dataset size, GPU or API key).
 |---|---|---|---|
 | — | Setup: repo copied to USB, shared `.venv`, CLAUDE.md, common/paths.py | ✅ | `.venv` on the key works: torch 2.14.1+cpu, cv2 5.0.0 (install took ~2 h on FAT32) |
 | 02 | Solar Defect Classifier | ✅ | Test acc 82.9 %, macro F1 0.830. README, figures, Gradio app tested |
-| 13 | Unsupervised Anomaly Detection (PatchCore) | ✅ | Image AUROC bottle 1.000 / metal_nut 0.999 / grid 0.977, pixel AUROC 0.977–0.985, matches the paper. Data from HF mirror `foersben/mvtec-ad` |
+| 13 | Unsupervised Anomaly Detection (PatchCore) | ✅ upgraded 2026-11-01 | All 15 MVTec AD categories: mean image AUROC 0.989 / pixel 0.979 (paper PatchCore-10 % 0.990 / 0.981), every category within 0.7 pt image AUROC. Held-out 99 %-recall thresholds (split-half, 10 repeats): 97.2 % recall reached, 20.7 % false alarms (0 % on 5 categories, pill 69 %); 95 % target → 6.0 % false alarms. OpenVINO: iGPU FP16 24 ms/img (18× vs PyTorch CPU 449 ms), accuracy unchanged; NPU gives wrong features (AUROC ~0.5, open issue). Coreset 5.9× faster, same patches. Data from HF mirror `foersben/mvtec-ad`. Commit 8484ea2 |
 | 08 | Traffic Analytics | ✅ | 19 vehicles tracked, 2 in / 5 out, median 119 km/h, 3.4 FPS at 4K on CPU. Ran with the USB `.venv` |
 | 19 | Edge Deployment Benchmark (CPU / iGPU / NPU) | ✅ | PyTorch CPU 79 ms → OpenVINO iGPU 4.7 ms / NPU 4.6 ms (~17×). INT8: −0.1 mAP on 500 held-out COCO val2017 images (first version wrongly used COCO128 = train data; fixed after review). Found and fixed a hybrid-CPU thread trap in ONNX Runtime |
 | 16 | Text-to-Image Search | ✅ | COCO 5k text→image R@1 39.1 % / R@5 65.5 % / R@10 75.2 % (matches published zero-shot). Gradio app tested |

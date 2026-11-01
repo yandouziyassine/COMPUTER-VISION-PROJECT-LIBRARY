@@ -184,3 +184,16 @@ def test_sync_picks_axis_convention_and_attaches_frames():
     report = sync.attach_frames(m)
     assert report["axis"] == "flip_y" and report["median_dist_m"] < 0.5
     assert m.events[0]["half"] == 0 and m.events[0]["frame"] == 10
+
+
+def test_sync_snaps_event_with_hand_timestamp_lead():
+    m = tiny_match(frames=200)
+    bx = float(m.halves[0].ball[100, 0])
+    m.halves[0].ball[:, 1] = 0.0
+    # operator stamped the event 1.2 s (30 frames) before the ball is actually there
+    m.events = [{"type": "pass", "t": float(m.halves[0].t[70]), "x": bx + 52.5, "y": 34.0, "team": 0}]
+    report = sync.attach_frames(m)
+    assert m.events[0]["frame"] == 100 and m.events[0]["sync_shift_s"] == pytest.approx(1.2)
+    assert report["median_dist_m"] < 0.1 and report["nominal_median_dist_m"] > 2 and report["median_shift_s"] == 1.2
+
+

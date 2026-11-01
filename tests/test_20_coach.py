@@ -395,3 +395,44 @@ def test_failed_pass_target_is_inferred_from_ball_path():
     assert D.intended_target(m, m.events[1], s, {0: 0, 1: 1}) == (1, None)  # ball dies at (2, 0): b is 4.2 m away
 
 
+from coach import models as ML  # noqa: E402
+
+
+def synthetic_table(n=1200, seed=0):
+    rng = np.random.default_rng(seed)
+    X = rng.normal(size=(n, 3))
+    p = 1 / (1 + np.exp(-(1.5 * X[:, 0] - 1.0 * X[:, 1])))
+    return {"X": X, "y": (rng.random(n) < p).astype(int), "match": np.repeat(list("ABCDEF"), n // 6)}
+
+
+def test_logistic_export_matches_sklearn():
+    t = synthetic_table()
+    model = ML.fit_logistic(t["X"], t["y"])
+    w = ML.export_logistic(model, ["a", "b", "c"])
+    z = (t["X"] - np.array(w["mean"])) / np.array(w["scale"]) @ np.array(w["coef"]) + w["intercept"]
+    assert np.allclose(1 / (1 + np.exp(-z)), model.predict_proba(t["X"])[:, 1], atol=1e-9)
+
+
+def test_leave_one_match_out_beats_base_rate():
+    r = ML.lomo(synthetic_table(), {"logistic": ML.fit_logistic, "base_rate": ML.fit_base_rate})
+    assert r["logistic"]["auc"] > 0.75 and r["logistic"]["log_loss"] < r["base_rate"]["log_loss"]
+    assert len(r["logistic"]["per_match"]) == 6 and len(r["logistic"]["reliability"]) == 10
+
+
+def test_ridge_export_and_regression_lomo():
+    rng = np.random.default_rng(1)
+    n = 1200
+    x = rng.uniform(-52.5, 52.5, n)
+    ay = rng.uniform(0, 34, n)
+    X = np.c_[x, ay, np.hypot(52.5 - x, ay)]
+    y = 0.002 * (x + 52.5) + rng.normal(0, 0.05, n)
+    t = {"X": X, "y": y, "match": np.repeat(list("ABCDEF"), n // 6)}
+    model = ML.fit_ridge(X, y)
+    w = ML.export_ridge(model, ["x", "abs_y", "goal_dist"])
+    z = (X - np.array(w["mean"])) / np.array(w["scale"]) @ np.array(w["coef"]) + w["intercept"]
+    assert w["link"] == "identity" and np.allclose(z, model.predict(X), atol=1e-9)
+    r = ML.lomo_reg(t, {"mean": ML.fit_mean, "ridge": ML.fit_ridge, "xt": ML.fit_xt_grid, "col": ML.column_reg(0)})
+    assert r["ridge"]["mse_skill"] > 0.3 and r["xt"]["mse_skill"] > 0.2 and abs(r["mean"]["mse_skill"]) < 1e-9
+    assert len(r["ridge"]["calibration"]) == 10 and set(r["ridge"]["per_match"]) == set("ABCDEF")
+
+

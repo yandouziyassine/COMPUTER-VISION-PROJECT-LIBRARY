@@ -1,22 +1,24 @@
 """Attach each event to a half and a frame index, and measure how well event locations match the ball.
 
-Event coordinates are 0..105 x 0..68; tracking is centred. Two conventions are tried (Y as is, or flipped) and the
-one with the smaller median event-to-ball distance is kept; the residuals are the sync-quality numbers in the README.
+Event coordinates are 0..105 x 0..68; tracking is centred. The two Y conventions (as is / flipped) are compared on
+the unsnapped event-to-ball distances and the better one is kept (stored in m.meta["event_axis"]).
 
-Time mapping (checked on J03WOH): the timezone handling is right (UTC vs +02:00 offset-aware), but the event
-timestamps are hand-made and lead the tracking by about 1.2 s on average with ~1 s of jitter, so the ball is not yet
-(or no longer) at the event location at the nominal frame (median distance 7.7 m). Each event is therefore snapped to
-the frame, within +-SNAP_S seconds of its nominal time, where the ball is closest to the event location. After the
-snap the passer is within 2 m of the ball for ~3/4 of the passes (39 % at the nominal time). Both the nominal and the
-snapped residuals are reported.
+Time mapping (checked on all 7 matches): the timezone handling is right (UTC vs +02:00, offset-aware parsing), but the
+event timestamps are hand-made: each half has its own clock offset against the tracking (median -1.6 s .. +1.4 s)
+plus ~1 s of jitter. So per half the median shift is estimated (best frame within +-SEARCH_S of each event), then each
+event is snapped within +-SNAP_S around its shifted time to the frame where the ball is closest to the event location,
+among frames where the acting player (passer / shooter) is within RELEASE_M of the ball: the release, never the later
+interception. The provider's CalculatedFrame is used when it exists and agrees with the event location. Events that
+cannot be placed get frame None and a reason in e["drop"]: no_half, no_position, no_release, far (more than MAX_DIST_M
+from the ball), window_edge (best frame is at the edge of the window, i.e. the true release is probably outside).
 """
 
 import numpy as np
 
-from .match import frame_at
+from .match import FPS, frame_at
 
 AXES = {"same_y": lambda x, y: (x - 52.5, y - 34.0), "flip_y": lambda x, y: (x - 52.5, 34.0 - y)}
-SNAP_S = 3.0
+SEARCH_S, SNAP_S, RELEASE_M, MAX_DIST_M = 4.0, 1.5, 2.0, 3.0
 
 
 def _half_of(m, t):
@@ -26,62 +28,121 @@ def _half_of(m, t):
     return None
 
 
-def _snap(h, nominal, loc, radius):
-    """Frame within +-radius frames of nominal whose ball position is closest to loc; returns (frame, distance)."""
-    lo, hi = max(0, nominal - radius), min(len(h.t), nominal + radius + 1)
-    d = np.hypot(h.ball[lo:hi, 0] - loc[0], h.ball[lo:hi, 1] - loc[1])
-    if not np.isfinite(d).any():
-        return nominal, float("nan")
-    k = int(np.nanargmin(d))
-    return lo + k, float(d[k])
+def _is_index(v):
+    return isinstance(v, (int, np.integer)) and not isinstance(v, bool)
+
+
+def _ball_dist(h, lo, hi, loc):
+    return np.hypot(h.ball[lo:hi, 0] - loc[0], h.ball[lo:hi, 1] - loc[1])
+
+
+def _pct(a, q):
+    return float(np.nanpercentile(a, q)) if len(a) else float("nan")
 
 
 def attach_frames(m) -> dict:
-    radius = int(round(SNAP_S * 25))
+    n_players = len(m.player_ids)
+    search, radius = int(round(SEARCH_S * FPS)), int(round(SNAP_S * FPS))
+    # 1. half and nominal frame
     located = []
     for e in m.events:
-        e["half"] = _half_of(m, e["t"])
+        e["half"], e["drop"], e["sync"] = _half_of(m, e["t"]), None, None
         if e["half"] is None:
-            e["frame"] = None
+            e["frame"], e["drop"] = None, "no_half"
             continue
-        h = m.halves[e["half"]]
-        e["frame"] = frame_at(h, e["t"])
-        if np.isfinite(e["x"]) and np.all(np.isfinite(h.ball[e["frame"], :2])):
+        e["frame"] = frame_at(m.halves[e["half"]], e["t"])
+        e["nominal"] = e["frame"]
+        if not np.isfinite(e["x"]):
+            e["frame"], e["drop"] = None, "no_position"
+        elif np.all(np.isfinite(m.halves[e["half"]].ball[e["nominal"], :2])):
             located.append(e)
-    best = None
+    # 2. axis convention on the unsnapped distances
+    nominal = {}
     for name, f in AXES.items():
-        snapped = []
-        for e in located:
-            h = m.halves[e["half"]]
-            snapped.append(_snap(h, e["frame"], f(e["x"], e["y"]), radius))
-        d = [s[1] for s in snapped]
-        med = float(np.nanmedian(d)) if d else float("nan")
-        if best is None or med < best[1]:
-            best = (name, med, snapped)
-    name, med, snapped = best
-    nominal = [
-        float(np.hypot(*(np.array(AXES[name](e["x"], e["y"])) - m.halves[e["half"]].ball[e["frame"], :2])))
-        for e in located
-    ]
+        nominal[name] = [
+            float(np.hypot(*(np.array(f(e["x"], e["y"])) - m.halves[e["half"]].ball[e["nominal"], :2])))
+            for e in located
+        ]
+    axis = min(nominal, key=lambda k: np.median(nominal[k]) if nominal[k] else float("inf"))
+    m.meta["event_axis"] = axis
+    loc = lambda e: AXES[axis](e["x"], e["y"])
+    # 3. clock offset per half: median of the best-frame shift of the events that find the ball nearby
     shift = []
-    for e, (frame, _) in zip(located, snapped):
-        shift.append((frame - e["frame"]) / 25.0)
-        e["sync_shift_s"] = shift[-1]
-        e["frame"] = frame
-    m.meta["event_axis"] = name
-    d = [s[1] for s in snapped]
-    pct = lambda a, q: float(np.nanpercentile(a, q)) if len(a) else float("nan")
+    for hi, h in enumerate(m.halves):
+        found = []
+        for e in located:
+            if e["half"] != hi:
+                continue
+            lo, up = max(0, e["nominal"] - search), min(len(h.t), e["nominal"] + search + 1)
+            d = _ball_dist(h, lo, up, loc(e))
+            if np.isfinite(d).any() and np.nanmin(d) <= MAX_DIST_M:
+                found.append(lo + int(np.nanargmin(d)) - e["nominal"])
+        shift.append(int(np.median(found)) if found else 0)
+    # 4. snap
+    for e in m.events:
+        if e["half"] is None or e["drop"] == "no_position":
+            continue
+        hi = e["half"]
+        h = m.halves[hi]
+        e["t_sync"] = e["t"] + shift[hi] / FPS  # used when the event cannot be placed
+        where = loc(e)
+        calc = e.get("calc_frame")
+        if calc is not None:
+            i = int(np.searchsorted(h.n, calc))
+            if i < len(h.n) and h.n[i] == calc:
+                d = _ball_dist(h, i, i + 1, where)[0]
+                if np.isfinite(d) and d <= MAX_DIST_M:
+                    e["frame"], e["sync"], e["dist"] = i, "calc", float(d)
+                    continue
+        centre = e["nominal"] + shift[hi]
+        lo_u, hi_u = centre - radius, centre + radius
+        lo, up = max(0, lo_u), min(len(h.t), hi_u + 1)
+        if lo >= up:
+            e["frame"], e["drop"] = None, "no_release"
+            continue
+        d = _ball_dist(h, lo, up, where)
+        ok = np.isfinite(d)
+        actor = e.get("player")
+        if _is_index(actor) and 0 <= actor < n_players:
+            ok &= np.linalg.norm(h.xy[lo:up, actor] - h.ball[lo:up, :2], axis=1) <= RELEASE_M
+        if not ok.any():
+            e["frame"], e["drop"] = None, "no_release"
+            continue
+        k = int(np.argmin(np.where(ok, d, np.inf)))
+        f = lo + k
+        if d[k] > MAX_DIST_M:
+            e["frame"], e["drop"] = None, "far"
+        elif f - lo_u <= 1 or hi_u - f <= 1:
+            e["frame"], e["drop"] = None, "window_edge"
+        else:
+            e["frame"], e["sync"], e["dist"] = f, "snap", float(d[k])
+    # 5. report
+    kept = [e for e in m.events if e.get("frame") is not None]
+    for e in kept:
+        e["sync_shift_s"] = (e["frame"] - e["nominal"]) / FPS
+        e["t_sync"] = float(m.halves[e["half"]].t[e["frame"]])
+    reasons = {}
+    for e in m.events:
+        if e.get("frame") is None:
+            reasons[e["drop"]] = reasons.get(e["drop"], 0) + 1
+    d = [e["dist"] for e in kept]
+    passes = [e for e in m.events if e["type"] == "pass"]
+    shots = [e for e in m.events if e["type"] == "shot"]
     return {
-        "axis": name,
-        "median_dist_m": med,
-        "p90_dist_m": pct(d, 90),
-        "nominal_median_dist_m": pct(nominal, 50),
-        "nominal_p90_dist_m": pct(nominal, 90),
-        "median_shift_s": pct(shift, 50),
-        "p90_abs_shift_s": pct(np.abs(shift), 90),
-        "snap_s": SNAP_S,
+        "axis": axis,
+        "nominal_median_dist_m": _pct(nominal[axis], 50),
+        "nominal_p90_dist_m": _pct(nominal[axis], 90),
+        "median_dist_m": _pct(d, 50),
+        "p90_dist_m": _pct(d, 90),
+        "shift_s": [s / FPS for s in shift],
         "events": len(m.events),
-        "located": len(located),
+        "kept": len(kept),
+        "dropped": reasons,
+        "passes": len(passes),
+        "passes_kept": sum(e.get("frame") is not None for e in passes),
+        "shots": len(shots),
+        "shots_kept": sum(e.get("frame") is not None for e in shots),
+        "calc_frames_used": sum(e.get("sync") == "calc" for e in kept),
     }
 
 

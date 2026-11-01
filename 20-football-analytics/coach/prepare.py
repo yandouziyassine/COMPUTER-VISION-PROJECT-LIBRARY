@@ -64,13 +64,13 @@ def main():
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     audit_path = OUT / "sync_audit.json"
-    audit = json.loads(audit_path.read_text()) if audit_path.exists() else {}
+    audit = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.exists() else {}
     for mid in args.only:
         if (OUT / f"{mid}.npz").exists() and mid in audit:
             print("have", mid)
             continue
         audit[mid] = convert(args.raw, mid)
-        audit_path.write_text(json.dumps(audit, indent=2))
+        audit_path.write_text(json.dumps(audit, indent=2), encoding="utf-8")
         print(mid, audit[mid], flush=True)
 
 

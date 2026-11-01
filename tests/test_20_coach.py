@@ -205,7 +205,46 @@ def test_sync_snaps_event_with_hand_timestamp_lead():
     m.events = [{"type": "pass", "t": float(m.halves[0].t[70]), "x": bx + 52.5, "y": 34.0, "team": 0}]
     report = sync.attach_frames(m)
     assert m.events[0]["frame"] == 100 and m.events[0]["sync_shift_s"] == pytest.approx(1.2)
-    assert report["median_dist_m"] < 0.1 and report["nominal_median_dist_m"] > 2 and report["median_shift_s"] == 1.2
+    assert report["median_dist_m"] < 0.1 and report["nominal_median_dist_m"] > 2 and report["shift_s"][0] == 1.2
+    assert report["kept"] == 1 and report["dropped"] == {} and m.events[0]["t_sync"] == float(m.halves[0].t[100])
+
+
+def _run_events(frames, events, ball_x=None):
+    m = tiny_match(frames=frames)
+    m.halves[0].ball[:, 1] = 0.0
+    if ball_x is not None:
+        m.halves[0].ball[:, 0] = ball_x
+    base = {"type": "pass", "team": 0, "y": 34.0}
+    m.events = [{**base, **e, "t": float(m.halves[0].t[e.pop("nominal")])} for e in events]
+    return m, sync.attach_frames(m)
+
+
+def test_sync_only_snaps_to_release_not_to_later_ball_position():
+    # passer a (index 0) stands at (-10, 0); the ball leaves him at frame 55 and passes (0, 0) at frame 75
+    ball_x = np.where(np.arange(200) < 55, -10.0, -10.0 + 0.5 * (np.arange(200) - 55))
+    ev = {"nominal": 75, "x": 52.5, "player": 0}
+    m, report = _run_events(200, [dict(ev)], ball_x)
+    assert m.events[0]["frame"] is None and m.events[0]["drop"] == "far" and report["dropped"] == {"far": 1}
+    assert m.events[0]["t_sync"] == pytest.approx(m.events[0]["t"])  # unplaced events keep the nominal time
+    # same ball and event, actor unknown: nothing ties the snap to the release, so it lands at frame 75
+    m, report = _run_events(200, [{**ev, "player": "a"}], ball_x)
+    assert m.events[0]["frame"] == 75
+    # event at the release itself: kept at the release frame range
+    m, report = _run_events(200, [{**ev, "x": 42.5, "nominal": 56}], ball_x)
+    assert m.events[0]["frame"] is not None and m.events[0]["frame"] <= 57 and report["kept"] == 1
+
+
+def test_sync_drops_events_at_the_window_edge_and_uses_calc_frame():
+    xs = np.linspace(-10, 10, 200)
+    ev = [{"nominal": n, "x": xs[n + 10] + 52.5} for n in (50, 80, 110)]  # three events that lead by 10 frames
+    ev.append({"nominal": 100, "x": xs[150] + 52.5})  # true release 40 frames later: outside +-37
+    m, report = _run_events(200, ev)
+    assert [e["frame"] for e in m.events[:3]] == [60, 90, 120]
+    assert m.events[3]["frame"] is None and m.events[3]["drop"] == "window_edge"
+    # the provider's CalculatedFrame is trusted when it agrees with the location
+    shot = {"type": "shot", "nominal": 20, "x": xs[150] + 52.5, "calc_frame": 10150}
+    m, report = _run_events(200, [shot])
+    assert m.events[0]["frame"] == 150 and m.events[0]["sync"] == "calc" and report["calc_frames_used"] == 1
 
 
 from coach import pitch_control as PC  # noqa: E402

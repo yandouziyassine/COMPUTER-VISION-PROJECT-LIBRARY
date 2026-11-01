@@ -138,8 +138,16 @@ def pass_samples(m):
         yield {"event": e, "state": s, "carrier": where[e["player"]], "target": target, "interceptor": interceptor}
 
 
+def completion_rate(m) -> float:
+    """True open-play completion rate of the match, from all its pass events (placed on the tracking or not)."""
+    ev = [
+        e for e in m.events if e["type"] == "pass" and not e.get("set_piece") and not e.get("cross") and e["team"] >= 0
+    ]
+    return float(np.mean([e["success"] for e in ev])) if ev else float("nan")
+
+
 def pass_table(m) -> dict:
-    """X: features at the release. X_noint: the same with the interceptor removed from the defenders of unsuccessful
+    """X: features at the release; weight: reweighting to the true completion rate. X_noint: the same with the interceptor removed from the defenders of unsuccessful
     passes (he stands on the lane by construction); X_geom: geometry only (no defenders), both leak-free variants."""
     rows, rows_noint, ys = [], [], []
     for p in pass_samples(m):
@@ -150,6 +158,12 @@ def pass_table(m) -> dict:
         ys.append(int(p["event"]["success"]))
     table = _table(rows, ys, m.match_id, F.PASS_FEATURES)
     table["X_noint"] = _table(rows_noint, ys, m.match_id, F.PASS_FEATURES)["X"]
+    # failed passes are harder to place (intended receiver, release frame) than completed ones, so the table over-represents
+    # completions: weight the failed rows so that the weighted completion rate equals the match's true rate
+    y = table["y"]
+    n_ok, n_fail, rate = int(y.sum()), int((1 - y).sum()), completion_rate(m)
+    w_fail = n_ok * (1 - rate) / (rate * n_fail) if n_ok and n_fail and 0 < rate < 1 else 1.0
+    table["weight"] = np.where(y == 1, 1.0, w_fail)
     return table
 
 

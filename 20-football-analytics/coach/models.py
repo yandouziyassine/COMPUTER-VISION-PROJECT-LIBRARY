@@ -10,51 +10,53 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 
-def fit_logistic(X, y):
-    return make_pipeline(StandardScaler(), LogisticRegression(C=1.0, max_iter=2000)).fit(X, y)
+def fit_logistic(X, y, w=None):
+    pipe = make_pipeline(StandardScaler(), LogisticRegression(C=1.0, max_iter=2000))
+    return pipe.fit(X, y) if w is None else pipe.fit(X, y, logisticregression__sample_weight=w)
 
 
-def fit_boosting(X, y):
+def fit_boosting(X, y, w=None):
     return HistGradientBoostingClassifier(
         max_depth=3, learning_rate=0.05, max_iter=300, random_state=0, early_stopping=False
-    ).fit(X, y)
+    ).fit(X, y, sample_weight=w)
 
 
-def fit_base_rate(X, y):
-    return DummyClassifier(strategy="prior").fit(X, y)
+def fit_base_rate(X, y, w=None):
+    return DummyClassifier(strategy="prior").fit(X, y, sample_weight=w)
 
 
-def column(i):
-    """Baseline that uses one feature only (e.g. pass distance), still a logistic regression."""
-    return lambda X, y: _Column(i, fit_logistic(X[:, [i]], y))
+def column(i, cols=None):
+    """Baseline that uses one feature (or the feature indices `cols`), still a logistic regression."""
+    cols = [i] if cols is None else list(cols)
+    return lambda X, y, w=None: _Column(cols, fit_logistic(X[:, cols], y, w))
 
 
 def column_reg(i):
     """Regression baseline that uses one feature only (e.g. goal distance), still a Ridge."""
-    return lambda X, y: _Column(i, fit_ridge(X[:, [i]], y))
+    return lambda X, y, w=None: _Column([i], fit_ridge(X[:, [i]], y))
 
 
 class _Column:
-    def __init__(self, i, model):
-        self.i, self.model = i, model
+    def __init__(self, cols, model):
+        self.cols, self.model = cols, model
 
     def predict_proba(self, X):
-        return self.model.predict_proba(X[:, [self.i]])
+        return self.model.predict_proba(X[:, self.cols])
 
     def predict(self, X):
-        return self.model.predict(X[:, [self.i]])
+        return self.model.predict(X[:, self.cols])
 
 
-def fit_ridge(X, y):
+def fit_ridge(X, y, w=None):
     """Value model: standardised fixed basis features + Ridge, exported as plain weights."""
     return make_pipeline(StandardScaler(), Ridge(alpha=10.0)).fit(X, y)
 
 
-def fit_mean(X, y):
+def fit_mean(X, y, w=None):
     return DummyRegressor(strategy="mean").fit(X, y)
 
 
-def fit_boosting_regressor(X, y):
+def fit_boosting_regressor(X, y, w=None):
     return HistGradientBoostingRegressor(
         max_depth=3, learning_rate=0.05, max_iter=200, random_state=0, early_stopping=False
     ).fit(X, y)
@@ -83,7 +85,7 @@ class XTGrid:
         return self.table_[self._cell(X)]
 
 
-def fit_xt_grid(X, y):
+def fit_xt_grid(X, y, w=None):
     return XTGrid().fit(X, y)
 
 
@@ -110,7 +112,8 @@ def export_ridge(model, names) -> dict:
     return export_linear(model, names, "identity")
 
 
-def reliability(y, p, bins=10):
+def reliability(y, p, bins=10, w=None):
+    w = np.ones(len(y)) if w is None else w
     edges = np.linspace(0, 1, bins + 1)
     out = []
     for lo, hi in zip(edges[:-1], edges[1:]):
@@ -120,38 +123,46 @@ def reliability(y, p, bins=10):
                 "lo": float(lo),
                 "hi": float(hi),
                 "n": int(sel.sum()),
-                "mean_pred": float(p[sel].mean()) if sel.any() else None,
-                "observed": float(y[sel].mean()) if sel.any() else None,
+                "mean_pred": float(np.average(p[sel], weights=w[sel])) if sel.any() else None,
+                "observed": float(np.average(y[sel], weights=w[sel])) if sel.any() else None,
             }
         )
     return out
 
 
-def metrics(y, p) -> dict:
+def metrics(y, p, w=None) -> dict:
+    """Log-loss, Brier, AUC (sample-weighted when w is given; n is always the row count)."""
     p = np.clip(p, 1e-6, 1 - 1e-6)
     return {
         "n": int(len(y)),
-        "positive_rate": float(y.mean()),
-        "log_loss": float(log_loss(y, p, labels=[0, 1])),
-        "brier": float(brier_score_loss(y, p)),
-        "auc": float(roc_auc_score(y, p)) if 0 < y.sum() < len(y) else None,
+        "positive_rate": float(np.average(y, weights=w)),
+        "log_loss": float(log_loss(y, p, sample_weight=w, labels=[0, 1])),
+        "brier": float(brier_score_loss(y, p, sample_weight=w)),
+        "auc": float(roc_auc_score(y, p, sample_weight=w)) if 0 < y.sum() < len(y) else None,
     }
 
 
-def lomo(table, fitters: dict) -> dict:
+def lomo(table, fitters: dict, weighted: bool = True) -> dict:
     """Each model is trained on all matches but one and scored on the held-out match; metrics on the pooled
-    out-of-fold predictions, plus per-match metrics for the spread."""
+    out-of-fold predictions, plus per-match metrics for the spread. When the table has a "weight" column (pass table:
+    reweights the failed passes to the true completion rate) it is used for fitting and scoring unless weighted=False."""
     X, y, groups = table["X"], table["y"], table["match"]
+    w = table.get("weight") if weighted else None
     result = {}
     for name, fit in fitters.items():
         oof = np.zeros(len(y))
         per = {}
         for g in np.unique(groups):
             test = groups == g
-            model = fit(X[~test], y[~test])
+            model = fit(X[~test], y[~test]) if w is None else fit(X[~test], y[~test], w[~test])
             oof[test] = model.predict_proba(X[test])[:, 1]
-            per[str(g)] = metrics(y[test], oof[test])
-        result[name] = {**metrics(y, oof), "per_match": per, "reliability": reliability(y, oof), "oof": oof}
+            per[str(g)] = metrics(y[test], oof[test], None if w is None else w[test])
+        result[name] = {
+            **metrics(y, oof, w),
+            "per_match": per,
+            "reliability": reliability(y, oof, w=w),
+            "oof": oof,
+        }
     return result
 
 

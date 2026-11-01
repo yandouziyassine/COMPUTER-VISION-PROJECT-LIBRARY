@@ -362,3 +362,15 @@ def test_advice_prefers_open_forward_teammate():
     assert all(0 <= o["p"] <= 1 for o in opts) and opts == sorted(opts, key=lambda o: -o["score"])
 
 
+from coach import export as X  # noqa: E402
+
+
+def test_pack_match_roundtrip_in_centimetres(tmp_path):
+    m = tiny_match(frames=100)
+    X.pack_match(m, tmp_path, fps=10)
+    meta = __import__("json").loads((tmp_path / "match.json").read_text())
+    raw = np.fromfile(tmp_path / "match.bin", dtype="<i2")
+    frames = sum(meta["frames"])
+    assert raw.size == frames * (len(m.player_ids) + 1) * 2 and meta["fps"] == 12.5
+    first = raw[: (len(m.player_ids) + 1) * 2].reshape(-1, 2) / 100.0
+    assert np.allclose(first[0], m.halves[0].xy[0, 0]) and np.allclose(first[-1], m.halves[0].ball[0, :2])

@@ -220,3 +220,36 @@ def test_grid_shape():
     assert g.shape == (len(ys), len(xs)) and 0 <= g.min() <= g.max() <= 1
 
 
+from coach import features as F  # noqa: E402
+
+
+def test_state_normalises_and_drops_absent_players():
+    m = tiny_match()
+    m.halves[0].xy[:, 1] = np.nan  # player b off the pitch
+    s = F.state(m, 0, 10, team=1)  # guests attack -x in half 0 → flipped
+    assert s["att"].shape == (2, 2) and s["def"].shape == (1, 2)
+    assert np.allclose(s["att"][0], [-10.0, 0.0]) and list(s["att_idx"]) == [2, 3]
+
+
+def test_pass_features_lane_and_pressure():
+    s = {
+        "att": np.array([[0.0, 0.0], [20.0, 0.0]]),
+        "att_v": np.zeros((2, 2)),
+        "def": np.array([[10.0, 1.0], [40.0, 30.0]]),
+        "def_v": np.zeros((2, 2)),
+        "att_idx": np.array([5, 6]),
+        "ball": np.array([0.0, 0.0]),
+    }
+    f = F.pass_features(s, passer=0, target=1)
+    assert f["distance"] == pytest.approx(20.0) and f["forward"] == pytest.approx(20.0)
+    assert f["lane_defenders"] == 1 and f["receiver_space"] == pytest.approx(np.hypot(10, 1))
+    assert 0 < f["target_control"] < 1 and list(F.PASS_FEATURES) == list(f)
+
+
+def test_value_and_shot_features():
+    v = F.value_features(np.array([41.5, 0.0]))
+    assert v["goal_dist"] == pytest.approx(11.0) and list(F.VALUE_FEATURES) == list(v)
+    s = F.shot_features(np.array([41.5, 0.0]), defenders=np.array([[45.0, 0.0], [0.0, 0.0]]))
+    assert s["cone_defenders"] == 1 and list(F.SHOT_FEATURES) == list(s)
+
+

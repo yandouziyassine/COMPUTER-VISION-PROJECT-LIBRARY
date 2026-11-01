@@ -13,18 +13,62 @@ def _table(rows, ys, mid, names):
     return {"X": X, "y": np.array(ys, int), "match": np.array([mid] * len(rows))}
 
 
+def intended_target(m, e, s, where):
+    """Teammate (row of s["att"]) an unsuccessful pass was meant for.
+
+    In the DFL events the Recipient of an unsuccessful pass is the opponent who got the ball, so the intended receiver
+    is not recorded. It is inferred from the ball path: the ball is followed from the pass until it is closest to that
+    opponent (the interception point E); the intended target is the teammate nearest to the ray passer -> E among
+    those at least half-way along it. Returns None when the path cannot be read (untracked opponent, E < 3 m away).
+    """
+    r = e["recipient"]
+    if r is None or r == e["player"]:
+        return None
+    h = m.halves[e["half"]]
+    lo, hi = e["frame"], min(len(h.t), e["frame"] + 4 * 25 + 1)
+    d = np.linalg.norm(h.xy[lo:hi, r] - h.ball[lo:hi, :2], axis=1)
+    if not np.isfinite(d).any() or np.nanmin(d) > 3.0:
+        return None
+    end = h.ball[lo + int(np.nanargmin(d)), :2] * s["direction"]  # normalised like the state
+    a = s["att"][where[e["player"]]]
+    v = end - a
+    length = float(np.linalg.norm(v))
+    if length < 3.0:
+        return None
+    u = v / length
+    best, best_cost = None, np.inf
+    for pid, j in where.items():
+        if pid == e["player"]:
+            continue
+        w = s["att"][j] - a
+        if float(w @ u) < 0.5 * length:
+            continue
+        cost = abs(float(w[0] * u[1] - w[1] * u[0]))  # perpendicular distance to the ray
+        if cost < best_cost:
+            best, best_cost = j, cost
+    return best
+
+
 def pass_table(m) -> dict:
     rows, ys = [], []
     for e in m.events:
         if e["type"] != "pass" or e.get("frame") is None or e.get("set_piece") or e.get("cross"):
             continue
-        if e["player"] is None or e["recipient"] is None or e["player"] == e["recipient"]:
+        if e["player"] is None or e["recipient"] == e["player"]:
             continue
         s = F.state(m, e["half"], e["frame"], e["team"])
         where = {p: i for i, p in enumerate(s["att_idx"])}
-        if e["player"] not in where or e["recipient"] not in where:
+        if e["player"] not in where:
             continue
-        rows.append(F.pass_features(s, where[e["player"]], where[e["recipient"]]))
+        if e["success"]:
+            if e["recipient"] not in where:
+                continue
+            target = where[e["recipient"]]
+        else:  # the recorded recipient is an opponent: infer the intended teammate from the ball path
+            target = intended_target(m, e, s, where)
+            if target is None:
+                continue
+        rows.append(F.pass_features(s, where[e["player"]], target))
         ys.append(int(e["success"]))
     return _table(rows, ys, m.match_id, F.PASS_FEATURES)
 

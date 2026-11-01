@@ -296,6 +296,22 @@ def test_tables_have_labels_and_match_ids():
     assert list(s["y"]) == [0] and s["X"].shape == (1, len(D.F.SHOT_FEATURES))
 
 
+def test_failed_pass_target_is_inferred_from_ball_path():
+    m = tiny_match(frames=100)  # ball runs from (-10, 0) to (10, 0); player c (guest) waits at (10, 0)
+    base = {"type": "pass", "half": 0, "frame": 5, "team": 0, "player": 0, "cross": False, "set_piece": None}
+    for h in m.halves:
+        h.owner[:] = 0
+    m.events = [
+        {**base, "t": float(m.halves[0].t[5]), "recipient": 1, "success": True, "x": 0, "y": 0},
+        {**base, "t": float(m.halves[0].t[6]), "recipient": 2, "success": False, "x": 0, "y": 0},  # c intercepts
+        {**base, "t": float(m.halves[0].t[7]), "recipient": 3, "success": False, "x": 0, "y": 0},  # d is far away
+    ]
+    p = D.pass_table(m)
+    # failed pass 1: ball travels to c at (10, 0); teammate b at (5, 5) is the only one beyond half-way -> target b
+    assert list(p["y"]) == [1, 0] and p["X"].shape == (2, len(D.F.PASS_FEATURES))
+    assert D.intended_target(m, m.events[2], D.F.state(m, 0, 7, 0), {0: 0, 1: 1}) is None
+
+
 from coach import models as ML  # noqa: E402
 
 
@@ -344,3 +360,5 @@ def test_advice_prefers_open_forward_teammate():
     passes = [o for o in opts if o["kind"] == "pass"]
     assert passes[0]["target"] == 1 and {o["kind"] for o in opts} == {"pass", "carry", "shot"}
     assert all(0 <= o["p"] <= 1 for o in opts) and opts == sorted(opts, key=lambda o: -o["score"])
+
+

@@ -436,3 +436,68 @@ def test_ridge_export_and_regression_lomo():
     assert len(r["ridge"]["calibration"]) == 10 and set(r["ridge"]["per_match"]) == set("ABCDEF")
 
 
+from coach import advice as A  # noqa: E402
+
+
+def test_advice_prefers_open_forward_teammate():
+    s = {
+        "att": np.array([[20.0, 0.0], [45.0, 0.0], [5.0, 0.0]]),
+        "att_v": np.zeros((3, 2)),
+        "def": np.array([[20.0, 25.0], [0.0, -25.0]]),
+        "def_v": np.zeros((2, 2)),
+        "att_idx": np.array([0, 1, 2]),
+        "ball": np.array([20.0, 0.0]),
+        "direction": 1,
+    }  # carrier 32.5 m from goal: the shot option exists
+    sig = lambda w: lambda X: 1 / (1 + np.exp(-(X @ w)))
+    # pass model: success falls with distance; value model: grows with x; shot model: closer is better
+    models = {
+        "pass": sig(np.r_[-0.05, 0, 0, -1.0, 0.05, 0, 2.0, 0, 0]),
+        "value": lambda X: 0.1 * X[:, 0] / 52.5,
+        "shot": sig(np.r_[-0.2, 0, 0]),
+    }
+    opts = A.options(s, carrier=0, models=models)
+    passes = [o for o in opts if o["kind"] == "pass"]
+    assert passes[0]["target"] == 1 and {o["kind"] for o in opts} == {"pass", "carry", "shot"}
+    assert all(0 <= o["p"] <= 1 for o in opts) and opts == sorted(opts, key=lambda o: -o["score"])
+    shot = next(o for o in opts if o["kind"] == "shot")  # shot: xG minus the value of keeping the ball here
+    assert shot["score"] == pytest.approx(shot["p"] - 0.1 * 20.0 / 52.5)
+
+
+def test_advice_turnover_cost_flips_the_order_against_probability_alone():
+    # carrier deep in his own half: the short pass back is safe but losing it there is a disaster; the long ball
+    # up the pitch is unlikely but losing it near the opponent's box costs nothing
+    s = {
+        "att": np.array([[-30.0, 0.0], [-35.0, 0.0], [10.0, 0.0]]),
+        "att_v": np.zeros((3, 2)),
+        "def": np.array([[-32.0, 3.0], [5.0, 2.0]]),
+        "def_v": np.zeros((2, 2)),
+        "att_idx": np.array([0, 1, 2]),
+        "ball": np.array([-30.0, 0.0]),
+        "direction": 1,
+    }
+    models = {
+        "pass": lambda X: 1 / (1 + np.exp(-(2.0 - 0.1 * X[:, 0]))),  # completion falls with distance
+        "value": lambda X: 0.1 * X[:, 0] / 52.5,
+        "shot": lambda X: np.zeros(len(X)),
+    }
+    passes = [o for o in A.options(s, carrier=0, models=models) if o["kind"] == "pass"]
+    by_p = sorted(passes, key=lambda o: -o["p"])
+    assert by_p[0]["target"] == 1 and passes[0]["target"] == 2  # p alone says short back-pass, the coach the long ball
+    assert passes[0]["score"] > 0 > by_p[0]["score"]
+    # the lost-ball point of the long ball is the nearest defender's projection on the lane, mirrored for the opponent
+    assert passes[0]["v_lost"] == pytest.approx(0.1 * -5.0 / 52.5)
+
+
+from coach import export as X  # noqa: E402
+
+
+def test_pack_match_roundtrip_in_centimetres(tmp_path):
+    m = tiny_match(frames=100)
+    X.pack_match(m, tmp_path, fps=10)
+    meta = __import__("json").loads((tmp_path / "match.json").read_text())
+    raw = np.fromfile(tmp_path / "match.bin", dtype="<i2")
+    frames = sum(meta["frames"])
+    assert raw.size == frames * (len(m.player_ids) + 1) * 2 and meta["fps"] == 12.5
+    first = raw[: (len(m.player_ids) + 1) * 2].reshape(-1, 2) / 100.0
+    assert np.allclose(first[0], m.halves[0].xy[0, 0]) and np.allclose(first[-1], m.halves[0].ball[0, :2])

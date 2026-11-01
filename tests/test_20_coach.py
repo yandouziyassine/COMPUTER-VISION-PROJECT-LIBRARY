@@ -197,3 +197,26 @@ def test_sync_snaps_event_with_hand_timestamp_lead():
     assert report["median_dist_m"] < 0.1 and report["nominal_median_dist_m"] > 2 and report["median_shift_s"] == 1.2
 
 
+from coach import pitch_control as PC  # noqa: E402
+
+
+def test_time_to_reach_includes_reaction_and_current_velocity():
+    t = PC.time_to_reach(np.array([[0.0, 0.0]]), np.array([[5.0, 0.0]]), np.array([[10.0, 0.0]]))
+    # after 0.7 s reaction the player is at x = 3.5, then 6.5 m at 5 m/s
+    assert t[0, 0] == pytest.approx(0.7 + 6.5 / 5.0)
+
+
+def test_control_is_half_when_equidistant_and_high_near_attacker():
+    att = np.array([[0.0, 0.0]])
+    dfn = np.array([[20.0, 0.0]])
+    zero = np.zeros((1, 2))
+    pts = np.array([[10.0, 0.0], [1.0, 0.0], [19.0, 0.0]])
+    c = PC.control(pts, att, zero, dfn, zero)
+    assert c[0] == pytest.approx(0.5, abs=1e-6) and c[1] > 0.95 and c[2] < 0.05
+
+
+def test_grid_shape():
+    g, xs, ys = PC.grid(np.array([[0.0, 0.0]]), np.zeros((1, 2)), np.array([[30.0, 0.0]]), np.zeros((1, 2)), step=5)
+    assert g.shape == (len(ys), len(xs)) and 0 <= g.min() <= g.max() <= 1
+
+

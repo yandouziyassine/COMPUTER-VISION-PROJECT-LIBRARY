@@ -253,3 +253,46 @@ def test_value_and_shot_features():
     assert s["cone_defenders"] == 1 and list(F.SHOT_FEATURES) == list(s)
 
 
+from coach import datasets as D  # noqa: E402
+
+
+def test_tables_have_labels_and_match_ids():
+    m = tiny_match(frames=600)  # 24 s per half
+    for h in m.halves:
+        h.owner[:] = 0
+    m.events = [
+        {
+            "type": "pass",
+            "half": 0,
+            "frame": 10,
+            "t": float(m.halves[0].t[10]),
+            "team": 0,
+            "player": 0,
+            "recipient": 1,
+            "success": True,
+            "cross": False,
+            "set_piece": None,
+            "x": 0,
+            "y": 0,
+        },
+        {
+            "type": "shot",
+            "half": 0,
+            "frame": 300,
+            "t": float(m.halves[0].t[300]),
+            "team": 0,
+            "goal": False,
+            "result": "SavedShot",
+            "x": 95.0,
+            "y": 34.0,
+        },
+    ]
+    p = D.pass_table(m)
+    assert p["X"].shape == (1, len(D.F.PASS_FEATURES)) and list(p["y"]) == [1] and list(p["match"]) == ["TEST"]
+    v = D.value_table(m)
+    # live seconds 2..11 of half 0 (t = 2 s .. 11 s) are within 10 s before the shot at 12 s
+    assert v["y"].sum() == 10 and v["X"].shape[1] == len(D.F.VALUE_FEATURES)
+    s = D.shot_table(m)
+    assert list(s["y"]) == [0] and s["X"].shape == (1, len(D.F.SHOT_FEATURES))
+
+

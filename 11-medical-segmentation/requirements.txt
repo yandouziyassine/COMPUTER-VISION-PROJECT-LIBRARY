@@ -1,5 +1,6 @@
 torch
 segmentation-models-pytorch
+huggingface-hub
 numpy
 pillow
 matplotlib

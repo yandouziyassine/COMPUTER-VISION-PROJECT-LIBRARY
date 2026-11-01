@@ -14,6 +14,8 @@ import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 from ultralytics import YOLO  # noqa: E402
 
+from protocol import alarm_frames  # noqa: E402, F401  (re-exported for detect.py)
+
 DATA = data_dir("fall")
 OUT = output_dir("fall")
 DOCS = Path(__file__).resolve().parent / "docs"
@@ -170,17 +172,6 @@ def features(kps, boxes, frame_h=240, fps=FPS):
         "height_vs_2s_max",
     ]
     return np.nan_to_num(feats), names
-
-
-def alarm_frames(prob, threshold=0.5, min_frames=10):
-    """Raise an alarm when the per-frame fall probability stays above `threshold` for `min_frames` in a row.
-    Returns the frame index of the first alarm, or None."""
-    run = 0
-    for t, p in enumerate(prob):
-        run = run + 1 if p > threshold else 0
-        if run >= min_frames:
-            return t
-    return None
 
 
 def draw_skeleton(frame, kp, color=(0, 255, 0)):

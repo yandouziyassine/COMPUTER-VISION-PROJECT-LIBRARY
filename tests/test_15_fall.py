@@ -1,13 +1,16 @@
-"""Project 15: fall-detection features and alarm logic on synthetic skeletons.
-fall.py imports Ultralytics and creates data folders at import time, so only the pure functions are loaded."""
+"""Project 15: fall-detection features, alarm logic and scoring protocol on synthetic skeletons.
+fall.py imports Ultralytics and creates data folders at import time, so only the pure functions are loaded;
+protocol.py (alarm rule, video metrics, threshold choice) is NumPy-only and imported whole."""
 
 import pytest
 
 np = pytest.importorskip("numpy")
 
-from conftest import load_defs  # noqa: E402
+from conftest import load_defs, load_module  # noqa: E402
 
-fall = load_defs("15", "fall.py", ["FPS", "L_SH", "_ffill", "features", "alarm_frames"], {"np": np})
+fall = load_defs("15", "fall.py", ["FPS", "L_SH", "_ffill", "features"], {"np": np})
+protocol = load_module("15", "protocol.py")
+fall.alarm_frames = protocol.alarm_frames
 alarm_len = load_defs("15", "detect.py", ["alarm_len"], {"FPS": fall.FPS}).alarm_len
 
 N_FEATURES = 16
@@ -105,3 +108,29 @@ def test_alarm_length_scales_with_fps():
     assert alarm_len(30) == 10
     assert alarm_len(60) == 20
     assert alarm_len(1) == 1
+
+
+ONSETS = {"fall-a": 50, "fall-b": 50, "adl-a": None, "adl-b": None}
+
+
+def test_video_metrics_counts_and_early_alarm():
+    alarms = {"fall-a": 60, "fall-b": 20, "adl-a": None, "adl-b": 30}  # fall-b alarm is > 0.5 s early
+    m = protocol.video_metrics(alarms, ONSETS)
+    assert (m["TP"], m["FN"], m["FP"], m["TN"]) == (1, 1, 1, 1)
+    assert m["sensitivity"] == 0.5 and m["specificity"] == 0.5
+    assert m["f1"] == 0.5  # 2*1 / (2*1 + 1 + 1)
+    assert m["median_latency_s"] == pytest.approx(10 / 30, abs=0.01)
+    assert m["missed_falls"] == ["fall-b"] and m["false_alarm_videos"] == ["adl-b"]
+
+
+def test_choose_threshold_separates_falls_from_adls():
+    T = 100
+    probs = {
+        "fall-a": np.r_[np.zeros(50), np.full(50, 0.9)],
+        "fall-b": np.r_[np.zeros(50), np.full(50, 0.8)],
+        "adl-a": np.full(T, 0.6),  # a confident false alarm below 0.6 is filtered only by a higher threshold
+        "adl-b": np.zeros(T),
+    }
+    thr, f1 = protocol.choose_threshold(probs, ONSETS, grid=(0.5, 0.6, 0.7, 0.8, 0.9))
+    assert f1 == 1.0
+    assert thr in (0.6, 0.7)  # plateau 0.6-0.7 (strict >): median of the tied values

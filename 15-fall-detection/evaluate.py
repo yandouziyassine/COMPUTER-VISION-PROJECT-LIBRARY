@@ -8,11 +8,22 @@ Two detectors on the same pose features:
 Sequence-level scoring: a fall video must raise an alarm (sensitivity); a daily-activity video,
 including the 16 where the person lies down on purpose, must not (specificity).
 
+Two threshold protocols for the learned model (same out-of-fold probabilities):
+    fixed 0.5   the original protocol
+    nested      inside each training fold, an inner grouped 4-fold CV gives validation probabilities
+                for the training videos; the alarm threshold that maximises video-level F1 on them is
+                applied to the held-out fold. No test video influences its own threshold.
+The outer CV is repeated with several shuffling seeds (seed 0 = the original split).
+
 Usage:
-    python evaluate.py
+    python evaluate.py                 # poses (first run ~10 min), CV, figures, final model
+    python evaluate.py --seeds 0       # only the original split
+    python evaluate.py --gifs          # also write demo GIFs to cv-data (never to docs/: dataset licence)
 """
 
+import argparse
 import json
+import time
 
 import cv2
 import joblib
@@ -26,9 +37,11 @@ from PIL import Image  # noqa: E402
 from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
 from sklearn.model_selection import StratifiedGroupKFold  # noqa: E402
 
-from fall import DATA, DOCS, FPS, OUT, alarm_frames, draw_skeleton, extract_poses, features, read_frames  # noqa: E402
+from fall import DATA, DOCS, FPS, OUT, draw_skeleton, extract_poses, features, read_frames  # noqa: E402
+from protocol import alarm_frames, alarms_at, choose_threshold, video_metrics  # noqa: E402
 
 POSES = OUT / "poses"
+NAMES = [f"fall-{i:02d}" for i in range(1, 31)] + [f"adl-{i:02d}" for i in range(1, 41)]
 
 
 def load_labels():
@@ -54,6 +67,26 @@ def load_sequence(name):
     return kps, boxes
 
 
+def load_dataset():
+    """All 70 videos: skeletons (cached), hand-crafted features, per-frame target and fall onset."""
+    labels = load_labels()
+    seqs = []
+    for k, n in enumerate(NAMES):
+        kps, boxes = load_sequence(n)
+        F, fnames = features(kps, boxes)
+        lab = np.array([labels.get(n, {}).get(t + 1, -1) for t in range(len(F))])
+        onset = int(np.argmax(lab == 0)) if n.startswith("fall") and (lab == 0).any() else None
+        # Learned target: the fall itself and the first 2 s after it began. Daily activities are
+        # all negative, including lying down on purpose.
+        y = np.zeros(len(F), int)
+        if onset is not None:
+            y[onset : onset + 2 * FPS] = 1
+        seqs.append({"name": n, "kps": kps, "boxes": boxes, "F": F, "y": y, "onset": onset, "lab": lab})
+        if k % 10 == 0:
+            print(f"poses {k + 1}/{len(NAMES)}", flush=True)
+    return seqs, fnames
+
+
 def rule_prob(F, names):
     f = dict(zip(names, F.T))
     lying = (f["torso_angle"] > 55) | (f["aspect"] > 1.0)
@@ -61,37 +94,80 @@ def rule_prob(F, names):
     return (lying & fast_drop).astype(float)
 
 
-def score(alarms, seqs):
-    rows = []
-    for s in seqs:
-        is_fall = s["name"].startswith("fall")
-        a = alarms[s["name"]]
-        detected = a is not None and (not is_fall or a >= s["onset"] - 15)  # alarms >0.5 s before the fall don't count
-        latency = (a - s["onset"]) / FPS if (is_fall and detected) else None
-        rows.append({"name": s["name"], "fall": is_fall, "alarm": detected, "latency_s": latency})
-    df = pd.DataFrame(rows)
-    falls, adls = df[df.fall], df[~df.fall]
-    tp, fn = int(falls.alarm.sum()), int((~falls.alarm).sum())
-    fp, tn = int(adls.alarm.sum()), int((~adls.alarm).sum())
+def video_folds(seqs, idx, n_splits, seed):
+    """Grouped, stratified folds over the videos `idx`. Split at frame level exactly as the original
+    protocol did (StratifiedGroupKFold balances frame counts), then mapped back to video indices."""
+    idx = np.asarray(idx)
+    groups = np.concatenate([[i] * len(seqs[i]["F"]) for i in idx])
+    cls = np.concatenate([[int(seqs[i]["onset"] is not None)] * len(seqs[i]["F"]) for i in idx])
+    for tr, te in StratifiedGroupKFold(n_splits=n_splits, shuffle=True, random_state=seed).split(
+        np.zeros((len(groups), 1)), cls, groups
+    ):
+        yield np.unique(groups[tr]), np.unique(groups[te])
+
+
+def cross_val_probs(seqs, idx, fit_predict, n_splits, seed):
+    probs = {}
+    for tr, te in video_folds(seqs, idx, n_splits, seed):
+        probs.update(fit_predict(seqs, tr, te))
+    return probs
+
+
+def nested_cv(seqs, fit_predict, seed, n_outer=5, n_inner=4, log=print):
+    """Outer grouped CV for test probabilities; per outer fold, an inner grouped CV on the training
+    videos chooses the alarm threshold. Returns out-of-fold probs, nested alarms and chosen thresholds."""
+    onsets = {s["name"]: s["onset"] for s in seqs}
+    probs, nested_alarms, thresholds = {}, {}, []
+    for k, (tr, te) in enumerate(video_folds(seqs, range(len(seqs)), n_outer, seed)):
+        inner = cross_val_probs(seqs, tr, fit_predict, n_inner, seed)
+        thr, inner_f1 = choose_threshold(inner, {n: onsets[n] for n in inner})
+        test = fit_predict(seqs, tr, te)
+        probs.update(test)
+        nested_alarms.update(alarms_at(test, thr))
+        thresholds.append(thr)
+        log(f"  seed {seed} fold {k}: threshold {thr:.2f} (inner F1 {inner_f1:.3f})")
+    return probs, nested_alarms, thresholds
+
+
+def summarize(seqs, probs, nested_alarms, thresholds):
+    onsets = {s["name"]: s["onset"] for s in seqs}
+    best_thr, _ = choose_threshold(probs, onsets)  # picked on the test probabilities: optimistic reference
     return {
-        "sensitivity": round(tp / max(tp + fn, 1), 3),
-        "specificity": round(tn / max(tn + fp, 1), 3),
-        "accuracy": round((tp + tn) / len(df), 3),
-        "TP": tp,
-        "FN": fn,
-        "FP": fp,
-        "TN": tn,
-        "median_latency_s": round(float(falls.latency_s.dropna().median()), 2) if tp else None,
-        "false_alarm_videos": adls[adls.alarm].name.tolist(),
-        "missed_falls": falls[~falls.alarm].name.tolist(),
-    }, df
+        "fixed_0.5": video_metrics(alarms_at(probs, 0.5), onsets),
+        "nested": video_metrics(nested_alarms, onsets),
+        "nested_thresholds": thresholds,
+        "posthoc_best": {"threshold": best_thr, **video_metrics(alarms_at(probs, best_thr), onsets)},
+    }
+
+
+def aggregate(per_seed, protocols=("fixed_0.5", "nested", "posthoc_best")):
+    """Mean, min and max of sensitivity / specificity / F1 over the outer-CV seeds."""
+    out = {}
+    for p in protocols:
+        out[p] = {}
+        for m in ("sensitivity", "specificity", "f1"):
+            v = [r[p][m] for r in per_seed.values()]
+            out[p][m] = {"mean": round(float(np.mean(v)), 3), "min": min(v), "max": max(v)}
+    return out
+
+
+def make_hgb():
+    return HistGradientBoostingClassifier(max_iter=300, learning_rate=0.05, class_weight="balanced", random_state=0)
+
+
+def hgb_fit_predict(seqs, tr, te):
+    X = np.concatenate([seqs[i]["F"] for i in tr])
+    Y = np.concatenate([seqs[i]["y"] for i in tr])
+    clf = make_hgb().fit(X, Y)
+    return {seqs[i]["name"]: clf.predict_proba(seqs[i]["F"])[:, 1] for i in te}
 
 
 def make_gif(name, prob, alarm, path, title):
+    """Local inspection only: written to cv-data, never committed (UR Fall images can't be redistributed)."""
     frames = read_frames(DATA / "videos" / f"{name}-cam0.mp4")
     kps, _ = load_sequence(name)
     imgs = []
-    step = max(3, len(frames) // 50)  # at most ~50 GIF frames, so README GIFs stay < 2 MB
+    step = max(3, len(frames) // 50)
     for t in range(0, len(frames), step):
         f = draw_skeleton(frames[t].copy(), np.nan_to_num(kps[t]))
         bar = int(prob[t] * f.shape[1])
@@ -104,91 +180,86 @@ def make_gif(name, prob, alarm, path, title):
 
 
 def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4], help="outer-CV shuffling seeds")
+    ap.add_argument("--gifs", action="store_true", help="write demo GIFs to cv-data/fall/outputs")
+    args = ap.parse_args()
     DOCS.mkdir(exist_ok=True)
-    labels = load_labels()
-    names = [f"fall-{i:02d}" for i in range(1, 31)] + [f"adl-{i:02d}" for i in range(1, 41)]
-
-    seqs = []
-    for k, n in enumerate(names):
-        kps, boxes = load_sequence(n)
-        F, fnames = features(kps, boxes)
-        lab = np.array([labels.get(n, {}).get(t + 1, -1) for t in range(len(F))])
-        onset = int(np.argmax(lab == 0)) if n.startswith("fall") and (lab == 0).any() else None
-        # Learned target: the fall itself and the first 2 s after it began. Daily activities are
-        # all negative, including lying down on purpose.
-        y = np.zeros(len(F), int)
-        if onset is not None:
-            y[onset : onset + 2 * FPS] = 1
-        seqs.append({"name": n, "F": F, "y": y, "onset": onset})
-        if k % 10 == 0:
-            print(f"poses {k + 1}/{len(names)}", flush=True)
+    t0 = time.time()
+    seqs, fnames = load_dataset()
+    onsets = {s["name"]: s["onset"] for s in seqs}
 
     # --- rule-based baseline
     rule_alarms = {s["name"]: alarm_frames(rule_prob(s["F"], fnames), 0.5, 5) for s in seqs}
-    rule_res, _ = score(rule_alarms, seqs)
+    rule_res = video_metrics(rule_alarms, onsets)
 
-    # --- learned, out-of-fold
-    groups = np.concatenate([[i] * len(s["F"]) for i, s in enumerate(seqs)])
-    X = np.concatenate([s["F"] for s in seqs])
-    Y = np.concatenate([s["y"] for s in seqs])
-    seq_class = np.concatenate([[int(s["name"].startswith("fall"))] * len(s["F"]) for s in seqs])
-    oof = np.zeros(len(X))
-    for tr, te in StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=0).split(X, seq_class, groups):
-        clf = HistGradientBoostingClassifier(max_iter=300, learning_rate=0.05, class_weight="balanced", random_state=0)
-        clf.fit(X[tr], Y[tr])
-        oof[te] = clf.predict_proba(X[te])[:, 1]
-    learned_alarms, start = {}, 0
-    probs = {}
-    for s in seqs:
-        p = oof[start : start + len(s["F"])]
-        start += len(s["F"])
-        probs[s["name"]] = p
-        learned_alarms[s["name"]] = alarm_frames(p, 0.5, 10)
-    learned_res, per_video = score(learned_alarms, seqs)
+    # --- learned, out-of-fold, fixed 0.5 and nested threshold, for each outer seed
+    per_seed, probs0 = {}, None
+    for seed in args.seeds:
+        probs, nested_alarms, thresholds = nested_cv(seqs, hgb_fit_predict, seed)
+        per_seed[seed] = summarize(seqs, probs, nested_alarms, thresholds)
+        if probs0 is None:
+            probs0, seed0 = probs, seed
+        r = per_seed[seed]
+        print(
+            f"seed {seed}: fixed 0.5 F1 {r['fixed_0.5']['f1']:.3f} | nested F1 {r['nested']['f1']:.3f} "
+            f"(sens {r['nested']['sensitivity']:.3f}, spec {r['nested']['specificity']:.3f})",
+            flush=True,
+        )
+    learned_res = per_seed[seed0]["fixed_0.5"]
+    learned_alarms = alarms_at(probs0, 0.5)
 
-    # Operating curve: the alarm threshold trades missed falls against false alarms. Reported as a
-    # curve on out-of-fold probabilities (picking the best point here would be optimistic).
+    # Operating curve on the out-of-fold probabilities of the first seed (descriptive only).
     sweep = []
     for thr in (0.5, 0.6, 0.7, 0.8, 0.9):
-        r, _ = score({n: alarm_frames(p, thr, 10) for n, p in probs.items()}, seqs)
-        sweep.append(
-            {
-                "threshold": thr,
-                "sensitivity": r["sensitivity"],
-                "specificity": r["specificity"],
-                "median_latency_s": r["median_latency_s"],
-            }
-        )
+        r = video_metrics(alarms_at(probs0, thr), onsets)
+        sweep.append({k: r[k] for k in ("sensitivity", "specificity", "f1", "median_latency_s")} | {"threshold": thr})
 
-    adl_lying = sum(1 for n in names if n.startswith("adl") and 1 in labels.get(n, {}).values())
+    adl_lying = sum(1 for s in seqs if s["onset"] is None and (s["lab"] == 1).any())
     res = {
         "videos": {"falls": 30, "daily_activities": 40, "adl_with_lying_down": adl_lying},
         "rule_based": rule_res,
         "learned_gradient_boosting_cv5": learned_res,
         "learned_threshold_sweep": sweep,
+        "nested_threshold": {
+            "outer_folds": 5,
+            "inner_folds": 4,
+            "criterion": "video-level F1, median of tied thresholds",
+            "seeds": args.seeds,
+            "per_seed": per_seed,
+            "aggregate": aggregate(per_seed),
+        },
     }
-    print(json.dumps(res, indent=1))
+    print(json.dumps({k: res[k] for k in ("rule_based", "learned_gradient_boosting_cv5")}, indent=1))
+    print(json.dumps(res["nested_threshold"]["aggregate"], indent=1))
     (DOCS / "results.json").write_text(json.dumps(res, indent=1))
-    per_video.to_csv(OUT / "per_video.csv", index=False)
+    pd.DataFrame(
+        [{"name": n, "fall": onsets[n] is not None, "alarm_frame": a} for n, a in learned_alarms.items()]
+    ).to_csv(OUT / "per_video.csv", index=False)
+    np.savez_compressed(OUT / "oof_hgb_seed0.npz", **probs0)
 
-    # Final model on all data, for detect.py
-    final = HistGradientBoostingClassifier(max_iter=300, learning_rate=0.05, class_weight="balanced", random_state=0)
-    joblib.dump({"model": final.fit(X, Y), "features": fnames}, OUT / "fall_model.joblib")
+    # Final model on all data, for detect.py. Its threshold is chosen the same way as in the nested
+    # protocol: grouped 5-fold CV probabilities over all 70 videos, best video-level F1.
+    all_probs = cross_val_probs(seqs, range(len(seqs)), hgb_fit_predict, 5, 0)
+    final_thr, _ = choose_threshold(all_probs, onsets)
+    X = np.concatenate([s["F"] for s in seqs])
+    Y = np.concatenate([s["y"] for s in seqs])
+    joblib.dump({"model": make_hgb().fit(X, Y), "features": fnames, "threshold": final_thr}, OUT / "fall_model.joblib")
+    print(f"final model saved, alarm threshold {final_thr:.2f}")
 
-    # Demos (out-of-fold probabilities, so the GIFs show test-time behavior)
-    make_gif("fall-01", probs["fall-01"], learned_alarms["fall-01"], DOCS / "demo_fall.gif", "fall-01 (fall)")
+    # Out-of-fold probability traces of one fall and one deliberate lying down (chart only, no frames)
     lying_adl = next(
         s["name"]
         for s in seqs
-        if s["name"].startswith("adl")
-        and (np.array([labels[s["name"]].get(t + 1, -1) for t in range(len(s["F"]))]) == 1).sum() > 30
-        and learned_alarms[s["name"]] is None
+        if s["onset"] is None and (s["lab"] == 1).sum() > 30 and learned_alarms[s["name"]] is None
     )
-    make_gif(lying_adl, probs[lying_adl], None, DOCS / "demo_lying_not_fall.gif", f"{lying_adl} (lies down on purpose)")
+    if args.gifs:
+        make_gif("fall-01", probs0["fall-01"], learned_alarms["fall-01"], OUT / "demo_fall.gif", "fall-01 (fall)")
+        make_gif(lying_adl, probs0[lying_adl], None, OUT / "demo_lying_not_fall.gif", f"{lying_adl} (lying down)")
 
     fig, ax = plt.subplots(figsize=(9, 3.2))
     for n, c in (("fall-01", "tab:red"), (lying_adl, "tab:blue")):
-        ax.plot(np.arange(len(probs[n])) / FPS, probs[n], color=c, label=n)
+        ax.plot(np.arange(len(probs0[n])) / FPS, probs0[n], color=c, label=n)
     ax.axhline(0.5, color="gray", ls="--", lw=1)
     ax.set_xlabel("time (s)")
     ax.set_ylabel("fall probability")
@@ -197,6 +268,7 @@ def main():
     fig.tight_layout()
     fig.savefig(DOCS / "probability_traces.png", dpi=100)
     plt.close(fig)
+    print(f"done in {time.time() - t0:.0f} s")
 
 
 if __name__ == "__main__":

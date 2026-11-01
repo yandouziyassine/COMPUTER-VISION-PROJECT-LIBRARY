@@ -7,16 +7,13 @@
  "rule_based": {
   "sensitivity": 0.8,
   "specificity": 0.95,
+  "f1": 0.857,
   "accuracy": 0.886,
   "TP": 24,
   "FN": 6,
   "FP": 2,
   "TN": 38,
   "median_latency_s": 0.95,
-  "false_alarm_videos": [
-   "adl-06",
-   "adl-38"
-  ],
   "missed_falls": [
    "fall-12",
    "fall-13",
@@ -24,59 +21,468 @@
    "fall-18",
    "fall-22",
    "fall-24"
+  ],
+  "false_alarm_videos": [
+   "adl-06",
+   "adl-38"
   ]
  },
  "learned_gradient_boosting_cv5": {
   "sensitivity": 1.0,
   "specificity": 0.8,
+  "f1": 0.882,
   "accuracy": 0.886,
   "TP": 30,
   "FN": 0,
   "FP": 8,
   "TN": 32,
   "median_latency_s": 0.6,
+  "missed_falls": [],
   "false_alarm_videos": [
-   "adl-16",
-   "adl-17",
-   "adl-30",
    "adl-31",
    "adl-32",
+   "adl-17",
+   "adl-30",
    "adl-33",
    "adl-38",
-   "adl-39"
-  ],
-  "missed_falls": []
+   "adl-39",
+   "adl-16"
+  ]
  },
  "learned_threshold_sweep": [
   {
-   "threshold": 0.5,
    "sensitivity": 1.0,
    "specificity": 0.8,
-   "median_latency_s": 0.6
+   "f1": 0.882,
+   "median_latency_s": 0.6,
+   "threshold": 0.5
   },
   {
-   "threshold": 0.6,
    "sensitivity": 0.967,
    "specificity": 0.825,
-   "median_latency_s": 0.7
+   "f1": 0.879,
+   "median_latency_s": 0.7,
+   "threshold": 0.6
   },
   {
-   "threshold": 0.7,
    "sensitivity": 0.967,
    "specificity": 0.875,
-   "median_latency_s": 0.7
+   "f1": 0.906,
+   "median_latency_s": 0.7,
+   "threshold": 0.7
   },
   {
-   "threshold": 0.8,
    "sensitivity": 0.967,
    "specificity": 0.925,
-   "median_latency_s": 0.7
+   "f1": 0.935,
+   "median_latency_s": 0.7,
+   "threshold": 0.8
   },
   {
-   "threshold": 0.9,
    "sensitivity": 0.967,
    "specificity": 1.0,
-   "median_latency_s": 0.7
+   "f1": 0.983,
+   "median_latency_s": 0.7,
+   "threshold": 0.9
   }
- ]
+ ],
+ "nested_threshold": {
+  "outer_folds": 5,
+  "inner_folds": 4,
+  "criterion": "video-level F1, median of tied thresholds",
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "per_seed": {
+   "0": {
+    "fixed_0.5": {
+     "sensitivity": 1.0,
+     "specificity": 0.8,
+     "f1": 0.882,
+     "accuracy": 0.886,
+     "TP": 30,
+     "FN": 0,
+     "FP": 8,
+     "TN": 32,
+     "median_latency_s": 0.6,
+     "missed_falls": [],
+     "false_alarm_videos": [
+      "adl-31",
+      "adl-32",
+      "adl-17",
+      "adl-30",
+      "adl-33",
+      "adl-38",
+      "adl-39",
+      "adl-16"
+     ]
+    },
+    "nested": {
+     "sensitivity": 0.967,
+     "specificity": 0.95,
+     "f1": 0.951,
+     "accuracy": 0.957,
+     "TP": 29,
+     "FN": 1,
+     "FP": 2,
+     "TN": 38,
+     "median_latency_s": 0.7,
+     "missed_falls": [
+      "fall-29"
+     ],
+     "false_alarm_videos": [
+      "adl-32",
+      "adl-16"
+     ]
+    },
+    "nested_thresholds": [
+     0.85,
+     0.95,
+     0.9,
+     0.9,
+     0.65
+    ],
+    "posthoc_best": {
+     "threshold": 0.9,
+     "sensitivity": 0.967,
+     "specificity": 1.0,
+     "f1": 0.983,
+     "accuracy": 0.986,
+     "TP": 29,
+     "FN": 1,
+     "FP": 0,
+     "TN": 40,
+     "median_latency_s": 0.7,
+     "missed_falls": [
+      "fall-29"
+     ],
+     "false_alarm_videos": []
+    }
+   },
+   "1": {
+    "fixed_0.5": {
+     "sensitivity": 1.0,
+     "specificity": 0.85,
+     "f1": 0.909,
+     "accuracy": 0.914,
+     "TP": 30,
+     "FN": 0,
+     "FP": 6,
+     "TN": 34,
+     "median_latency_s": 0.52,
+     "missed_falls": [],
+     "false_alarm_videos": [
+      "adl-39",
+      "adl-30",
+      "adl-33",
+      "adl-38",
+      "adl-16",
+      "adl-34"
+     ]
+    },
+    "nested": {
+     "sensitivity": 0.933,
+     "specificity": 0.975,
+     "f1": 0.949,
+     "accuracy": 0.957,
+     "TP": 28,
+     "FN": 2,
+     "FP": 1,
+     "TN": 39,
+     "median_latency_s": 0.7,
+     "missed_falls": [
+      "fall-21",
+      "fall-13"
+     ],
+     "false_alarm_videos": [
+      "adl-16"
+     ]
+    },
+    "nested_thresholds": [
+     0.9,
+     0.95,
+     0.75,
+     0.95,
+     0.8
+    ],
+    "posthoc_best": {
+     "threshold": 0.95,
+     "sensitivity": 0.9,
+     "specificity": 1.0,
+     "f1": 0.947,
+     "accuracy": 0.957,
+     "TP": 27,
+     "FN": 3,
+     "FP": 0,
+     "TN": 40,
+     "median_latency_s": 0.73,
+     "missed_falls": [
+      "fall-21",
+      "fall-29",
+      "fall-13"
+     ],
+     "false_alarm_videos": []
+    }
+   },
+   "2": {
+    "fixed_0.5": {
+     "sensitivity": 0.967,
+     "specificity": 0.85,
+     "f1": 0.892,
+     "accuracy": 0.9,
+     "TP": 29,
+     "FN": 1,
+     "FP": 6,
+     "TN": 34,
+     "median_latency_s": 0.6,
+     "missed_falls": [
+      "fall-25"
+     ],
+     "false_alarm_videos": [
+      "adl-34",
+      "adl-33",
+      "adl-16",
+      "adl-32",
+      "adl-38",
+      "adl-39"
+     ]
+    },
+    "nested": {
+     "sensitivity": 0.933,
+     "specificity": 0.975,
+     "f1": 0.949,
+     "accuracy": 0.957,
+     "TP": 28,
+     "FN": 2,
+     "FP": 1,
+     "TN": 39,
+     "median_latency_s": 0.75,
+     "missed_falls": [
+      "fall-25",
+      "fall-29"
+     ],
+     "false_alarm_videos": [
+      "adl-39"
+     ]
+    },
+    "nested_thresholds": [
+     0.95,
+     0.95,
+     0.9,
+     0.95,
+     0.95
+    ],
+    "posthoc_best": {
+     "threshold": 0.9,
+     "sensitivity": 0.967,
+     "specificity": 0.95,
+     "f1": 0.951,
+     "accuracy": 0.957,
+     "TP": 29,
+     "FN": 1,
+     "FP": 2,
+     "TN": 38,
+     "median_latency_s": 0.73,
+     "missed_falls": [
+      "fall-25"
+     ],
+     "false_alarm_videos": [
+      "adl-16",
+      "adl-39"
+     ]
+    }
+   },
+   "3": {
+    "fixed_0.5": {
+     "sensitivity": 1.0,
+     "specificity": 0.85,
+     "f1": 0.909,
+     "accuracy": 0.914,
+     "TP": 30,
+     "FN": 0,
+     "FP": 6,
+     "TN": 34,
+     "median_latency_s": 0.48,
+     "missed_falls": [],
+     "false_alarm_videos": [
+      "adl-33",
+      "adl-38",
+      "adl-39",
+      "adl-32",
+      "adl-17",
+      "adl-35"
+     ]
+    },
+    "nested": {
+     "sensitivity": 0.9,
+     "specificity": 0.975,
+     "f1": 0.931,
+     "accuracy": 0.943,
+     "TP": 27,
+     "FN": 3,
+     "FP": 1,
+     "TN": 39,
+     "median_latency_s": 0.7,
+     "missed_falls": [
+      "fall-10",
+      "fall-29",
+      "fall-13"
+     ],
+     "false_alarm_videos": [
+      "adl-39"
+     ]
+    },
+    "nested_thresholds": [
+     0.95,
+     0.95,
+     0.95,
+     0.8,
+     0.95
+    ],
+    "posthoc_best": {
+     "threshold": 0.85,
+     "sensitivity": 1.0,
+     "specificity": 0.95,
+     "f1": 0.968,
+     "accuracy": 0.971,
+     "TP": 30,
+     "FN": 0,
+     "FP": 2,
+     "TN": 38,
+     "median_latency_s": 0.62,
+     "missed_falls": [],
+     "false_alarm_videos": [
+      "adl-38",
+      "adl-39"
+     ]
+    }
+   },
+   "4": {
+    "fixed_0.5": {
+     "sensitivity": 1.0,
+     "specificity": 0.825,
+     "f1": 0.896,
+     "accuracy": 0.9,
+     "TP": 30,
+     "FN": 0,
+     "FP": 7,
+     "TN": 33,
+     "median_latency_s": 0.47,
+     "missed_falls": [],
+     "false_alarm_videos": [
+      "adl-30",
+      "adl-36",
+      "adl-37",
+      "adl-16",
+      "adl-32",
+      "adl-33",
+      "adl-39"
+     ]
+    },
+    "nested": {
+     "sensitivity": 0.933,
+     "specificity": 0.95,
+     "f1": 0.933,
+     "accuracy": 0.943,
+     "TP": 28,
+     "FN": 2,
+     "FP": 2,
+     "TN": 38,
+     "median_latency_s": 0.58,
+     "missed_falls": [
+      "fall-25",
+      "fall-29"
+     ],
+     "false_alarm_videos": [
+      "adl-30",
+      "adl-39"
+     ]
+    },
+    "nested_thresholds": [
+     0.85,
+     0.9,
+     0.9,
+     0.95,
+     0.75
+    ],
+    "posthoc_best": {
+     "threshold": 0.9,
+     "sensitivity": 0.933,
+     "specificity": 0.95,
+     "f1": 0.933,
+     "accuracy": 0.943,
+     "TP": 28,
+     "FN": 2,
+     "FP": 2,
+     "TN": 38,
+     "median_latency_s": 0.68,
+     "missed_falls": [
+      "fall-25",
+      "fall-29"
+     ],
+     "false_alarm_videos": [
+      "adl-30",
+      "adl-39"
+     ]
+    }
+   }
+  },
+  "aggregate": {
+   "fixed_0.5": {
+    "sensitivity": {
+     "mean": 0.993,
+     "min": 0.967,
+     "max": 1.0
+    },
+    "specificity": {
+     "mean": 0.835,
+     "min": 0.8,
+     "max": 0.85
+    },
+    "f1": {
+     "mean": 0.898,
+     "min": 0.882,
+     "max": 0.909
+    }
+   },
+   "nested": {
+    "sensitivity": {
+     "mean": 0.933,
+     "min": 0.9,
+     "max": 0.967
+    },
+    "specificity": {
+     "mean": 0.965,
+     "min": 0.95,
+     "max": 0.975
+    },
+    "f1": {
+     "mean": 0.943,
+     "min": 0.931,
+     "max": 0.951
+    }
+   },
+   "posthoc_best": {
+    "sensitivity": {
+     "mean": 0.953,
+     "min": 0.9,
+     "max": 1.0
+    },
+    "specificity": {
+     "mean": 0.97,
+     "min": 0.95,
+     "max": 1.0
+    },
+    "f1": {
+     "mean": 0.956,
+     "min": 0.933,
+     "max": 0.983
+    }
+   }
+  }
+ }
 }

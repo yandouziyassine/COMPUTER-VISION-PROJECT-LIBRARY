@@ -30,6 +30,7 @@ def main():
     args = ap.parse_args()
     bundle = joblib.load(OUT / "fall_model.joblib")
     model = bundle["model"]
+    thr = bundle.get("threshold", 0.5)  # chosen by grouped CV in evaluate.py (older bundles: 0.5)
 
     if args.video == "0":  # live webcam: score a rolling 3-second window
         cap, kps_all, boxes_all = cv2.VideoCapture(0), [], []
@@ -46,7 +47,7 @@ def main():
             F, _ = features(np.array(kps_all), np.array(boxes_all), frame_h=f.shape[0], fps=fps)
             p = model.predict_proba(F)[:, 1]
             draw_skeleton(f, np.nan_to_num(k[0]))
-            if alarm_frames(p[-round(0.5 * fps) :], 0.5, alarm_len(fps)) is not None:
+            if alarm_frames(p[-round(0.5 * fps) :], thr, alarm_len(fps)) is not None:
                 cv2.putText(f, "FALL ALARM", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.4, (0, 0, 255), 3)
             cv2.imshow("fall detection", f)
             if cv2.waitKey(1) & 0xFF == ord("q"):
@@ -58,12 +59,12 @@ def main():
     kps, boxes = extract_poses(frames)
     F, _ = features(kps, boxes, frame_h=frames[0].shape[0], fps=fps)
     prob = model.predict_proba(F)[:, 1]
-    alarm = alarm_frames(prob, 0.5, alarm_len(fps))
+    alarm = alarm_frames(prob, thr, alarm_len(fps))
     h, w = frames[0].shape[:2]
     out = cv2.VideoWriter(args.out, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
     for t, f in enumerate(frames):
         draw_skeleton(f, np.nan_to_num(kps[t]))
-        cv2.rectangle(f, (0, h - 8), (int(prob[t] * w), h), (0, 0, 255) if prob[t] > 0.5 else (0, 200, 0), -1)
+        cv2.rectangle(f, (0, h - 8), (int(prob[t] * w), h), (0, 0, 255) if prob[t] > thr else (0, 200, 0), -1)
         if alarm is not None and t >= alarm:
             cv2.putText(f, "FALL ALARM", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
         out.write(f)

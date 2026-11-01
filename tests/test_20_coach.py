@@ -320,3 +320,27 @@ def test_leave_one_match_out_beats_base_rate():
     assert len(r["logistic"]["per_match"]) == 6 and len(r["logistic"]["reliability"]) == 10
 
 
+from coach import advice as A  # noqa: E402
+
+
+def test_advice_prefers_open_forward_teammate():
+    s = {
+        "att": np.array([[20.0, 0.0], [45.0, 0.0], [5.0, 0.0]]),
+        "att_v": np.zeros((3, 2)),
+        "def": np.array([[20.0, 25.0], [0.0, -25.0]]),
+        "def_v": np.zeros((2, 2)),
+        "att_idx": np.array([0, 1, 2]),
+        "ball": np.array([20.0, 0.0]),
+        "direction": 1,
+    }  # carrier 32.5 m from goal: the shot option exists
+    sig = lambda w: lambda X: 1 / (1 + np.exp(-(X @ w)))
+    # pass model: success falls with distance; value model: grows with x
+    models = {
+        "pass": sig(np.r_[-0.05, 0, 0, -1.0, 0.05, 0, 2.0, 0, 0]),
+        "value": sig(np.r_[0.05, 0, 0, 0, 0]),
+        "shot": sig(np.r_[-0.2, 0, 0]),
+    }
+    opts = A.options(s, carrier=0, models=models)
+    passes = [o for o in opts if o["kind"] == "pass"]
+    assert passes[0]["target"] == 1 and {o["kind"] for o in opts} == {"pass", "carry", "shot"}
+    assert all(0 <= o["p"] <= 1 for o in opts) and opts == sorted(opts, key=lambda o: -o["score"])

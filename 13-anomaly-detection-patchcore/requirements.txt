@@ -4,3 +4,4 @@ scikit-learn
 matplotlib
 pillow
 huggingface_hub
+openvino==2026.4.1

@@ -1,0 +1,93 @@
+{
+ "machine": {
+  "cpu": "Intel64 Family 6 Model 189 Stepping 1, GenuineIntel",
+  "openvino": "2026.4.1-22982-e213a147257-releases/2026/4",
+  "torch": "2.14.1+cpu",
+  "devices": {
+   "CPU": "Intel(R) Core(TM) Ultra 7 258V",
+   "GPU": "Intel(R) Arc(TM) 140V GPU (16GB) (iGPU)",
+   "NPU": "Intel(R) AI Boost"
+  }
+ },
+ "latency_category": "bottle",
+ "memory_bank_size": 16385,
+ "runs": 50,
+ "configs": {
+  "PyTorch CPU FP32 (4 threads)": {
+   "backbone_ms": 212.12,
+   "total_ms": 448.81,
+   "total_p90_ms": 517.54
+  },
+  "PyTorch CPU FP32 (8 threads)": {
+   "backbone_ms": 158.21,
+   "total_ms": 629.91,
+   "total_p90_ms": 862.92,
+   "bottle_image_auroc": 1.0,
+   "bottle_pixel_auroc": 0.9835,
+   "grid_image_auroc": 0.9774,
+   "grid_pixel_auroc": 0.9761,
+   "screw_image_auroc": 0.9682,
+   "screw_pixel_auroc": 0.9886
+  },
+  "OpenVINO CPU FP32": {
+   "backbone_ms": 145.47,
+   "knn_ms": 265.34,
+   "total_ms": 403.59,
+   "total_p90_ms": 536.3,
+   "bottle_image_auroc": 1.0,
+   "bottle_pixel_auroc": 0.9835,
+   "grid_image_auroc": 0.9774,
+   "grid_pixel_auroc": 0.9761,
+   "screw_image_auroc": 0.9682,
+   "screw_pixel_auroc": 0.9886
+  },
+  "OpenVINO iGPU FP16 (kNN FP32)": {
+   "backbone_ms": 4.43,
+   "knn_ms": 78.03,
+   "total_ms": 100.44,
+   "total_p90_ms": 103.72,
+   "bottle_image_auroc": 1.0,
+   "bottle_pixel_auroc": 0.9835,
+   "grid_image_auroc": 0.9774,
+   "grid_pixel_auroc": 0.9761,
+   "screw_image_auroc": 0.9684,
+   "screw_pixel_auroc": 0.9886
+  },
+  "OpenVINO iGPU FP16": {
+   "backbone_ms": 5.63,
+   "knn_ms": 12.1,
+   "total_ms": 24.44,
+   "total_p90_ms": 26.81,
+   "bottle_image_auroc": 1.0,
+   "bottle_pixel_auroc": 0.9835,
+   "grid_image_auroc": 0.9766,
+   "grid_pixel_auroc": 0.976,
+   "screw_image_auroc": 0.9684,
+   "screw_pixel_auroc": 0.9886
+  },
+  "OpenVINO NPU (kNN on iGPU FP32)": {
+   "backbone_ms": 4.6,
+   "knn_ms": 33.0,
+   "total_ms": 47.22,
+   "total_p90_ms": 50.93,
+   "bottle_image_auroc": 0.5556,
+   "bottle_pixel_auroc": 0.6988,
+   "grid_image_auroc": 0.5948,
+   "grid_pixel_auroc": 0.4698,
+   "screw_image_auroc": 0.4081,
+   "screw_pixel_auroc": 0.8644
+  },
+  "OpenVINO NPU": {
+   "backbone_ms": 5.97,
+   "knn_ms": 27.98,
+   "total_ms": 35.2,
+   "total_p90_ms": 36.89,
+   "bottle_image_auroc": 0.5536,
+   "bottle_pixel_auroc": 0.7002,
+   "grid_image_auroc": 0.5961,
+   "grid_pixel_auroc": 0.4698,
+   "screw_image_auroc": 0.4083,
+   "screw_pixel_auroc": 0.8645
+  }
+ }
+}

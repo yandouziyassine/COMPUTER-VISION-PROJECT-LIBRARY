@@ -129,3 +129,63 @@ def test_skillcorner_descriptors(tmp_path):
     assert p["completion_vs_xpass"] == {"value": pytest.approx(0.013), "n_passes": 198}
     assert p["top_speed_kmh"] == {"value": 28.83, "n_matches": 24} and "runs_p30" not in p
     assert not any("birth" in k for k in p)
+
+
+from coach import models as ML  # noqa: E402
+from coach import profiles_eval as PE  # noqa: E402
+
+
+def _pass_table(effects, matches=5, rows=250, seed=0):
+    rng = np.random.default_rng(seed)
+    n = matches * rows
+    X = rng.normal(size=(n, 2))
+    keys = np.array([f"p{i}" for i in rng.integers(0, len(effects), n)])
+    z = 1.0 + 1.2 * X[:, 0] + np.array([effects[int(k[1:])] for k in keys])
+    y = (rng.uniform(size=n) < PR.sigmoid(z)).astype(int)
+    match = np.repeat([f"M{i}" for i in range(matches)], rows)
+    return {"X": X, "y": y, "match": match, "weight": np.ones(n)}, keys
+
+
+def test_lomo_profiles_improves_with_real_effects_and_reports_coverage():
+    table, keys = _pass_table([1.5, -1.5, 1.0, -1.0])
+    r = PE.lomo_profiles(table, keys, fit=ML.fit_logistic)
+    s = PE.summarize(table, r)
+    assert s["coverage"] == 1.0 and set(s["folds"]) == {f"M{i}" for i in range(5)}
+    assert s["with"]["log_loss"] < s["without"]["log_loss"]
+    assert s["log_loss_diff"]["ci95"][1] < 0 and s["decision"] == "advice"
+
+
+def test_lomo_profiles_fixed_base_and_unseen_player():
+    table, keys = _pass_table([0.0, 0.0])
+    keys[table["match"] == "M0"] = "only_in_M0"  # never in a training set when M0 is held out
+    r = PE.lomo_profiles(table, keys, base=np.full(len(keys), 0.7))
+    m0 = table["match"] == "M0"
+    assert not r["has"][m0].any() and np.allclose(r["p1"][m0], 0.7)
+
+
+def test_bootstrap_diff_sign():
+    y = np.array([1, 0] * 50)
+    match = np.repeat(["a", "b", "c", "d"], 25)
+    good, bad = np.where(y == 1, 0.9, 0.1), np.full(100, 0.5)
+    d = PE.bootstrap_diff(match, y, bad, good, np.ones(100))
+    assert d["mean"] < 0 and d["ci95"][1] < 0
+
+
+def test_check_target_mapping():
+    assert PE.check_target_mapping([5, 6, 5], [0, 1, 0]) == 2
+    with pytest.raises(ValueError):
+        PE.check_target_mapping([5, 6, 5], [0, 1, 1])
+
+
+def test_idsse_keys_follow_the_derived_rows():
+    info = {
+        "player_ids": ["P0", "P1"],
+        "events": [
+            {"type": "pass", "player": 1, "team": 0, "half": 0},
+            {"type": "shot", "player": 0, "team": 0, "half": 0},
+            {"type": "shot", "player": 1, "team": 1, "half": None},  # not a shot row (no half)
+        ],
+    }
+    d = {"pass": {"event_idx": np.array([0])}, "shot": {"y": np.array([0])}}
+    pk, sk = PE.idsse_keys(d, info)
+    assert list(pk) == ["dfl:P1"] and list(sk) == ["dfl:P0"]

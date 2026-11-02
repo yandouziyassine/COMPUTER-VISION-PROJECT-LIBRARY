@@ -8,6 +8,7 @@ extend-exclude = [
     "01-virtual-painter/.venv",
     "_template",
     "**/Ultralytics",   # Ultralytics settings folders created at runtime
+    "docs/superpowers", # design specs and plans: their code blocks are drafts, not code
 ]
 
 [tool.ruff.lint]

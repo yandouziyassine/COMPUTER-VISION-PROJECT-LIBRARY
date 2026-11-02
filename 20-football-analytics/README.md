@@ -286,10 +286,11 @@ the website replay (phase 2).
 cd 20-football-analytics
 python -m coach.prepare --raw D:/football-coach/idsse-raw    # 7 matches, ~15 min, restartable
 python -m coach.evaluate                                     # all numbers + charts (~10 min on CPU)
-python -m coach.export --match J03WOH --site <folder>        # one match + model weights for the website
+python -m coach.export --match J03WOH --site <folder>        # one match (h0.bin / h1.bin, int16 cm, 12.5 fps) + weights
+python -m coach.parity_fixtures                              # Python <-> TypeScript parity frames for the website
 ```
 
-All numbers: [`docs/coach_results.json`](docs/coach_results.json). Tests: `tests/test_20_coach.py` (31).
+All numbers: [`docs/coach_results.json`](docs/coach_results.json). Tests: `tests/test_20_coach.py` (34).
 
 ## How it works
 

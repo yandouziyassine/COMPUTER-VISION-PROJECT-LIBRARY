@@ -41,7 +41,7 @@ pixels to foundation models, each pointing to the projects where the concept is 
 | 10 | [Face Recognition](10-face-recognition/) | 99.35 % on LFW (official 10-fold protocol) | Face alignment, embeddings, TAR@FAR, ethics & limits | ★★★ |
 | 11 | [Polyp Segmentation](11-medical-segmentation/) | Dice 0.886 (0.892 TTA); other hospital 0.825; screening sensitivity 0.972 | U-Net, Dice + BCE loss, cross-center test | ★★ |
 | 12 | [Satellite Land-Cover](12-satellite-land-cover/) | 98.1 % fine-tuned vs 47.4 % zero-shot | Remote sensing, domain shift | ★★ |
-| 13 | [Anomaly Detection (PatchCore)](13-anomaly-detection-patchcore/) | All 15 MVTec categories: image AUROC 0.989 / pixel 0.979 (paper 0.990 / 0.981); 24 ms/img on the iGPU | Paper reimplemented from scratch, held-out thresholds, OpenVINO | ★★★ |
+| 13 | [Anomaly Detection (PatchCore)](13-anomaly-detection-patchcore/) | All 15 MVTec categories: image AUROC 0.989 / pixel 0.979 (paper 0.990 / 0.981); 24 ms/img on the iGPU, 36 ms on the NPU | Paper reimplemented from scratch, held-out thresholds, OpenVINO (NPU compiler bug found and worked around) | ★★★ |
 | 14 | [Monocular Depth: where 3D vision fails](14-monocular-depth-3d/) | AbsRel 0.058 on NYU; mirrors 7× worse than walls; distances from one photo ±10 % with one known length | 4-model benchmark, failure map by surface, poster illusion test, metric measurement app | ★★★ |
 | 15 | [Fall Detection](15-fall-detection/) | 93 % of falls caught, 96.5 % no false alarm (F1 0.94) in ~0.7 s | Pose estimation, temporal features, nested CV, 1D-CNN/GRU | ★★★ |
 | 16 | [Text-to-Image Search](16-text-to-image-search/) | Recall@10 75.2 % on COCO 5k | CLIP embeddings, FAISS, web UI | ★★ |

@@ -565,6 +565,21 @@ def test_pack_match_writes_one_file_per_half_with_its_own_players(tmp_path):
     assert len(meta["owner"][1]) == 50 and set(meta["owner"][0]) == {"1"} and set(meta["alive"][0]) == {"1"}
 
 
+def test_pack_match_writes_the_ball_height_per_half(tmp_path):
+    m = tiny_match(frames=100)
+    m.halves[0].ball[:, 2] = np.linspace(0, 3, 100)  # a lofted ball, metres
+    m.halves[0].ball[4, 2] = np.nan  # height unknown at source frame 4 = site frame 2
+    X.pack_match(m, tmp_path, fps=10)
+    z0 = np.fromfile(tmp_path / "z0.bin", dtype="<i2")
+    z1 = np.fromfile(tmp_path / "z1.bin", dtype="<i2")
+    assert z0.size == 50 and z1.size == 50  # one int16 per site frame (12.5 fps)
+    assert z0[2] == -32768
+    assert np.allclose(z0[[0, 1, 49]] / 100.0, m.halves[0].ball[[0, 2, 98], 2], atol=0.005)  # whole cm
+    assert (z1 == 0).all()
+    raw0 = np.fromfile(tmp_path / "h0.bin", dtype="<i2")
+    assert raw0.size == 50 * (4 + 1) * 2  # the position files keep their layout (the parity fixtures read them)
+
+
 def test_export_models_leave_the_replay_match_out(tmp_path, monkeypatch):
     import json
 

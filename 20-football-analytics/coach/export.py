@@ -4,7 +4,9 @@
 
 Frame rate: the 25 fps source is subsampled by a whole step (fps=10 -> step 2 -> 12.5 fps, written in match.json).
 h<i>.bin (little-endian int16): for each frame of half i, the players who appear in that half (match.json
-halves[i].slots, ascending player index), then the ball, each (x, y) in cm; NaN -> -32768. The browser loads the first
+halves[i].slots, ascending player index), then the ball, each (x, y) in cm; NaN -> -32768. z<i>.bin (little-endian
+int16): the ball's height in cm for each frame of half i (NaN -> -32768), used only by the site's 3D view; h<i>.bin
+keeps its layout so the parity fixtures are unchanged. The browser loads the first
 half first and the second when needed. match.json (UTF-8) holds players (team, shirt, name; the list index is the
 player index used by slots and events), team names/colours, per half the frame count, the slots and the attack
 directions (+1/-1 for home, guest), fps, owner/alive per frame (strings of digits), passes and shots with frame and
@@ -51,6 +53,8 @@ def pack_match(m, out: Path, fps: int = 10):
         slots = np.flatnonzero(~np.isnan(h.xy[idx, :, 0]).all(axis=0))  # players seen at least once in this half
         pos = np.concatenate([h.xy[idx][:, slots], h.ball[idx, None, :2]], axis=1) * 100
         np.where(np.isnan(pos), NAN, np.round(pos)).astype("<i2").tofile(out / f"h{i}.bin")
+        z = h.ball[idx, 2] * 100  # ball height (DFL tracking Z, metres) -> cm
+        np.where(np.isnan(z), NAN, np.round(z)).astype("<i2").tofile(out / f"z{i}.bin")
         halves.append(
             {"frames": len(idx), "slots": slots.tolist(), "attack": [int(d) for d in G.attack_dirs(h, m.team)]}
         )

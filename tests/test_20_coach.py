@@ -504,27 +504,45 @@ def test_advice_turnover_cost_flips_the_order_against_probability_alone():
 from coach import export as X  # noqa: E402
 
 
-def test_pack_match_roundtrip_in_centimetres(tmp_path):
+def test_pack_match_writes_one_file_per_half_with_its_own_players(tmp_path):
     import json
 
     m = tiny_match(frames=100)
     m.names[0] = "Müller-Ösil"  # non-ASCII must survive (UTF-8 on disk, whatever the platform default encoding)
-    m.halves[0].xy[:7, 1] = np.nan  # player b is not on the pitch for the first frames
+    m.halves[0].xy[:7, 1] = np.nan  # player b is not on the pitch for the first frames of half 0
+    m.halves[1].xy[:, 3] = np.nan  # player d never plays in half 1: not in that half's file
     m.events[0]["frame"] = 40
-    m.events.append({"type": "shot", "half": 0, "frame": None, "team": 0, "drop": "far", "x": 1.0, "y": 2.0})
+    m.events[0]["nominal"] = 41
+    m.events[0]["t_sync"] = 1000.0  # sync diagnostics are not shipped
+    m.events.append(
+        {"type": "shot", "half": 0, "frame": None, "nominal": 61, "team": 0, "drop": "far", "x": 1.0, "y": 2.0}
+    )
+    (tmp_path / "match.bin").write_bytes(b"old single-file layout")
     X.pack_match(m, tmp_path, fps=10)
     meta = json.loads((tmp_path / "match.json").read_text(encoding="utf-8"))
-    raw = np.fromfile(tmp_path / "match.bin", dtype="<i2")
-    frames = sum(meta["frames"])
-    assert raw.size == frames * (len(m.player_ids) + 1) * 2 and meta["fps"] == 12.5
-    assert (
-        meta["players"][0]["name"] == "Müller-Ösil"
-        and "ö" in (tmp_path / "match.json").read_text(encoding="utf-8").lower()
+    assert meta["fps"] == 12.5 and not (tmp_path / "match.bin").exists()
+    h0, h1 = meta["halves"]
+    assert h0 == {"frames": 50, "slots": [0, 1, 2, 3], "attack": [1, -1]}
+    assert h1 == {"frames": 50, "slots": [0, 1, 2], "attack": [-1, 1]}
+    raw0 = np.fromfile(tmp_path / "h0.bin", dtype="<i2")
+    raw1 = np.fromfile(tmp_path / "h1.bin", dtype="<i2")
+    assert raw0.size == 50 * (4 + 1) * 2 and raw1.size == 50 * (3 + 1) * 2
+    first = raw0[:10].reshape(-1, 2)
+    assert np.allclose(first[0] / 100.0, m.halves[0].xy[0, 0]) and np.allclose(
+        first[-1] / 100.0, m.halves[0].ball[0, :2]
     )
-    first = raw[: (len(m.player_ids) + 1) * 2].reshape(-1, 2) / 100.0
-    assert np.allclose(first[0], m.halves[0].xy[0, 0]) and np.allclose(first[-1], m.halves[0].ball[0, :2])
-    assert (raw[: (len(m.player_ids) + 1) * 2].reshape(-1, 2)[1] == -32768).all()  # absent player -> NaN code
-    assert meta["events"][-1]["frame"] is None and meta["events"][0]["frame"] == 20
+    assert (first[1] == -32768).all()  # absent player -> NaN code
+    last1 = (
+        raw1[-8:].reshape(-1, 2) / 100.0
+    )  # half 1, last site frame (source frame 98): players a, b, c, then the ball
+    assert np.allclose(last1[2], m.halves[1].xy[98, 2]) and np.allclose(
+        last1[3], m.halves[1].ball[98, :2], atol=0.005
+    )  # whole cm
+    text = (tmp_path / "match.json").read_text(encoding="utf-8")
+    assert meta["players"][0]["name"] == "Müller-Ösil" and "ö" in text.lower()
+    assert meta["events"][0]["frame"] == 20 and meta["events"][0]["nominal"] == 20 and "t_sync" not in meta["events"][0]
+    assert meta["events"][-1]["frame"] is None and meta["events"][-1]["nominal"] == 30
+    assert len(meta["owner"][1]) == 50 and set(meta["owner"][0]) == {"1"} and set(meta["alive"][0]) == {"1"}
 
 
 def test_export_models_leave_the_replay_match_out(tmp_path, monkeypatch):

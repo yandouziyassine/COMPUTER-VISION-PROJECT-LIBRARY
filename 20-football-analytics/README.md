@@ -191,6 +191,106 @@ All numbers are in [`docs/results_stats.json`](docs/results_stats.json). Unit te
 **Remaining v2 stages:** S1 tracking (SoccerNet-Tracking HOTA), S2 team/jersey identity, S3 calibration
 smoothing + ball (→ GS-HOTA), S5 action spotting + replays, S6 OpenVINO, demo video and match report.
 
+## v3 · AI coach (phase 1: engine, models, evaluation)
+
+**What it does.** Give it one tracking frame (22 players + ball, in metres) and it ranks what the player on the ball
+can do: a pass to each teammate, a carry in five directions, or a shot. Each option comes with the chance that it
+works and what it is worth in **expected goals** (xG), counting the cost of losing the ball. This engine will run the
+website's replay ("pause the match and ask the coach") and, later, the live camera mode. Design:
+[`docs/superpowers/specs/2026-11-01-football-ai-coach-design.md`](../docs/superpowers/specs/2026-11-01-football-ai-coach-design.md).
+
+**Data.** 7 full Bundesliga 2022/23 matches: optical tracking of every player and the ball at 25 fps plus the
+official events (Bassek et al. 2025, *Scientific Data*, [DOI 10.1038/s41597-025-04505-y](https://doi.org/10.1038/s41597-025-04505-y);
+data [10.6084/m9.figshare.28196177](https://doi.org/10.6084/m9.figshare.28196177); DFL / Sportec Solutions,
+**CC BY 4.0**). Every number below is **leave-one-match-out**: models trained on 6 matches, scored on the 7th.
+
+### How it works
+
+1. **Parsing** ([`coach/dfl.py`](coach/dfl.py)): a streaming reader turns each 400 MB positions XML into compact
+   arrays (16 MB per match).
+2. **Syncing events to tracking** ([`coach/sync.py`](coach/sync.py)). The event clock is hand-logged: against the
+   tracking it is off by −1.6 s to +1.6 s depending on the half, with about a second of jitter. Each half's offset
+   is estimated, then each pass is snapped (±1.5 s) to the frame where the ball is closest to its logged spot *and*
+   the passer still has it (the release, never after an interception); shots use the provider's frame. Events that
+   land on the window edge or more than 3 m from the ball are dropped. Result: median event-to-ball distance
+   **0.8–1.1 m** per match (5–12 m before), keeping about 66 % of passes and 163 of 171 shots.
+3. **Pitch control** ([`coach/pitch_control.py`](coach/pitch_control.py)): who gets to each point first. Each
+   player reacts for 0.7 s, then runs at up to 5 m/s; the gap between the fastest attacker and defender becomes a
+   probability (logistic, σ = 0.45 s). Closed form, so the browser can compute it exactly.
+4. **Pass model**: logistic regression on pass distance, direction, defenders near the passing lane, the
+   receiver's space, pressure on the passer, pitch control at the target and the target's position.
+5. **Value model**: V(ball position) = expected **net xG** (team in possession minus opponent) in the next 15 s;
+   ridge regression on a fixed set of position features. The shot outcomes use the provider's own xG per shot.
+6. **Advice** ([`coach/advice.py`](coach/advice.py)): score = p · V(target) − (1 − p) · V_opponent(where the ball
+   is lost) − V(now). A shot scores its xG − V(now). Everything is in expected goals.
+
+### Two traps in the data (found and fixed)
+
+- **"Recipient" on a failed pass is the opponent who won the ball**, not the intended teammate (156 of 156 in one
+  match). Taking it at face value made every failed pass "to an opponent" and left the model with no failures at
+  all. The intended teammate is now inferred from the ball's path (first frame it reaches an opponent, nearest
+  teammate along that line), and passes whose target can't be read are dropped.
+- **That inference is itself outcome-informed**: for a failed pass the chosen "target" lies past the interceptor,
+  so the interceptor sits in the lane by construction. The headline pass AUC below is therefore an upper bound;
+  the leak checks give the honest range. The pass table is also reweighted per match to the true completion rate
+  (failed passes are harder to keep, so the raw table was 3–6 points too optimistic).
+
+### Results (held-out matches)
+
+| Model | Log-loss | Brier | AUC |
+|---|---|---|---|
+| **Pass success**, logistic (3,464 passes, weighted to the true rate) | 0.378 | 0.125 | 0.838 |
+| Pass, gradient boosting | 0.381 | 0.124 | 0.839 |
+| Pass, pitch control at the target only | 0.471 | 0.152 | 0.739 |
+| Pass, distance only | 0.505 | 0.162 | 0.497 |
+| Pass, base rate | 0.507 | 0.163 | — |
+| *Leak check: interceptor removed from failed passes' defenders* | 0.400–0.426 | | **0.77–0.81** |
+| **Shot → goal**, logistic (160 shots, no penalties) | 0.325 | 0.091 | 0.634 |
+| Shot, the provider's xG (reference) | 0.254 | 0.072 | 0.816 |
+
+| Value model (net xG in 15 s) | RMSE | Skill vs the mean | Spearman |
+|---|---|---|---|
+| **Ridge on position features** | 0.0487 | 2.2 % | 0.235 |
+| Distance to goal only | 0.0488 | 1.9 % | 0.238 |
+| xT-style location grid | 0.0488 | 1.8 % | 0.213 |
+| Gradient boosting | 0.0489 | 1.5 % | 0.224 |
+
+<img src="docs/coach_pass_reliability.png" alt="Reliability chart of the pass model on held-out matches" width="32%"> <img src="docs/coach_value_calibration.png" alt="Value model: predicted vs realised net xG by decile" width="32%"> <img src="docs/coach_advice_calibration.png" alt="Coach expectation vs realised net xG of the chosen pass" width="32%">
+
+**What the numbers say.**
+
+- **The pass model is real.** Even in the pessimistic leak check (AUC 0.77–0.81) it is far better than distance
+  alone (0.50) and than pitch control alone (0.74). Calibration is good where most passes are (p > 0.5).
+- **The value model is calibrated but weak.** It explains about 2 % of the variance of what happens in the next
+  15 s, and it is no better than "distance to goal". Goals are rare; 7 matches are not enough to learn more than
+  "closer is better". The 10 / 15 / 20 s horizons give the same picture (skill 2.9 / 2.2 / 1.7 %).
+- **Our shot model loses to the provider's xG** (AUC 0.63 vs 0.82): 160 shots are far too few. The engine uses
+  the provider's xG where it has it and our model only as a fallback.
+- **The coach is calibrated in expected goals but not a better ranker than V alone.** For the pass the player
+  actually made, the coach's expected outcome tracks the realised net xG (Spearman 0.24, 95 % CI 0.22–0.26, slope
+  1.15): when it says a choice is worth more, it usually is. But ranking by V(target) alone does as well (0.24).
+- **It plays bolder than the pros.** Completion of the pass the player chose, by the coach's rank of that option:
+  rank 1: 69 %, ranks 2–3: 78 %, 4–6: 81 %, 7+: 85 %. Its top suggestions are the riskier, more valuable passes.
+  It agrees with the receiver the pro chose in 37 % of cases (top-3), about the same as random (30 %); the
+  nearest-teammate rule agrees 67 %. That is expected (a coach that copied pros would be pointless), but it also
+  means the advice is a *value* opinion, not a prediction of what a player will do.
+
+**Limits.** 7 matches from one league; event sync drops a third of the passes; failed-pass targets are inferred;
+associations, not causal effects (players choose their passes). Logistic and ridge models were kept on purpose: the
+browser runs the exact same formulas. Next: a cross-league check on SkillCorner's open A-League data (MIT), then
+the website replay (phase 2).
+
+### Run the coach
+
+```bash
+cd 20-football-analytics
+python -m coach.prepare --raw D:/football-coach/idsse-raw    # 7 matches, ~15 min, restartable
+python -m coach.evaluate                                     # all numbers + charts (~10 min on CPU)
+python -m coach.export --match J03WOH --site <folder>        # one match + model weights for the website
+```
+
+All numbers: [`docs/coach_results.json`](docs/coach_results.json). Tests: `tests/test_20_coach.py` (31).
+
 ## How it works
 
 1. **Detection** ([`train.py`](train.py)): YOLO11n from COCO weights, fine-tuned at **960 px** (instead of
@@ -219,6 +319,9 @@ smoothing + ball (→ GS-HOTA), S5 action spotting + replays, S6 OpenVINO, demo 
   stage S4 validation, not redistributed.
 - **StatsBomb open data** (github.com/statsbomb/open-data), under the StatsBomb Public Data User Agreement
   (research/analysis use, no redistribution, StatsBomb attribution on published analysis). Only the shots are kept.
+- **IDSSE Bundesliga tracking + events** (Bassek et al. 2025, figshare 10.6084/m9.figshare.28196177, CC BY 4.0,
+  data owner DFL): 7 matches, used for the v3 coach. Raw XML (2.6 GB) on the USB key, compact matches in
+  `../../cv-data/football-coach/`; never committed.
 - **Location:** `../../cv-data/football/` (not committed).
 
 ## Run it

@@ -345,7 +345,7 @@ events, 20 matches of one season.
 cd 20-football-analytics
 python -m coach.prepare --raw D:/football-coach/idsse-raw    # 7 matches, ~15 min, restartable
 python -m coach.evaluate                                     # all numbers + charts (~10 min on CPU)
-python -m coach.export --match J03WOH --site <folder>        # one match (h0.bin / h1.bin, int16 cm, 12.5 fps) + weights
+python -m coach.export --match J03WOH --site <folder>        # one match (h0/h1.bin int16 cm 12.5 fps, z0/z1.bin ball height) + weights
 python -m coach.parity_fixtures                              # Python <-> TypeScript parity frames for the website
 python -m coach.skillcorner                                  # 20 A-League matches streamed (1.7 GB), ~5 min
 python -m coach.cross_league                                 # cross-league + combined numbers and charts (~3 min)

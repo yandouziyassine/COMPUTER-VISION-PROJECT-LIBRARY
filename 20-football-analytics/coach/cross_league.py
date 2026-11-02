@@ -13,21 +13,16 @@ shots to reproduce the provider's xG from the coach's own shot features (distanc
 its quality is measured on held-out IDSSE matches (vs the provider xG) and on the A-League goals.
 """
 
+import json
 import pickle
 from pathlib import Path
 
-import matplotlib
+import numpy as np
 
-matplotlib.use("Agg")
-import json  # noqa: E402
-
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
-
-from . import datasets as D  # noqa: E402
-from . import features as F  # noqa: E402
-from . import models as ML  # noqa: E402
-from .sync import event_xy  # noqa: E402
+from . import datasets as D
+from . import features as F
+from . import models as ML
+from .sync import event_xy
 
 DOCS = Path(__file__).resolve().parents[1] / "docs"
 LEAGUES = ("idsse", "skillcorner")
@@ -317,7 +312,18 @@ def pass_cross_detail(pi, ps) -> dict:
     return out
 
 
+def _pyplot():
+    """matplotlib only for the charts (the tests and CI import this module without it)."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    return plt
+
+
 def reliability_chart(curves, path, title):
+    plt = _pyplot()
     fig, ax = plt.subplots(figsize=(5, 5))
     ax.plot([0, 1], [0, 1], "k--", lw=1)
     for name, (y, p, w) in curves.items():
@@ -332,6 +338,7 @@ def reliability_chart(curves, path, title):
 
 def rules_chart(res_pass, res_value, path):
     """Held-out log-loss (pass) and MSE skill (value) per held-out league and training set."""
+    plt = _pyplot()
     fig, axes = plt.subplots(1, 2, figsize=(9, 4))
     labels = {"same": "own league", "other": "other league", "all": "both", "all+league": "both + indicator"}
     width = 0.2

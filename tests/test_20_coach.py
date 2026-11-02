@@ -633,3 +633,51 @@ def test_advice_summary_buckets_correlations_and_bootstrap():
     assert c["spearman"] > 0.9 and c["ci95"][0] > 0.8 and abs(s["outcome_correlation"]["p_only"]["spearman"]) < 0.3
     assert s["coach_expected_outcome"]["slope"] == pytest.approx(1.0, abs=0.1) and len(s["coach_deciles"]) == 10
     assert s["agreement_context"]["random"]["top3"] == pytest.approx(1 / 3)
+
+
+from coach import parity_fixtures as PF  # noqa: E402
+
+
+def _flat_model(names, link, c):
+    k = len(names)
+    return {
+        "features": list(names),
+        "link": link,
+        "mean": [0.0] * k,
+        "scale": [1.0] * k,
+        "coef": [c] * k,
+        "intercept": 0.0,
+    }
+
+
+def test_parity_fixtures_rebuild_the_site_state_and_rank_options(tmp_path):
+    import json
+
+    m = tiny_match(frames=100)
+    m.halves[0].ball[30:50, :2] = [-10.0, 0.5]  # the ball at player a's feet around the pass (source frame 40)
+    m.events[0]["frame"] = 40
+    X.pack_match(m, tmp_path, fps=10)
+    models = {
+        "trained_without": "TEST",
+        "pass": _flat_model(F.PASS_FEATURES, "logit", 0.05),
+        "value": _flat_model(F.VALUE_FEATURES, "identity", 0.001),
+        "shot": _flat_model(F.SHOT_FEATURES, "logit", -0.1),
+    }
+    (tmp_path / "models.json").write_text(json.dumps(models), encoding="utf-8")
+    meta = json.loads((tmp_path / "match.json").read_text(encoding="utf-8"))
+    team_of = np.array([p["team"] for p in meta["players"]])
+    h = PF.load_half(tmp_path, meta, 0)
+    assert PF.carrier_at(meta, 0, h, team_of, 20) == (0, 0)
+    assert PF.carrier_at(meta, 0, h, team_of, 49) is None  # ball ~7 m from the nearest home player
+    fx = PF.build(tmp_path, per_half=3)
+    assert fx["back_frames"] == 2 and fx["fps"] == 12.5 and fx["models"]["trained_without"] == "TEST"
+    assert len(fx["frames"]) == 1  # the tiny match has one pass with a frame
+    rec = fx["frames"][0]
+    assert (rec["half"], rec["frame"], rec["carrier"], rec["team"], rec["carrier_row"]) == (0, 20, 0, 0, 0)
+    st = rec["state"]
+    assert st["att_idx"] == [0, 1] and st["def_idx"] == [2, 3] and st["direction"] == 1
+    assert np.allclose(st["att"][0], [-10.0, 0.0]) and np.allclose(st["att_v"], 0.0)
+    scores = [o["score"] for o in rec["options"]]
+    assert scores == sorted(scores, reverse=True) and {"pass", "carry"} <= {o["kind"] for o in rec["options"]}
+    assert [p["target"] for p in rec["pass_features"]] == [1] and set(rec["value_features"]) == set(F.VALUE_FEATURES)
+    json.dumps(fx, allow_nan=False)  # valid JSON for the browser: no NaN anywhere

@@ -230,3 +230,10 @@ def test_export_profiles_built_without_the_match(tmp_path):
     assert prof["teams"]["0"] == {"name": "H", "matches_in_profiles": 3}
     EP.write(prof, tmp_path)
     assert PR.load(tmp_path / "profiles.json")["players"]["0"]["pass_skill"]["n"] > 0
+
+
+def test_choose_k_picks_k_on_the_a1_curve_even_when_a_is_zero():
+    groups, keys, y, base = _synthetic([0.0] * 6, seed=2, rows=40)  # tiny samples: raw offsets are pure noise
+    sel = PR.choose_k(groups, keys, y, base)
+    best_k = min(sel["curve_a1"], key=sel["curve_a1"].get)
+    assert sel["k"] == float(best_k) and sel["k"] > 0

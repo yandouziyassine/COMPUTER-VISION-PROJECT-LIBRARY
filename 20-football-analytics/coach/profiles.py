@@ -105,27 +105,29 @@ def held_out_sums(groups, keys, y, p, w=None):
 
 
 def choose_k(groups, keys, y, p, w=None, ks=K_GRID, scales=A_GRID) -> dict:
-    """(k, a) with the lowest held-out log-loss when each group (match) gets offsets built from the other groups only.
-    `p` must be out-of-fold expectations. Ties keep the first in grid order (k, then a). curve_a1: log-loss per k at
-    a = 1 (when 1 is in the grid)."""
+    """k and the scale a by held-out log-loss, each group (match) getting offsets built from the other groups only;
+    `p` must be out-of-fold expectations. k minimises the held-out log-loss with the offsets used as estimated (a = 1,
+    curve_a1); a is then the best scale for that k (a = 0: the offsets do not help). Ties keep the first in grid
+    order."""
     n, g, h = held_out_sums(groups, keys, y, p, w)
     lp = logit(p)
-    grid = {}
-    for k in ks:
+
+    def loss(k, a):
         off = np.where(h + k > 0, g / np.maximum(h + k, 1e-12), 0.0)
-        for a in scales:
-            grid[(float(k), float(a))] = log_loss(y, sigmoid(lp + a * off), w)
-    best = min(grid, key=grid.get)
-    out = {
-        "k": best[0],
-        "a": best[1],
-        "log_loss": grid[best],
+        return log_loss(y, sigmoid(lp + a * off), w)
+
+    curve = {float(k): loss(k, 1.0) for k in ks}
+    k = min(curve, key=curve.get)
+    by_a = {float(a): loss(k, a) for a in scales}
+    a = min(by_a, key=by_a.get)
+    return {
+        "k": k,
+        "a": a,
+        "log_loss": by_a[a],
         "base_log_loss": log_loss(y, p, w),
         "coverage": float(np.mean(n > 0)),
+        "curve_a1": {str(kk): v for kk, v in curve.items()},
     }
-    if 1.0 in scales:
-        out["curve_a1"] = {str(float(k)): grid[(float(k), 1.0)] for k in ks}
-    return out
 
 
 # ------------------------------------------------------------------------------------- format and providers

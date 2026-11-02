@@ -189,3 +189,44 @@ def test_idsse_keys_follow_the_derived_rows():
     d = {"pass": {"event_idx": np.array([0])}, "shot": {"y": np.array([0])}}
     pk, sk = PE.idsse_keys(d, info)
     assert list(pk) == ["dfl:P1"] and list(sk) == ["dfl:P0"]
+
+
+from coach import export_profiles as EP  # noqa: E402
+
+
+def _part(mid, players, rng, n=200, ns=12):
+    return {
+        "match": mid,
+        "pass": {
+            "X": rng.normal(size=(n, 2)),
+            "y": rng.integers(0, 2, n),
+            "match": np.full(n, mid),
+            "weight": np.ones(n),
+        },
+        "pass_keys": np.array(rng.choice(players, n), dtype=str),
+        "shot": {
+            "X": rng.normal(size=(ns, 3)),
+            "y": rng.integers(0, 2, ns),
+            "match": np.full(ns, mid),
+            "xg": rng.uniform(0.05, 0.3, ns),
+            "penalty": np.zeros(ns, bool),
+            "placed": np.ones(ns, bool),
+        },
+        "shot_keys": np.array(rng.choice(players, ns), dtype=str),
+        "info": {"player_ids": [p[4:] for p in players], "names": ["A", "B"], "meta": {"home": "H", "guest": "G"}},
+        "team": np.array([0, 1], np.int8),
+    }
+
+
+def test_export_profiles_built_without_the_match(tmp_path):
+    rng = np.random.default_rng(3)
+    parts = [
+        _part(m, ["dfl:A", "dfl:B"] if m != "M0" else ["dfl:A", "dfl:ONLY0"], rng) for m in ("M0", "M1", "M2", "M3")
+    ]
+    prof = EP.build("M0", parts, decision={"pass": "display-only", "shot": "display-only"})
+    assert prof["built_without"] == ["M0"] and "M0" not in prof["trained_on"]
+    assert set(prof["players"]) == {"0"} and prof["mapping"] == {"dfl:A": 0}  # ONLY0 plays only in M0
+    assert prof["a"] == {"pass": 0.0, "shot": 0.0} and prof["advice_effect"] == "display-only"
+    assert prof["teams"]["0"] == {"name": "H", "matches_in_profiles": 3}
+    EP.write(prof, tmp_path)
+    assert PR.load(tmp_path / "profiles.json")["players"]["0"]["pass_skill"]["n"] > 0

@@ -8,7 +8,6 @@ including penalties and direct free kicks). Shot table: y = goal, penalties flag
 import numpy as np
 
 from . import features as F
-from .match import FPS
 from .sync import event_xy
 
 HORIZON = 15.0  # seconds: value = net expected goals within this horizon (10 / 15 / 20 s are compared)
@@ -59,7 +58,7 @@ def _ball_path_end(m, e, s):
     """
     h = m.halves[e["half"]]
     f = e["frame"]
-    up = min(len(h.t), f + int(MAX_FLIGHT_S * FPS) + 1)
+    up = min(len(h.t), f + int(MAX_FLIGHT_S * F.match_fps(m)) + 1)
     ball = h.ball[f:up, :2]
     left = np.flatnonzero(np.linalg.norm(h.xy[f:up, e["player"]] - ball, axis=1) > LEFT_PASSER_M)
     if not len(left):
@@ -112,9 +111,12 @@ def intended_target(m, e, s, where):
 
 
 def pass_samples(m):
-    """Usable open-play passes: dicts with the event, the state at the release, carrier / target rows of s["att"],
-    and for unsuccessful passes the interceptor's row in s["def"] (None when unknown)."""
-    for e in m.events:
+    """Usable open-play passes: dicts with the event (and its index in m.events), the state at the release, carrier /
+    target rows of s["att"], and for unsuccessful passes the interceptor's row in s["def"] (None when unknown).
+
+    When the provider records the intended receiver of failed passes too (e["target_known"], SkillCorner), it is used
+    as is and the ball path only names the interceptor; otherwise (DFL) the target is inferred from the ball path."""
+    for idx, e in enumerate(m.events):
         if e["type"] != "pass" or e.get("frame") is None or e.get("set_piece") or e.get("cross"):
             continue
         if e["team"] < 0 or e["player"] is None or e["recipient"] == e["player"]:
@@ -124,10 +126,15 @@ def pass_samples(m):
         if e["player"] not in where:
             continue
         interceptor = None
-        if e["success"]:
+        if e["success"] or e.get("target_known"):
             if e["recipient"] not in where:
                 continue
             target = where[e["recipient"]]
+            if not e["success"]:
+                end = _ball_path_end(m, e, s)
+                who = end[1] if end is not None else None
+                if who is not None and who in s["def_idx"]:
+                    interceptor = int(np.flatnonzero(s["def_idx"] == who)[0])
         else:  # the recorded recipient is an opponent: infer the intended teammate from the ball path
             found = intended_target(m, e, s, where)
             if found is None:
@@ -135,7 +142,14 @@ def pass_samples(m):
             target, who = found
             if who is not None and who in s["def_idx"]:
                 interceptor = int(np.flatnonzero(s["def_idx"] == who)[0])
-        yield {"event": e, "state": s, "carrier": where[e["player"]], "target": target, "interceptor": interceptor}
+        yield {
+            "index": idx,
+            "event": e,
+            "state": s,
+            "carrier": where[e["player"]],
+            "target": target,
+            "interceptor": interceptor,
+        }
 
 
 def completion_rate(m) -> float:
@@ -149,8 +163,10 @@ def completion_rate(m) -> float:
 def pass_table(m) -> dict:
     """X: features at the release; weight: reweighting to the true completion rate. X_noint: the same with the interceptor removed from the defenders of unsuccessful
     passes (he stands on the lane by construction); X_geom: geometry only (no defenders), both leak-free variants."""
-    rows, rows_noint, ys = [], [], []
+    rows, rows_noint, ys, idx, target = [], [], [], [], []
     for p in pass_samples(m):
+        idx.append(p["index"])
+        target.append(int(p["state"]["att_idx"][p["target"]]))
         s, c, t = p["state"], p["carrier"], p["target"]
         rows.append(F.pass_features(s, c, t))
         s2 = s if p["interceptor"] is None else F.without_defender(s, p["interceptor"])
@@ -158,6 +174,8 @@ def pass_table(m) -> dict:
         ys.append(int(p["event"]["success"]))
     table = _table(rows, ys, m.match_id, F.PASS_FEATURES)
     table["X_noint"] = _table(rows_noint, ys, m.match_id, F.PASS_FEATURES)["X"]
+    table["event_idx"] = np.array(idx, int)  # row -> index in m.events
+    table["target_idx"] = np.array(target, int)  # row -> player index of the (given or inferred) target
     # failed passes are harder to place (intended receiver, release frame) than completed ones, so the table over-represents
     # completions: weight the failed rows so that the weighted completion rate equals the match's true rate
     y = table["y"]
@@ -168,10 +186,11 @@ def pass_table(m) -> dict:
 
 
 def value_table(m, horizons=(HORIZON,), every: float = 1.0) -> dict:
-    """y: net xG within the first horizon; y_h maps every horizon to its labels."""
-    rows, ys = [], {h: [] for h in horizons}
+    """y: net xG within the first horizon; y_h maps every horizon to its labels; half / t / team locate each row
+    (labels can be recomputed with another shot value, see cross_league.value_labels)."""
+    rows, ys, where = [], {h: [] for h in horizons}, []
     shots = shots_by_half(m)
-    step = max(1, int(round(every * FPS)))
+    step = max(1, int(round(every * F.match_fps(m))))
     for hi, h in enumerate(m.halves):
         for i in range(0, len(h.t), step):
             team = int(h.owner[i])
@@ -179,11 +198,21 @@ def value_table(m, horizons=(HORIZON,), every: float = 1.0) -> dict:
                 continue
             s = F.state(m, hi, i, team)
             rows.append(F.value_features(s["ball"]))
+            where.append((hi, float(h.t[i]), team))
             for hz in horizons:
                 ys[hz].append(net_xg(shots[hi], float(h.t[i]), team, hz))
     X = np.array([[r[k] for k in F.VALUE_FEATURES] for r in rows], float).reshape(len(rows), len(F.VALUE_FEATURES))
     y_h = {hz: np.array(v) for hz, v in ys.items()}
-    return {"X": X, "y": y_h[horizons[0]], "match": np.array([m.match_id] * len(rows)), "y_h": y_h}
+    w = np.array(where, float).reshape(len(where), 3)
+    return {
+        "X": X,
+        "y": y_h[horizons[0]],
+        "match": np.array([m.match_id] * len(rows)),
+        "y_h": y_h,
+        "half": w[:, 0].astype(int),
+        "t": w[:, 1],
+        "team": w[:, 2].astype(int),
+    }
 
 
 def shot_table(m) -> dict:

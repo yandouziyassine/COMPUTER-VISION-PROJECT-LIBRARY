@@ -45,13 +45,24 @@ VALUE_BASIS = {
 }
 SHOT_FEATURES = ("goal_dist", "goal_angle", "cone_defenders")
 LANE_WIDTH = 2.0
-BACK = 4  # frames of history for velocities (0.16 s)
+BACK = 4  # frames of history for velocities (0.16 s at 25 fps)
+BACK_S = BACK / FPS
 
 
-def state(m, half: int, frame: int, team: int, fps: float = FPS, back_frames: int = BACK, direction=None) -> dict:
+def match_fps(m) -> float:
+    """Frame rate of a match: 25 fps (IDSSE) unless its meta says otherwise (SkillCorner: 10 fps)."""
+    return float(m.meta.get("fps", FPS)) if getattr(m, "meta", None) else FPS
+
+
+def state(m, half: int, frame: int, team: int, fps=None, back_frames=None, direction=None) -> dict:
     """Causal state: velocities are backward differences over `back_frames` frames (same in training and at
-    inference). The website rebuilds it at 12.5 fps with back_frames=2 (0.16 s, as in training) and the attack
-    direction stored in its match.json (coach/parity_fixtures.py)."""
+    inference). Defaults: the match's frame rate and 0.16 s of history (4 frames at 25 fps, 2 at 10 fps, i.e. 0.2 s).
+    The website rebuilds it at 12.5 fps with back_frames=2 (0.16 s, as in training) and the attack direction stored
+    in its match.json (coach/parity_fixtures.py)."""
+    if fps is None:
+        fps = match_fps(m)
+    if back_frames is None:
+        back_frames = max(1, int(round(BACK_S * fps)))
     h = m.halves[half]
     if direction is None:
         direction = G.attack_dirs(h, m.team)[team]

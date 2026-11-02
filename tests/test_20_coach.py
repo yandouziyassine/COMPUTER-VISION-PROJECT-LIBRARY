@@ -696,3 +696,227 @@ def test_parity_fixtures_rebuild_the_site_state_and_rank_options(tmp_path):
     assert scores == sorted(scores, reverse=True) and {"pass", "carry"} <= {o["kind"] for o in rec["options"]}
     assert [p["target"] for p in rec["pass_features"]] == [1] and set(rec["value_features"]) == set(F.VALUE_FEATURES)
     json.dumps(fx, allow_nan=False)  # valid JSON for the browser: no NaN anywhere
+
+
+# ------------------------------------------------------------------ SkillCorner open data (A-League, 10 fps)
+
+from coach import skillcorner as SC  # noqa: E402
+
+
+def sc_sheet():
+    def player(pid, team, shirt):
+        return {"id": pid, "team_id": team, "number": shirt, "short_name": f"P{pid}", "player_role": {"acronym": "CM"}}
+
+    return {
+        "id": 99,
+        "home_team": {"id": 1, "short_name": "Home"},
+        "away_team": {"id": 2, "short_name": "Away"},
+        "home_team_kit": {"jersey_color": "#ff0000"},
+        "away_team_kit": {"jersey_color": "#0000ff"},
+        "home_team_score": 1,
+        "away_team_score": 0,
+        "pitch_length": 104,
+        "pitch_width": 68,
+        "home_team_side": ["left_to_right", "right_to_left"],
+        "players": [player(11, 1, 7), player(12, 1, 8), player(21, 2, 4), player(22, 2, 5), player(13, 1, 9)],
+    }
+
+
+def sc_tracking_lines():
+    """Period 1: frames 10..39, period 2: frames 50..79 (10 fps). Home attacks +x in period 1. Player 11 holds the
+    ball for 10 frames, then it rolls away diagonally; player 22 is never on screen (extrapolated)."""
+    import json
+
+    lines = [json.dumps({"frame": 0, "period": None, "ball_data": {}, "possession": {}, "player_data": []})]
+    players = [(11, -10.0, 0.0, True), (12, -5.0, 10.0, True), (21, 10.0, 0.0, True), (22, 20.0, -5.0, False)]
+    for period, frames, sign in ((1, range(10, 40), 1), (2, range(50, 80), -1)):
+        for f in frames:
+            k = f - frames[0]
+            bx, by = (-10.0, 0.5) if k < 10 else (-10.0 + (k - 9) * 0.5, 0.5 + (k - 9) * 0.5)
+            frame = {
+                "frame": f,
+                "timestamp": None,
+                "period": period,
+                "ball_data": {"x": sign * bx, "y": sign * by, "z": 0.1, "is_detected": k % 2 == 0},
+                "possession": {"player_id": 11, "group": "home team" if k < 20 else None},
+                "player_data": [
+                    {"x": sign * x, "y": sign * y, "player_id": pid, "is_detected": d} for pid, x, y, d in players
+                ],
+            }
+            lines.append(json.dumps(frame))
+    return lines
+
+
+def sc_rows():
+    """Dynamic events: coordinates in pitch metres with the attacking team towards +x."""
+
+    def poss(frame, period, end_type, side, x, y, **kw):
+        base = {
+            "event_type": "player_possession",
+            "frame_start": str(frame - 3),
+            "frame_end": str(frame),
+            "period": str(period),
+            "team_id": "1",
+            "player_id": "11",
+            "end_type": end_type,
+            "attacking_side": side,
+            "x_end": str(x),
+            "y_end": str(y),
+            "pass_outcome": "",
+            "player_targeted_id": "",
+            "channel_end": "center",
+            "player_targeted_penalty_area_pass": "False",
+            "player_targeted_xpass_completion": "",
+            "game_interruption_before": "",
+            "game_interruption_after": "",
+        }
+        return {**base, **kw}
+
+    ok = {"pass_outcome": "successful", "player_targeted_id": "12"}
+    return [
+        poss(15, 1, "pass", "left_to_right", -10, 0, player_targeted_xpass_completion="0.81", **ok),
+        poss(19, 1, "pass", "left_to_right", -10, 0, pass_outcome="unsuccessful", player_targeted_id="12"),
+        poss(17, 1, "pass", "left_to_right", -10, 0, pass_outcome="offside", player_targeted_id="12"),
+        poss(18, 1, "shot", "left_to_right", -10, 0, game_interruption_after="goal_for"),
+        poss(60, 2, "pass", "right_to_left", -10, 0, **ok),
+        poss(
+            75,
+            2,
+            "pass",
+            "right_to_left",
+            -10,
+            0,
+            channel_end="wide_left",
+            player_targeted_penalty_area_pass="True",
+            **ok,
+        ),  # fmt: skip
+        {"event_type": "passing_option", "frame_end": "15", "period": "1", "player_id": "12"},
+    ]
+
+
+SC_PHASES = [{"frame_start": "10", "frame_end": "29"}, {"frame_start": "50", "frame_end": "79"}]
+
+
+def sc_match():
+    return SC.build_match(sc_sheet(), SC.read_tracking(sc_tracking_lines()), sc_rows(), SC_PHASES)
+
+
+def test_skillcorner_tracking_reader_and_compact_storage(tmp_path):
+    raw = SC.read_tracking(line.encode() for line in sc_tracking_lines())  # bytes, as streamed over HTTP
+    assert raw["xy"].shape == (60, 4, 2) and list(raw["player_ids"]) == [11, 12, 21, 22]
+    assert list(raw["frame"][:2]) == [10, 11] and set(raw["period"]) == {1, 2}  # the frame without a period is skipped
+    assert raw["detected"][:, :3].all() and not raw["detected"][:, 3].any()
+    assert list(raw["poss_group"][18:22]) == [0, 0, -1, -1] and raw["ball_detected"].mean() == 0.5
+    raw["xy"][5, 1] = np.nan  # a player missing in one frame
+    SC.save_tracking(raw, tmp_path / "t.npz")
+    back = SC.load_tracking(tmp_path / "t.npz")
+    assert np.allclose(back["xy"], raw["xy"], atol=0.006, equal_nan=True) and np.isnan(back["xy"][5, 1]).all()
+    assert np.allclose(back["ball"], raw["ball"], atol=0.006) and np.array_equal(back["detected"], raw["detected"])
+
+
+def test_skillcorner_match_is_rescaled_centred_with_teams_alive_and_owner():
+    from coach import geometry as G
+
+    m = sc_match()
+    assert m.match_id == "99" and list(m.team) == [0, 0, 1, 1] and list(m.shirt) == [7, 8, 4, 5]
+    assert m.meta["fps"] == 10.0 and m.meta["pitch"] == [104, 68] and m.meta["event_axis"] == "same_y"
+    h0, h1 = m.halves
+    assert len(h0.t) == 30 and list(h0.n[:2]) == [10, 11] and h0.t[1] - h0.t[0] == pytest.approx(0.1)
+    assert np.allclose(h0.xy[0, 0], [-10 * 105 / 104, 0.0]) and np.allclose(h1.xy[0, 0], [10 * 105 / 104, 0.0])
+    assert h0.alive[:20].all() and not h0.alive[20:].any() and h1.alive.all()
+    assert list(h0.owner[18:22]) == [0, 0, -1, -1]
+    assert m.detected[0].shape == (30, 4) and not m.detected[0][:, 3].any()
+    assert G.attack_dirs(h0, m.team) == (1, -1) and G.attack_dirs(h1, m.team) == (-1, 1)  # = home_team_side
+
+
+def test_skillcorner_events_passes_shots_targets_and_orientation():
+    from coach.sync import event_xy
+
+    m = sc_match()
+    passes = [e for e in m.events if e["type"] == "pass"]
+    shots = [e for e in m.events if e["type"] == "shot"]
+    assert len(passes) == 4 and len(shots) == 1  # the offside pass and the passing option are not passes
+    ok, failed = passes[0], passes[1]
+    assert ok["success"] and ok["player"] == 0 and ok["recipient"] == 1 and ok["xpass"] == pytest.approx(0.81)
+    assert not failed["success"] and failed["recipient"] == 1 and failed["target_known"] and not failed["cross"]
+    assert passes[3]["cross"] and ok["set_piece"] is None and failed["xpass"] is None
+    s = shots[0]
+    assert s["goal"] and s["xg"] is None and s["xg_missing"] and s["team"] == 0
+    # attack-normalised event coordinates are rotated back: player 11 stands at (-10, 0) in period 1, (10, 0) in 2
+    assert np.allclose(event_xy(m, ok), [-10 * 105 / 104, 0.0])
+    assert np.allclose(event_xy(m, passes[2]), [10 * 105 / 104, 0.0])
+    assert (ok["half"], ok["frame"], passes[2]["half"], passes[2]["frame"]) == (0, 5, 1, 10)
+
+
+def test_skillcorner_sync_report_measures_the_passer_ball_distance():
+    m = sc_match()
+    by_frame = {e["n"]: e for e in m.events}
+    assert by_frame[15]["actor_ball_m"] == pytest.approx(0.5) and by_frame[15]["sync"] == "provider"
+    # frame 75 (period 2): the ball has rolled ~12 m away from the passer -> dropped as "far"
+    assert by_frame[75]["frame"] is None and by_frame[75]["drop"] == "far" and by_frame[75]["t_sync"] == 7.5
+    rep = m.meta["sync"]
+    assert rep["passes"] == 4 and rep["passes_kept"] == 3 and rep["offside_dropped"] == 1
+    assert rep["shots"] == 1 and rep["shots_kept"] == 1 and rep["goals"] == 1 and rep["score"] == [1, 0]
+    assert rep["actor_ball_median_m"] == pytest.approx(0.5) and rep["dropped"] == {"far": 1}
+    det = SC.detection_report(m)
+    assert det["players_detected"] == pytest.approx(0.75) and det["ball_detected_in_play"] == pytest.approx(0.5)
+
+
+def test_tables_on_a_skillcorner_match_use_the_given_target_and_its_frame_rate():
+    m = sc_match()
+    m.halves[0].alive[:] = True  # no interception and no dead ball: the ball path cannot tell the intended receiver
+    failed = next(e for e in m.events if e["type"] == "pass" and not e["success"])
+    assert D.intended_target(m, failed, F.state(m, 0, 9, 0), {0: 0, 1: 1}) is None
+    p = D.pass_table(m)
+    # the failed pass keeps SkillCorner's intended receiver although no opponent touches the ball path
+    assert list(p["y"]) == [1, 0, 1] and p["X"].shape == (3, len(D.F.PASS_FEATURES))
+    assert [m.events[i]["n"] for i in p["event_idx"]] == [15, 19, 60] and list(p["target_idx"]) == [1, 1, 1]
+    v = D.value_table(m)  # one row per second (10 frames) of live play with an owner: 2 per half
+    assert len(v["y"]) == 4 and list(v["half"]) == [0, 0, 1, 1] and np.allclose(v["t"], [1.0, 2.0, 5.0, 6.0])
+    m.halves[0].xy[:, 0, 0] = -10 + 0.25 * np.arange(30)  # 2.5 m/s at 10 fps
+    s = F.state(m, 0, 12, team=0)  # back_frames defaults to 0.16 s at the match's rate -> 2 frames
+    assert np.allclose(s["att_v"][0], [2.5, 0.0]) and s["direction"] == 1
+
+
+from coach import cross_league as CL  # noqa: E402
+
+
+def test_derive_keeps_value_rows_and_every_shot_for_relabelling():
+    m = sc_match()
+    d = CL.derive(m)
+    assert d["pass"]["X"].shape[0] == 3 and np.isfinite(d["pass"]["xpass"]).sum() == 1
+    assert d["pass"]["carrier_detected"].all() and d["pass"]["detected_players"][0] == 3
+    sh = d["shot"]
+    assert list(sh["goal"]) == [1] and np.isnan(sh["xg"]).all() and sh["X"].shape == (1, len(F.SHOT_FEATURES))
+    assert sh["t"][0] == pytest.approx(1.8) and list(sh["placed"]) == [True]
+    assert len(d["value"]["t"]) == 4 and d["league"] == "skillcorner"
+    assert CL.derive(tiny_match())["league"] == "idsse"
+
+
+def test_value_labels_from_shot_rows_with_any_xg():
+    value = {"half": np.array([0, 0, 0, 1]), "t": np.array([0.0, 5.0, 20.0, 0.0]), "team": np.array([0, 1, 0, 0])}
+    shots = {"half": np.array([0, 0]), "t": np.array([10.0, 12.0]), "team": np.array([0, 1])}
+    y = CL.value_labels(value, shots, np.array([0.3, 0.1]), horizon=15.0)
+    assert np.allclose(y, [0.3 - 0.1, 0.1 - 0.3, 0.0, 0.0])
+
+
+def test_xg_proxy_learns_the_provider_xg_from_shot_features():
+    rng = np.random.default_rng(0)
+    X = np.column_stack([rng.uniform(5, 30, 400), rng.uniform(0.1, 1.2, 400), rng.integers(0, 3, 400)])
+    xg = 1 / (1 + np.exp(-(1.0 - 0.15 * X[:, 0] + 1.0 * X[:, 1] - 0.5 * X[:, 2])))
+    model = CL.fit_soft_logistic(X, xg)
+    assert np.corrcoef(model.predict_proba(X)[:, 1], xg)[0, 1] > 0.99
+
+
+def test_lomo_rules_train_on_the_same_league_the_other_or_all():
+    rng = np.random.default_rng(1)
+    n = 1200
+    X = rng.normal(size=(n, 2))
+    league = np.repeat([0, 1], n // 2)
+    p = 1 / (1 + np.exp(-(2 * X[:, 0] + np.where(league == 1, 1.0, -1.0))))  # same slope, other base rate
+    table = {"X": X, "y": (rng.random(n) < p).astype(int), "match": np.repeat(list("ABCDEF"), n // 6)}
+    res = CL.lomo_rules(table, league, {"logistic": ML.fit_logistic}, ("same", "other", "all", "all+league"))
+    assert set(res) == {"same", "other", "all", "all+league"} and set(res["same"]["logistic"]) == {0, 1}
+    ll = lambda r: res[r]["logistic"][1]["log_loss"]
+    assert ll("same") < ll("other") and ll("all+league") < ll("all")  # the base-rate shift needs the indicator
+    assert res["same"]["logistic"][1]["n"] == n // 2

@@ -364,7 +364,9 @@ def test_value_labels_are_net_xg_for_the_team_in_possession_on_snapped_time():
     assert y[4] == pytest.approx(0.3 - 0.1) and y[11] == pytest.approx(0.3 - 0.1)
     assert y[12] == pytest.approx(-0.1) and y[18] == 0.0
     t = D.shot_table(m)
-    assert list(t["penalty"]) == [False, True] and len(D.drop_penalties(t)["y"]) == 1
+    assert (
+        list(t["penalty"]) == [False, True] and np.allclose(t["xg"], [0.3, 0.76]) and len(D.drop_penalties(t)["y"]) == 1
+    )
 
 
 def test_failed_pass_target_is_inferred_from_ball_path():
@@ -555,3 +557,41 @@ def test_export_models_leave_the_replay_match_out(tmp_path, monkeypatch):
     assert w["trained_without"] == "B" and w["trained_on"] == ["A", "C"] and seen["pass"] == ["A", "C"]
     assert w["value"]["link"] == "identity" and w["value"]["features"] == list(X.D.F.VALUE_FEATURES)
     assert set(w["value"]["basis"]) == set(X.D.F.VALUE_FEATURES) and w["pass"]["link"] == "logit"
+
+
+def test_advice_summary_buckets_correlations_and_bootstrap():
+    pytest.importorskip("matplotlib")
+    from coach import evaluate as EV
+
+    rng = np.random.default_rng(0)
+    recs = []
+    for mid in "ABCD":
+        for _ in range(60):
+            score = float(rng.normal())
+            rank = 1 + int(rng.integers(0, 9))
+            recs.append(
+                {
+                    "match": mid,
+                    "success": int(rng.random() < 0.5 + 0.04 * rank),
+                    "weight": 1.0,
+                    "score": score,
+                    "v_now": 0.0,
+                    "p": float(rng.random()),
+                    "value": float(rng.normal()),
+                    "xt": float(rng.normal()),
+                    "outcome": score + float(rng.normal(0, 0.1)),  # the outcome follows the coach score
+                    "rank_coach": rank,
+                    "rank_p": rank,
+                    "rank_value": rank,
+                    "rank_near": rank,
+                    "options": 9,
+                }
+            )
+    s = EV.advice_summary(recs)
+    assert s["passes"] == 240 and sum(b["n"] for b in s["completion_by_rank"]) == 240
+    assert [b["rank"] for b in s["completion_by_rank"]] == ["1", "2-3", "4-6", "7+"]
+    assert s["completion_by_rank"][-1]["completion"] > s["completion_by_rank"][0]["completion"]
+    c = s["outcome_correlation"]["coach"]
+    assert c["spearman"] > 0.9 and c["ci95"][0] > 0.8 and abs(s["outcome_correlation"]["p_only"]["spearman"]) < 0.3
+    assert s["coach_expected_outcome"]["slope"] == pytest.approx(1.0, abs=0.1) and len(s["coach_deciles"]) == 10
+    assert s["agreement_context"]["random"]["top3"] == pytest.approx(1 / 3)

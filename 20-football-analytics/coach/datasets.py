@@ -187,8 +187,8 @@ def value_table(m, horizons=(HORIZON,), every: float = 1.0) -> dict:
 
 
 def shot_table(m) -> dict:
-    """Every located shot; `penalty` flags penalties (kept out of the fit by drop_penalties)."""
-    rows, ys, pen = [], [], []
+    """Every located shot; `penalty` flags penalties (kept out of the fit by drop_penalties); `xg` is the provider's."""
+    rows, ys, pen, xg = [], [], [], []
     for e in m.events:
         if e["type"] != "shot" or e.get("frame") is None or e["team"] < 0:
             continue
@@ -197,7 +197,8 @@ def shot_table(m) -> dict:
         rows.append(F.shot_features(loc, s["def"]))
         ys.append(int(e["goal"]))
         pen.append(e.get("set_piece") == "Penalty")
-    return _table(rows, ys, m.match_id, F.SHOT_FEATURES, penalty=np.array(pen, bool))
+        xg.append(e["xg"] if e.get("xg") is not None else np.nan)
+    return _table(rows, ys, m.match_id, F.SHOT_FEATURES, penalty=np.array(pen, bool), xg=np.array(xg, float))
 
 
 def drop_penalties(table) -> dict:

@@ -15,6 +15,13 @@ import torch.nn.functional as F
 from torchvision.models import Wide_ResNet50_2_Weights, wide_resnet50_2
 
 
+def local_average(f):
+    """3x3 mean with zero padding: the same values as F.avg_pool2d(f, 3, 1, 1) (count_include_pad=True), but
+    written as Pad + unpadded AvgPool. The Intel NPU compiler (OpenVINO 2026.4) miscomputes a padded AvgPool
+    with count_include_pad on large maps (every second block of 32 channels wrong); the split form is exact."""
+    return F.avg_pool2d(F.pad(f, (1, 1, 1, 1)), 3, 1)
+
+
 class FeatureExtractor(nn.Module):
     """Mid-level WideResNet-50 features (layer2 + layer3): local enough for small defects, semantic
     enough to ignore pixel noise. A module so the same code is exported to ONNX / OpenVINO."""
@@ -28,9 +35,9 @@ class FeatureExtractor(nn.Module):
         x = b.maxpool(b.relu(b.bn1(b.conv1(x))))
         f2 = b.layer2(b.layer1(x))
         f3 = b.layer3(f2)
-        # Locally aware patch features: average each position with its 3x3 neighborhood.
-        f2 = F.avg_pool2d(f2, 3, 1, 1)
-        f3 = F.avg_pool2d(f3, 3, 1, 1)
+        # Locally aware patch features: average each position with its 3x3 neighborhood (zeros outside).
+        f2 = local_average(f2)
+        f3 = local_average(f3)
         f3 = F.interpolate(f3, size=f2.shape[-2:], mode="bilinear", align_corners=False)
         return torch.cat([f2, f3], dim=1)  # (B, 1536, H, W)
 

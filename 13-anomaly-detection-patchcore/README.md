@@ -115,9 +115,10 @@ OpenVINO 2026.4. Every configuration is also re-scored on the full bottle, grid 
 | OpenVINO FP32 | CPU | 145 ms | 265 ms | **404 ms** | 1.1× | 1.000 / 0.977 / 0.968 |
 | OpenVINO FP16 backbone, FP32 kNN | Arc 140V iGPU | 4.4 ms | 78 ms | 100 ms | 4.5× | 1.000 / 0.977 / 0.968 |
 | **OpenVINO FP16** | **Arc 140V iGPU** | **5.6 ms** | **12 ms** | **24 ms** | **18×** | **1.000 / 0.977 / 0.968** |
-| OpenVINO (FP16) | AI Boost NPU | 6.0 ms | 28 ms | 35 ms | (13×) | **0.554 / 0.596 / 0.408: wrong output** |
+| OpenVINO (FP16) | AI Boost NPU | 5.8 ms | 27 ms | **36 ms** | **12.5×** | 1.000 / 0.976 / 0.968 |
 
-(Totals include the copy between the two models. Pixel AUROC on the iGPU is also unchanged: 0.984 / 0.976 / 0.989.
+(Totals include the copy between the two models. Pixel AUROC on the iGPU and the NPU is also unchanged (±0.001): 0.984 / 0.976 / 0.989.
+NPU backbone + FP32 kNN on the iGPU: 76 ms, AUROC identical to PyTorch.
 Full numbers: [`docs/latency.json`](docs/latency.json).)
 
 ![Latency per configuration](docs/latency.png)
@@ -131,11 +132,27 @@ Full numbers: [`docs/latency.json`](docs/latency.json).)
 - **On the CPU alone OpenVINO helps little** (1.1× here, 1.4× in an earlier run: 283 vs 389 ms): most of the time
   is the large kNN matrix product, which PyTorch already does with an optimized BLAS. Timings on this laptop
   vary ±30 % between runs because other jobs share it; the iGPU numbers were the most stable (24–32 ms).
-- **The NPU compiles and runs fast, but computes the wrong features.** Its backbone output correlates only 0.76
-  (layer 2) and 0.56 (layer 3) with the CPU's on the same input, so AUROC falls to chance level. The iGPU in FP16
-  matches the CPU to 0.002. The first attempt didn't even compile on the NPU (it needs static input shapes; the
-  compiler aborted the process). I didn't find the root cause (likely an NPU compiler issue with one of the
-  backbone's layers); the NPU is not usable for this model as is.
+- **The NPU now matches too: 36 ms per image, same AUROC** (grid 0.976 vs 0.977, the same small FP16 kNN effect
+  as on the iGPU). It first gave chance-level AUROC (0.554 / 0.596 / 0.408) because of an **NPU compiler bug**, found
+  by comparing tensors stage by stage on 3 test images against PyTorch:
+  - every layer of the WideResNet (stem, layer1–3) matched the CPU to FP16 precision; the error appeared at the
+    3×3 local averaging, `F.avg_pool2d(f, 3, 1, 1)`, which exports as an OpenVINO `AvgPool` with built-in padding
+    and `exclude_pad=false` (PyTorch's default `count_include_pad=True`);
+  - on the NPU that op returns wrong values in **every second block of 32 channels** (channels 32–63, 96–127, …),
+    while the other half matches to 1e-4. Hence the misleading 0.76 / 0.56 "correlations": half the channels were
+    right, half garbage;
+  - smallest reproduction: one `AvgPool(3×3, stride 1, pad 1)` on random data. It is correct up to 512 × 28 × 28 and
+    wrong from 512 × 29 × 29 or 1,024 × 28 × 28 (a size threshold, probably where the compiler starts tiling the op;
+    inside the full model even the 512 × 28 × 28 one fails). The same op with `exclude_pad=true`, a separate `Pad`
+    followed by an unpadded `AvgPool`, or a 3×3 depthwise convolution are all correct. It is not FP16 precision,
+    input layout, output order, the static shapes or a stale compile cache (reproduced with no cache dir);
+  - **fix:** [`patchcore.py`](patchcore.py) writes the averaging as zero `Pad` + unpadded `AvgPool`
+    (`local_average`). That is the same computation, so PyTorch features are bit-identical (max difference 0.0;
+    memory banks and all accuracy numbers unchanged), and the NPU backbone now matches the CPU (correlation 1.00000
+    on both layers). A unit test checks the exported graph has no padded `AvgPool`. Versions: OpenVINO 2026.4.1, NPU
+    compiler 8.4, driver 1004724 (Core Ultra 7 258V, NPU 4000).
+  - The NPU needs static input shapes (with dynamic shapes the compiler aborted the process), and `benchmark.py`
+    now re-exports the IR on every run so a stale model is never reused.
 - Before: the README's desktop number was ~390–570 ms per image in PyTorch (batch 8, including data loading).
 
 ## How it works
@@ -179,6 +196,7 @@ python run.py                     # all 15 categories, resumable (skips finished
 python threshold.py               # operating thresholds at 99 % recall (--recall 0.95 for another target)
 python report.py                  # docs/results_chart.png + the README table
 python benchmark.py               # OpenVINO export + latency on CPU / iGPU / NPU + accuracy check
+python benchmark.py --only NPU    # re-run only the NPU configurations, update them in docs/latency.json
 ```
 
 Get the data (≈ 5 GB for all 15 categories, loose PNG files, no archive to extract):
@@ -232,8 +250,8 @@ python web/build.py && python web/validate.py     # writes to ../../cv-data/mvte
 - Calibrate the threshold with a safety margin (or a conformal bound) so the 99 % promise holds on unseen parts,
   and report it against more defect samples (e.g. MVTec AD 2 or VisA).
 - Close the pixel-AUROC gap on textures (larger feature maps or higher input resolution).
-- INT8 quantization of the backbone (NNCF), as in project 19, and find why the NPU computes wrong features
-  (bisect the backbone layer by layer on the NPU).
+- INT8 quantization of the backbone (NNCF), as in project 19, and report the NPU `AvgPool` padding bug upstream
+  (OpenVINO NPU plugin) with the one-op reproduction above.
 
 ## Tech stack
 

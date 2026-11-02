@@ -7,7 +7,8 @@
    "CPU": "Intel(R) Core(TM) Ultra 7 258V",
    "GPU": "Intel(R) Arc(TM) 140V GPU (16GB) (iGPU)",
    "NPU": "Intel(R) AI Boost"
-  }
+  },
+  "npu_driver": 1004724
  },
  "latency_category": "bottle",
  "memory_bank_size": 16385,
@@ -66,28 +67,28 @@
    "screw_pixel_auroc": 0.9886
   },
   "OpenVINO NPU (kNN on iGPU FP32)": {
-   "backbone_ms": 4.6,
-   "knn_ms": 33.0,
-   "total_ms": 47.22,
-   "total_p90_ms": 50.93,
-   "bottle_image_auroc": 0.5556,
-   "bottle_pixel_auroc": 0.6988,
-   "grid_image_auroc": 0.5948,
-   "grid_pixel_auroc": 0.4698,
-   "screw_image_auroc": 0.4081,
-   "screw_pixel_auroc": 0.8644
+   "backbone_ms": 5.98,
+   "knn_ms": 67.07,
+   "total_ms": 76.41,
+   "total_p90_ms": 80.46,
+   "bottle_image_auroc": 1.0,
+   "bottle_pixel_auroc": 0.9835,
+   "grid_image_auroc": 0.9774,
+   "grid_pixel_auroc": 0.9762,
+   "screw_image_auroc": 0.9682,
+   "screw_pixel_auroc": 0.9886
   },
   "OpenVINO NPU": {
-   "backbone_ms": 5.97,
-   "knn_ms": 27.98,
-   "total_ms": 35.2,
-   "total_p90_ms": 36.89,
-   "bottle_image_auroc": 0.5536,
-   "bottle_pixel_auroc": 0.7002,
-   "grid_image_auroc": 0.5961,
-   "grid_pixel_auroc": 0.4698,
-   "screw_image_auroc": 0.4083,
-   "screw_pixel_auroc": 0.8645
+   "backbone_ms": 5.83,
+   "knn_ms": 27.33,
+   "total_ms": 35.79,
+   "total_p90_ms": 41.36,
+   "bottle_image_auroc": 1.0,
+   "bottle_pixel_auroc": 0.9833,
+   "grid_image_auroc": 0.9762,
+   "grid_pixel_auroc": 0.9761,
+   "screw_image_auroc": 0.9681,
+   "screw_pixel_auroc": 0.9886
   }
  }
 }

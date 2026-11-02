@@ -75,10 +75,10 @@ class Knn(nn.Module):
 
 
 def convert(module, example, path):
-    """Static input shape: the NPU compiler rejects dynamic dimensions."""
-    if not path.exists():
-        m = ov.convert_model(module.eval(), example_input=example, input=[tuple(example.shape)])
-        ov.save_model(m, str(path), compress_to_fp16=False)
+    """Static input shape: the NPU compiler rejects dynamic dimensions. Always re-exported (a few seconds), so a
+    stale IR from older code (e.g. the padded AvgPool the NPU miscomputes) is never reused."""
+    m = ov.convert_model(module.eval(), example_input=example, input=[tuple(example.shape)])
+    ov.save_model(m, str(path), compress_to_fp16=False)
     return path
 
 
@@ -163,6 +163,11 @@ def main():
     ap.add_argument("--warmup", type=int, default=10)
     ap.add_argument("--threads", type=int, nargs="+", default=[4, 8], help="PyTorch CPU thread counts to time")
     ap.add_argument("--plot-only", action="store_true", help="redraw docs/latency.png from docs/latency.json")
+    ap.add_argument(
+        "--only", nargs="+", metavar="TEXT",
+        help="re-run only the OpenVINO configurations whose name contains TEXT (e.g. NPU) and update them in the "
+        "existing docs/latency.json (no PyTorch runs)",
+    )  # fmt: skip
     args = ap.parse_args()
     if args.plot_only:
         return plot(json.loads((DOCS / "latency.json").read_text()), DOCS / "latency.png")
@@ -187,6 +192,7 @@ def main():
             "openvino": ov.get_version(),
             "torch": torch.__version__,
             "devices": {d: core.get_property(d, "FULL_DEVICE_NAME") for d in devices},
+            **({"npu_driver": core.get_property("NPU", "NPU_DRIVER_VERSION")} if "NPU" in devices else {}),
         },
         "latency_category": args.latency_category,
         "memory_bank_size": int(banks[args.latency_category].shape[0]),
@@ -194,10 +200,14 @@ def main():
         "configs": {},
     }
     print(results["machine"], flush=True)
+    configs = [c for c in CONFIGS if not args.only or any(t in c[0] for t in args.only)]
+    if args.only:  # update the selected configurations in place, keep the rest of the file
+        old = json.loads((DOCS / "latency.json").read_text())
+        results["configs"] = old["configs"]
 
     # PyTorch reference (the code path run.py uses: model.predict, batch 1).
     lat_bank = banks[args.latency_category]
-    for n in args.threads:
+    for n in [] if args.only else args.threads:
         torch.set_num_threads(n)
         model.memory_bank = lat_bank
         with torch.no_grad():
@@ -208,7 +218,7 @@ def main():
         print(name, results["configs"][name], flush=True)
     torch.set_num_threads(max(args.threads))
 
-    for name, (bdev, bprec), (kdev, kprec) in CONFIGS:
+    for name, (bdev, bprec), (kdev, kprec) in configs:
         if bdev not in devices or kdev not in devices:
             results["configs"][name] = {"error": f"device not available ({devices})"}
             continue
@@ -230,7 +240,7 @@ def main():
 
     # PyTorch accuracy reference, same code path as the OpenVINO models.
     ref = results["configs"][f"PyTorch CPU FP32 ({max(args.threads)} threads)"]
-    for c in args.accuracy_categories:
+    for c in [] if args.only else args.accuracy_categories:
         model.memory_bank = banks[c]
 
         def torch_predict(x):
@@ -274,7 +284,8 @@ def plot(results, path):
     ax.set_xlim(0, total.max() * 1.15)
     ax.set_title(
         "PatchCore inference, Intel Core Ultra 7 258V\n"
-        f"(memory bank: {results['memory_bank_size']:,} patches; faded = accuracy collapsed, not usable)",
+        f"(memory bank: {results['memory_bank_size']:,} patches"
+        + ("; faded = accuracy collapsed, not usable)" if any(bad) else "; all within 0.02 image AUROC of PyTorch)"),
         fontsize=10,
     )
     ax.legend(loc="upper right", fontsize=8)

@@ -61,3 +61,43 @@ def test_greedy_coreset_covers_every_cluster():
     bank = bare_patchcore(5 / len(feats), proj_dim=32)._greedy_coreset(feats)
     picked = labels[torch.cdist(bank, feats).argmin(dim=1)]
     assert sorted(picked.tolist()) == [0, 1, 2, 3, 4]
+
+
+class TinyBackbone(torch.nn.Module):
+    """Stand-in for WideResNet-50 with the attributes FeatureExtractor uses (no weight download)."""
+
+    def __init__(self):
+        super().__init__()
+        torch.manual_seed(0)
+        self.conv1 = self.bn1 = self.relu = self.maxpool = self.layer1 = torch.nn.Identity()
+        self.layer2 = torch.nn.Conv2d(3, 4, 1)
+        self.layer3 = torch.nn.Conv2d(4, 6, 1, stride=2)
+
+
+def test_feature_extractor_local_average_is_zero_padded_3x3_mean():
+    """Each position = mean of its 3x3 neighborhood, zeros outside the map (avg_pool2d count_include_pad=True),
+    the semantics the saved memory banks were computed with."""
+    b = TinyBackbone().eval()
+    x = torch.rand(2, 3, 16, 16)
+    with torch.no_grad():
+        out = pc.FeatureExtractor(b)(x)
+        f2, f3 = b.layer2(x), b.layer3(b.layer2(x))
+        f3 = torch.nn.functional.avg_pool2d(f3, 3, 1, 1)
+        f3 = torch.nn.functional.interpolate(f3, size=(16, 16), mode="bilinear", align_corners=False)
+        ref = torch.cat([torch.nn.functional.avg_pool2d(f2, 3, 1, 1), f3], dim=1)
+    assert out.shape == (2, 10, 16, 16)
+    assert torch.allclose(out, ref, atol=1e-6)
+
+
+def test_feature_extractor_exports_avgpool_without_padding():
+    """The Intel NPU compiler (OpenVINO 2026.4, Core Ultra 200V) miscomputes AvgPool with built-in padding and
+    exclude_pad=false on large maps: every second block of 32 channels comes out wrong. The padding must be a
+    separate Pad op so the exported graph has no padded AvgPool."""
+    ov = pytest.importorskip("openvino")
+    x = torch.rand(1, 3, 16, 16)
+    m = ov.convert_model(pc.FeatureExtractor(TinyBackbone()).eval(), example_input=x, input=[tuple(x.shape)])
+    pools = [op for op in m.get_ordered_ops() if op.get_type_name() == "AvgPool"]
+    assert len(pools) == 2
+    for op in pools:
+        attrs = op.get_attributes()
+        assert not any(attrs["pads_begin"]) and not any(attrs["pads_end"]), attrs

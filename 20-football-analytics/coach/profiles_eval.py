@@ -223,3 +223,133 @@ def shot_rows(parts):
     st, keys = D.stack([d["shot"] for d in parts]), np.concatenate([d["shot_keys"] for d in parts])
     keep = st["placed"] & ~st["penalty"] & np.isfinite(st["xg"]) & np.isfinite(st["X"]).all(axis=1)
     return subset(st, keep), keys[keep]
+
+
+# ------------------------------------------------------------------------------------------ results
+
+
+def final_profile(table, keys, p_oof) -> tuple:
+    """k / a chosen on every match (nested held-out) and the offsets of every player: the 'best k' and the
+    distribution shown in the README."""
+    w = table.get("weight")
+    sel = PR.choose_k(table["match"], keys, table["y"], p_oof, w)
+    return sel, PR.offsets(keys, table["y"], p_oof, w, k=sel["k"])
+
+
+def profile_summary(sel, prof) -> dict:
+    off = np.array([v["logit"] for v in prof.values()])
+    n = np.array([v["n"] for v in prof.values()])
+    return {
+        "k": sel["k"],
+        "a": sel["a"],
+        "held_out_log_loss": sel["log_loss"],
+        "base_log_loss": sel["base_log_loss"],
+        "coverage": sel["coverage"],
+        "curve_a1": sel.get("curve_a1"),
+        "players": len(prof),
+        "offsets": quantiles(off),
+        "rows_per_player": quantiles(n),
+        "share_abs_offset_over_0.1": float(np.mean(np.abs(off) > 0.1)) if len(off) else 0.0,
+    }
+
+
+def _pyplot():
+    """matplotlib only for the chart (the tests and CI import this module without it)."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    return plt
+
+
+LABELS = {
+    "pass_idsse": "pass, Bundesliga",
+    "pass_skillcorner": "pass, A-League",
+    "finishing_idsse": "finishing vs provider xG",
+    "shot_provider_xg": "shot, provider xG",
+    "shot_logistic": "shot, coach logistic",
+}
+
+
+def chart(finals, res, path):
+    """Offsets vs sample size, held-out log-loss change vs k, and the with-minus-without log-loss with its 95 % CI."""
+    plt = _pyplot()
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4.2))
+    for name, (sel, prof) in finals.items():
+        n = [v["n"] for v in prof.values()]
+        label = f"{LABELS[name]} (k = {sel['k']:g})"
+        axes[0].scatter(n, [v["logit"] for v in prof.values()], s=10, alpha=0.6, label=label)
+        curve = sel["curve_a1"]
+        axes[1].plot([float(k) for k in curve], [v - sel["base_log_loss"] for v in curve.values()], "o-", label=label)
+    axes[0].set(xscale="log", xlabel="rows of the player (passes / shots)", ylabel="shrunk offset (logit)")
+    axes[0].axhline(0, color="k", lw=0.5)
+    axes[0].set_title("Player offsets vs sample size")
+    axes[0].legend(fontsize=7)
+    axes[1].set_xscale("symlog", linthresh=1)
+    axes[1].set_ylim(-0.003, 0.015)  # unshrunk finishing (k = 0) is far above: see the JSON curve_a1
+    axes[1].axhline(0, color="k", lw=0.5)
+    axes[1].set(xlabel="k (prior strength)", ylabel="held-out log-loss change (a = 1)")
+    axes[1].set_title("Choosing k (all matches, nested)")
+    axes[1].legend(fontsize=7)
+    rows = ("pass_idsse", "pass_skillcorner", "shot_provider_xg", "shot_logistic")
+    for i, key in enumerate(rows):
+        d = res[key]["log_loss_diff"]
+        err = [[d["mean"] - d["ci95"][0]], [d["ci95"][1] - d["mean"]]]
+        axes[2].errorbar(d["mean"], i, xerr=err, fmt="o", capsize=4, color="#4c78a8")
+    axes[2].set_yticks(range(len(rows)), [LABELS[r] for r in rows])
+    axes[2].axvline(0, color="k", lw=0.8)
+    axes[2].set(xlabel="log-loss with - without offsets (95 % CI)")
+    axes[2].set_title("Held-out effect (leave-one-match-out)")
+    fig.tight_layout()
+    fig.savefig(path, dpi=120)
+    plt.close(fig)
+
+
+def _line(name, s):
+    return (
+        f"{name}: log-loss {s['without']['log_loss']:.4f} -> {s['with']['log_loss']:.4f}, diff {s['log_loss_diff']}, "
+        f"coverage {s['coverage']:.3f}, folds {[(f['k'], f['a']) for f in s['folds'].values()]}"
+    )
+
+
+def main():
+    from . import skillcorner as SC
+
+    idsse, sc = idsse_data(), sc_data()
+    res, finals = {}, {}
+    for name, parts in (("idsse", idsse), ("skillcorner", sc)):
+        pt, keys = pass_rows(parts)
+        res[f"pass_{name}"] = summarize(pt, lomo_profiles(pt, keys, fit=ML.fit_logistic))
+        s1 = summarize(pt, lomo_profiles(pt, keys, fit=ML.fit_logistic, scales=(1.0,)))
+        res[f"pass_{name}"]["a_fixed_1"] = {k: s1[k] for k in ("with", "log_loss_diff", "folds")}
+        finals[f"pass_{name}"] = final_profile(pt, keys, oof(pt, ML.fit_logistic))
+        print(_line(f"pass {name}", res[f"pass_{name}"]), flush=True)
+    st, sk = shot_rows(idsse)
+    res["shot_provider_xg"] = summarize(st, lomo_profiles(st, sk, base=st["xg"]))
+    res["shot_logistic"] = summarize(st, lomo_profiles(st, sk, fit=ML.fit_logistic))
+    finals["finishing_idsse"] = final_profile(st, sk, st["xg"])
+    for k in ("shot_provider_xg", "shot_logistic"):
+        print(_line(k, res[k]), flush=True)
+    desc = PR.skillcorner_descriptors(SC.OUT / "aggregates")
+    sc_keys = set(np.concatenate([d["pass_keys"] for d in sc]).tolist())
+    out = {
+        **res,
+        "profiles_all_matches": {k: profile_summary(*v) for k, v in finals.items()},
+        "skillcorner_descriptors": {
+            "players": len(desc),
+            "tracked_passers": len(sc_keys),
+            "tracked_passers_with_descriptors": len(sc_keys & set(desc)),
+        },
+        "decision": {"pass": res["pass_idsse"]["decision"], "shot": res["shot_provider_xg"]["decision"], "rule": RULE},
+        "grids": {"k": list(PR.K_GRID), "a": list(PR.A_GRID)},
+    }
+    DOCS.mkdir(exist_ok=True)
+    (DOCS / "coach_profiles_results.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+    chart(finals, res, DOCS / "coach_profiles.png")
+    print(json.dumps(out["profiles_all_matches"], indent=1)[:3000])
+    print("descriptors", out["skillcorner_descriptors"], "decision", out["decision"])
+
+
+if __name__ == "__main__":
+    main()

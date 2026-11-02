@@ -48,13 +48,16 @@ LANE_WIDTH = 2.0
 BACK = 4  # frames of history for velocities (0.16 s)
 
 
-def state(m, half: int, frame: int, team: int) -> dict:
-    """Causal state: velocities are backward differences over BACK frames (same in training and at inference)."""
+def state(m, half: int, frame: int, team: int, fps: float = FPS, back_frames: int = BACK, direction=None) -> dict:
+    """Causal state: velocities are backward differences over `back_frames` frames (same in training and at
+    inference). The website rebuilds it at 12.5 fps with back_frames=2 (0.16 s, as in training) and the attack
+    direction stored in its match.json (coach/parity_fixtures.py)."""
     h = m.halves[half]
-    direction = G.attack_dirs(h, m.team)[team]
-    back = max(0, frame - BACK)
+    if direction is None:
+        direction = G.attack_dirs(h, m.team)[team]
+    back = max(0, frame - back_frames)
     pos = h.xy[frame]
-    vel = np.nan_to_num((pos - h.xy[back]) * (FPS / (frame - back))) if frame > back else np.zeros_like(pos)
+    vel = np.nan_to_num((pos - h.xy[back]) * (fps / (frame - back))) if frame > back else np.zeros_like(pos)
     present = ~np.isnan(pos[:, 0])
     att = present & (m.team == team)
     dfn = present & (m.team == 1 - team)  # players with team -1 (not on the match sheet) are neither

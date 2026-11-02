@@ -112,6 +112,18 @@ def export_ridge(model, names) -> dict:
     return export_linear(model, names, "identity")
 
 
+def linear_predictor(w: dict):
+    """Inverse of export_linear: X[n, k] -> P(y = 1) (link "logit") or the prediction (link "identity"), computed from
+    the exported JSON weights alone, exactly what the website computes."""
+    mean, scale, coef = (np.asarray(w[k], float) for k in ("mean", "scale", "coef"))
+
+    def predict(X):
+        z = ((np.atleast_2d(np.asarray(X, float)) - mean) / scale) @ coef + w["intercept"]
+        return 1.0 / (1.0 + np.exp(-z)) if w["link"] == "logit" else z
+
+    return predict
+
+
 def reliability(y, p, bins=10, w=None):
     w = np.ones(len(y)) if w is None else w
     edges = np.linspace(0, 1, bins + 1)

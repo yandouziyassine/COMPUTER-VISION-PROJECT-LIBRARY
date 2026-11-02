@@ -300,6 +300,16 @@ def test_state_velocity_is_causal_backward_difference():
     assert np.allclose(F.state(m, 0, 0, team=0)["att_v"][0], 0.0)  # first frame: no history
 
 
+def test_state_velocity_at_the_site_frame_rate_and_given_direction():
+    m = tiny_match(frames=50)
+    m.halves[0].xy[:, 0, 0] = -10 + 0.2 * np.arange(50)  # 0.2 m per (12.5 fps) frame = 2.5 m/s
+    s = F.state(m, 0, 10, team=0, fps=12.5, back_frames=2)
+    assert np.allclose(s["att_v"][0], [2.5, 0.0])  # (x[10] - x[8]) * 12.5 / 2
+    flipped = F.state(m, 0, 10, team=0, fps=12.5, back_frames=2, direction=-1)
+    assert flipped["direction"] == -1 and np.allclose(flipped["att"][0], -s["att"][0])
+    assert np.allclose(flipped["att_v"][0], [-2.5, 0.0])
+
+
 def test_pass_features_lane_and_pressure():
     s = {
         "att": np.array([[0.0, 0.0], [20.0, 0.0]]),
@@ -429,6 +439,16 @@ def test_leave_one_match_out_beats_base_rate():
     assert ones["log_loss"] == pytest.approx(r["logistic"]["log_loss"], rel=1e-6)
     half = ML.lomo({**t, "weight": np.where(t["y"] == 1, 0.5, 1.0)}, {"logistic": ML.fit_logistic})["logistic"]
     assert half["positive_rate"] < ones["positive_rate"]
+
+
+def test_linear_predictor_reproduces_the_fitted_pipelines():
+    t = synthetic_table()
+    clf = ML.fit_logistic(t["X"], t["y"])
+    p = ML.linear_predictor(ML.export_logistic(clf, ["a", "b", "c"]))(t["X"])
+    assert np.allclose(p, clf.predict_proba(t["X"])[:, 1], atol=1e-9)
+    reg = ML.fit_ridge(t["X"], 0.3 * t["X"][:, 0])
+    v = ML.linear_predictor(ML.export_ridge(reg, ["a", "b", "c"]))(t["X"])
+    assert np.allclose(v, reg.predict(t["X"]), atol=1e-9)
 
 
 def test_ridge_export_and_regression_lomo():

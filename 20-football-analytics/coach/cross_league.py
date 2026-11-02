@@ -202,6 +202,21 @@ def load_all():
     return idsse, sc
 
 
+def skillcorner_shots(derived=None, ids=None) -> tuple:
+    """Open-play shots of the cached SkillCorner tables with all shot features finite, as a training table
+    (X, y = goal, match) and the match ids read. Penalties are out, like in every shot model of the coach."""
+    from . import skillcorner as SC
+
+    derived = SC.DERIVED if derived is None else Path(derived)
+    ids = list(SC.MATCHES if ids is None else ids)
+    rows = []
+    for mid in ids:
+        s = pickle.loads((derived / f"{mid}.pkl").read_bytes())["shot"]
+        keep = ~s["penalty"] & np.isfinite(s["X"]).all(axis=1)
+        rows.append({"X": s["X"][keep], "y": s["y"][keep], "match": s["match"][keep]})
+    return D.stack(rows), ids
+
+
 def xg_proxy(idsse, sc) -> dict:
     """Fit the provider-xG emulator on IDSSE shots; check it on held-out IDSSE matches and on A-League goals; fill
     the SkillCorner shots' xG with it (penalties: the mean provider xG of IDSSE penalties)."""

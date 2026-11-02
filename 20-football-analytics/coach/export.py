@@ -12,7 +12,9 @@ player index used by slots and events), team names/colours, per half the frame c
 directions (+1/-1 for home, guest), fps, owner/alive per frame (strings of digits), passes and shots with frame and
 nominal indices at the site's rate (frame None when sync could not place the event, `drop` says why), and the data
 credit. models.json holds the weights of the pass (logistic), value (ridge, with its basis definition) and shot
-(logistic) models, trained WITHOUT the exported match.
+(logistic) models, trained WITHOUT the exported match. The pass and value models learn from the Bundesliga matches
+only; the shot model also learns from every A-League shot (SkillCorner, cross_league.skillcorner_shots) because
+pooling raised the held-out Bundesliga shot AUC (see shot_pooled); "shot_trained_on" lists what it was fitted on.
 """
 
 import argparse
@@ -22,6 +24,7 @@ from pathlib import Path
 import numpy as np
 
 from . import advice as A
+from . import cross_league as CL
 from . import datasets as D
 from . import geometry as G
 from . import models as ML
@@ -74,8 +77,9 @@ def pack_match(m, out: Path, fps: int = 10):
     (out / "match.json").write_text(json.dumps(meta, ensure_ascii=False), encoding="utf-8")
 
 
-def export_models(out: Path, matches, exclude=None):
-    """Fit on every match but `exclude` (the replay match must stay unseen) and write models.json."""
+def export_models(out: Path, matches, exclude=None, extra_shots=None):
+    """Fit on every match but `exclude` (the replay match must stay unseen) and write models.json. `extra_shots`
+    (X, y, match: open-play shots of another league) is added to the shot model's training rows only."""
     train = [m for m in matches if m.match_id != exclude]
     tables = {
         "pass": D.stack([D.pass_table(m) for m in train]),
@@ -83,9 +87,17 @@ def export_models(out: Path, matches, exclude=None):
         "shot": D.drop_penalties(D.stack([D.shot_table(m) for m in train])),
     }
     p, v, s = tables["pass"], tables["value"], tables["shot"]
+    n_extra = 0 if extra_shots is None else len(extra_shots["y"])
+    if n_extra:
+        s = {"X": np.vstack([s["X"], extra_shots["X"]]), "y": np.concatenate([s["y"], extra_shots["y"]])}
     weights = {
         "trained_without": exclude,
         "trained_on": [m.match_id for m in train],
+        "shot_trained_on": {
+            "idsse": [m.match_id for m in train],
+            "skillcorner_matches": len(set(extra_shots["match"].tolist())) if n_extra else 0,
+            "shots": len(s["y"]),
+        },
         "pass": ML.export_logistic(ML.fit_logistic(p["X"], p["y"], p["weight"]), D.F.PASS_FEATURES),
         "value": {
             **ML.export_ridge(ML.fit_ridge(v["X"], v["y"]), D.F.VALUE_FEATURES),
@@ -109,9 +121,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--match", default="J03WOH")
     ap.add_argument("--site", type=Path, required=True)
+    ap.add_argument("--idsse-only-shots", action="store_true", help="fit the shot model on the Bundesliga shots only")
     args = ap.parse_args()
     pack_match(load(OUT / args.match), args.site)
-    export_models(args.site, [load(OUT / mid) for mid in MATCHES], exclude=args.match)
+    extra = None if args.idsse_only_shots else CL.skillcorner_shots()[0]
+    export_models(args.site, [load(OUT / mid) for mid in MATCHES], exclude=args.match, extra_shots=extra)
     print("wrote", sorted(p.name for p in args.site.iterdir()))
 
 

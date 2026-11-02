@@ -610,6 +610,51 @@ def test_export_models_leave_the_replay_match_out(tmp_path, monkeypatch):
     assert w["trained_without"] == "B" and w["trained_on"] == ["A", "C"] and seen["pass"] == ["A", "C"]
     assert w["value"]["link"] == "identity" and w["value"]["features"] == list(X.D.F.VALUE_FEATURES)
     assert set(w["value"]["basis"]) == set(X.D.F.VALUE_FEATURES) and w["pass"]["link"] == "logit"
+    assert w["shot_trained_on"] == {"idsse": ["A", "C"], "skillcorner_matches": 0, "shots": 120}
+
+
+def test_export_models_pool_the_shot_model_with_extra_shots(tmp_path, monkeypatch):
+    import json
+
+    nf = len(X.D.F.SHOT_FEATURES)
+    rng = np.random.default_rng(0)
+
+    def table(m):
+        Xs = rng.normal(size=(40, nf))
+        return {
+            "X": Xs,
+            "y": (Xs[:, 0] > 0).astype(int),
+            "match": np.array([m.match_id] * 40),
+            "penalty": np.zeros(40, bool),
+        }
+
+    def pass_or_value(kind):
+        def build(m):
+            rng = np.random.default_rng(ord(m.match_id))  # the same rows at every call, for the comparison below
+            Xp = rng.normal(size=(60, len(X.D.F.PASS_FEATURES if kind == "pass" else X.D.F.VALUE_FEATURES)))
+            y = np.arange(60) % 2 if kind == "pass" else rng.normal(size=60)
+            return {"X": Xp, "y": y, "match": np.array([m.match_id] * 60), "weight": np.ones(60)}
+
+        return build
+
+    monkeypatch.setattr(X.D, "pass_table", pass_or_value("pass"))
+    monkeypatch.setattr(X.D, "value_table", pass_or_value("value"))
+    monkeypatch.setattr(X.D, "shot_table", table)
+    ms = [tiny_match(), tiny_match()]
+    for m, mid in zip(ms, "AB"):
+        m.match_id = mid
+    Xe = rng.normal(size=(100, nf))
+    extra = {"X": Xe, "y": (Xe[:, 1] > 0).astype(int), "match": np.array(["s1"] * 50 + ["s2"] * 50)}
+    X.export_models(tmp_path, ms, exclude="B", extra_shots=extra)
+    (tmp_path / "alone").mkdir()
+    X.export_models(tmp_path / "alone", ms, exclude="B")
+    w = json.loads((tmp_path / "models.json").read_text(encoding="utf-8"))
+    alone = json.loads((tmp_path / "alone" / "models.json").read_text(encoding="utf-8"))
+    assert w["shot_trained_on"] == {"idsse": ["A"], "skillcorner_matches": 2, "shots": 140}
+    assert w["shot"]["features"] == alone["shot"]["features"] and w["shot"]["link"] == "logit"
+    assert w["shot"]["coef"] != alone["shot"]["coef"]  # the extra shots changed the fit
+    assert w["pass"] == alone["pass"] and w["value"] == alone["value"]  # pass and value are untouched
+    assert set(w) == set(alone)
 
 
 def test_advice_summary_buckets_correlations_and_bootstrap():
@@ -920,3 +965,55 @@ def test_lomo_rules_train_on_the_same_league_the_other_or_all():
     ll = lambda r: res[r]["logistic"][1]["log_loss"]
     assert ll("same") < ll("other") and ll("all+league") < ll("all")  # the base-rate shift needs the indicator
     assert res["same"]["logistic"][1]["n"] == n // 2
+
+
+def test_skillcorner_shots_keeps_open_play_shots_with_features(tmp_path):
+    import pickle
+
+    nf = len(F.SHOT_FEATURES)
+    X1 = np.ones((3, nf))
+    X1[1] = np.nan
+    rows = {
+        "m1": {
+            "X": X1,
+            "y": np.array([1, 0, 0]),
+            "penalty": np.array([False, False, False]),
+            "match": np.array(["m1"] * 3),
+        },
+        "m2": {
+            "X": np.ones((2, nf)),
+            "y": np.array([0, 1]),
+            "penalty": np.array([True, False]),
+            "match": np.array(["m2"] * 2),
+        },
+    }
+    for mid, s in rows.items():
+        (tmp_path / f"{mid}.pkl").write_bytes(pickle.dumps({"shot": s}))
+    t, ids = CL.skillcorner_shots(tmp_path, ids=["m1", "m2"])
+    assert ids == ["m1", "m2"] and t["X"].shape == (3, nf) and list(t["y"]) == [1, 0, 1]  # NaN row and penalty out
+    assert list(t["match"]) == ["m1", "m1", "m2"]
+
+
+def test_pooled_shot_lomo_adds_the_extra_shots_to_every_fold():
+    from coach import shot_pooled as SP
+
+    rng = np.random.default_rng(3)
+    nf = 3
+    Xi = rng.normal(size=(120, nf))
+    yi = (rng.random(120) < 1 / (1 + np.exp(-(1.5 * Xi[:, 0] - 1.5)))).astype(int)
+    idsse = {"X": Xi, "y": yi, "match": np.repeat(list("ABCD"), 30)}
+    Xs = rng.normal(size=(600, nf))
+    extra = {
+        "X": Xs,
+        "y": (rng.random(600) < 1 / (1 + np.exp(-(1.5 * Xs[:, 0] - 1.5)))).astype(int),
+        "match": np.repeat("s", 600),
+    }
+    res = SP.lomo_pooled(idsse, extra, reps=50)
+    assert res["n_shots"] == 120 and res["extra_shots"] == 600 and res["goals"] == int(yi.sum())
+    for k in ("idsse_only", "pooled"):
+        assert set(res[k]) >= {"log_loss", "brier", "auc", "per_match"} and set(res[k]["per_match"]) == set("ABCD")
+    assert res["pooled"]["log_loss"] < res["idsse_only"]["log_loss"]
+    assert set(res["difference"]) >= {"auc", "log_loss", "brier"}
+    assert (
+        res["difference"]["auc"]["ci95"][0] <= res["difference"]["auc"]["mean"] <= res["difference"]["auc"]["ci95"][1]
+    )

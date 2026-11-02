@@ -277,8 +277,67 @@ data [10.6084/m9.figshare.28196177](https://doi.org/10.6084/m9.figshare.28196177
 
 **Limits.** 7 matches from one league; event sync drops a third of the passes; failed-pass targets are inferred;
 associations, not causal effects (players choose their passes). Logistic and ridge models were kept on purpose: the
-browser runs the exact same formulas. Next: a cross-league check on SkillCorner's open A-League data (MIT), then
-the website replay (phase 2).
+browser runs the exact same formulas.
+
+### Cross-league check: SkillCorner A-League (20 matches)
+
+Tracking and event data: SkillCorner open data (MIT), 20 A-League 2024/25 matches. **Broadcast** tracking at 10 fps
+(players off screen are extrapolated), events derived from it. [`coach/skillcorner.py`](coach/skillcorner.py)
+streams each 89 MB tracking file and converts it in memory to the same match format (metres, centred, each pitch
+rescaled to 105 × 68, owner, ball in play = inside a SkillCorner phase of play); only small derived tables are kept.
+[`coach/cross_league.py`](coach/cross_league.py) scores every model on held-out matches with four training sets:
+own league (plain leave-one-match-out), other league (the cross-league test), both leagues, both + a league flag.
+
+**Data checks.** Event coordinates are attack-normalised (checked against the passer's tracked position: 0.1 m
+after rotation, 60 m without). Events carry frame numbers on the tracking clock, so no offset has to be estimated:
+at the event frame the passer is a median **1.1–1.4 m** from the ball (90th percentile 2.0–2.8 m) per match, and
+91–97 % of passes and shots have their actor within 3 m (kept; 92–98 % of passes survive, vs 66 % for the
+hand-logged Bundesliga events). While the ball is in play ~21.6 players are present per frame but only **54–73 %**
+of positions are detected (12–16 players), the rest extrapolated; the ball is detected 90–95 % of the time. The
+intended receiver of failed passes is given by SkillCorner (no inference needed). There is **no xG**: shots are
+possessions ending in a shot (526, 61 of the 66 goals scored are attached to one; the rest fall in gaps such as
+replays). Value labels there use an **xG proxy**: a logistic model fitted on the Bundesliga shots to reproduce the
+provider's xG from our shot features. It is rough (correlation 0.44 with the provider's xG on held-out Bundesliga
+matches, goal AUC 0.67 vs 0.81 for the provider; 0.75 on the A-League goals, 51.5 proxy xG for 61 goals).
+
+| Pass model, logistic (log-loss / AUC) | own league | other league | both | both + flag |
+|---|---|---|---|---|
+| held-out Bundesliga (3,464 passes) | **0.378** / 0.838 | 0.399 / 0.839 | 0.391 / 0.841 | 0.387 / 0.840 |
+| held-out A-League (14,844 passes) | **0.309** / 0.860 | 0.330 / 0.837 | 0.310 / 0.857 | 0.310 / 0.857 |
+
+| Value model, ridge (MSE skill / Spearman) | own league | other league | both |
+|---|---|---|---|
+| held-out Bundesliga (provider xG labels) | **2.2 %** / 0.235 | 1.9 % / 0.239 | 2.1 % / 0.239 |
+| held-out A-League (proxy xG labels) | **5.1 %** / 0.273 | 4.8 % / 0.274 | 5.1 % / 0.274 |
+
+| Shot → goal, logistic (log-loss / AUC) | own league | other league | both |
+|---|---|---|---|
+| held-out Bundesliga (168 shots) | 0.319 / 0.617 | **0.298 / 0.686** | 0.301 / 0.667 |
+| held-out A-League (526 shots) | 0.322 / 0.735 | 0.320 / 0.749 | 0.321 / 0.738 |
+
+<img src="docs/coach_skillcorner_pass_reliability.png" alt="Pass model reliability on held-out A-League matches by training set" width="40%"> <img src="docs/coach_skillcorner_rules.png" alt="Held-out pass log-loss and value skill by training set and league" width="58%">
+
+- **The pass model travels.** Trained on 7 Bundesliga matches it ranks A-League passes almost as well as an
+  A-League model (AUC 0.837 vs 0.860), also when passer and target are both detected (0.824, 12,237 passes). What
+  breaks is calibration: it predicts 81 % completion where 84.9 % happen (A-League passes complete more for the same
+  geometry). The leak check transfers too (interceptor removed: AUC 0.77 cross-league, 0.80 in-league).
+  SkillCorner's own xPass column scores higher (AUC 0.90) but is a reference, not a like-for-like rival: it is
+  computed by the provider with its own inputs.
+- **More matches do not help the browser models.** Pooling both leagues leaves the A-League pass model unchanged
+  (0.310 vs 0.309) and makes the Bundesliga one worse (0.391; 0.387 with a league flag), because the two datasets
+  define failed-pass targets differently (inferred vs given) and the coefficients differ. Only gradient boosting
+  with a league flag gains on the Bundesliga (0.369 vs 0.381). The value model is the same "closer is better"
+  with any training set (2.1–2.2 % skill on the Bundesliga).
+- **The A-League value skill (5 %) is a label artefact**: the same Bundesliga matches scored with proxy-xG labels
+  give 6.0 %. Proxy labels are a smooth function of position, so position predicts them better; they are not
+  evidence of a better value model.
+- **Shots are where more data helps.** The Bundesliga shot model goes from AUC 0.62 (168 shots) to 0.69 when trained
+  on the 526 A-League shots (0.67 pooled). The engine still prefers the provider's xG where it exists.
+
+The exported website models are unchanged (Bundesliga only); the shot model is the one worth retraining on both
+leagues later. Limits: broadcast tracking (a third of positions extrapolated), no xG (proxy labels), goals missing
+from 5 of 66, crosses approximated (wide channel to a target in the box), set-piece deliveries absent from the
+events, 20 matches of one season.
 
 ### Run the coach
 
@@ -288,9 +347,12 @@ python -m coach.prepare --raw D:/football-coach/idsse-raw    # 7 matches, ~15 mi
 python -m coach.evaluate                                     # all numbers + charts (~10 min on CPU)
 python -m coach.export --match J03WOH --site <folder>        # one match (h0.bin / h1.bin, int16 cm, 12.5 fps) + weights
 python -m coach.parity_fixtures                              # Python <-> TypeScript parity frames for the website
+python -m coach.skillcorner                                  # 20 A-League matches streamed (1.7 GB), ~5 min
+python -m coach.cross_league                                 # cross-league + combined numbers and charts (~3 min)
 ```
 
-All numbers: [`docs/coach_results.json`](docs/coach_results.json). Tests: `tests/test_20_coach.py` (34).
+All numbers: [`docs/coach_results.json`](docs/coach_results.json),
+[`docs/coach_skillcorner_results.json`](docs/coach_skillcorner_results.json). Tests: `tests/test_20_coach.py` (44).
 
 ## How it works
 
@@ -323,6 +385,10 @@ All numbers: [`docs/coach_results.json`](docs/coach_results.json). Tests: `tests
 - **IDSSE Bundesliga tracking + events** (Bassek et al. 2025, figshare 10.6084/m9.figshare.28196177, CC BY 4.0,
   data owner DFL): 7 matches, used for the v3 coach. Raw XML (2.6 GB) on the USB key, compact matches in
   `../../cv-data/football-coach/`; never committed.
+- **SkillCorner open data** (github.com/SkillCorner/opendata, **MIT**; "Tracking and event data: SkillCorner open
+  data (MIT)"): 20 A-League 2024/25 matches, broadcast tracking at 10 fps + dynamic events + phases of play, used for
+  the coach's cross-league test. Tracking streamed and parsed in memory; only derived tables in
+  `../../cv-data/skillcorner/`; never committed.
 - **Location:** `../../cv-data/football/` (not committed).
 
 ## Run it

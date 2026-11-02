@@ -1,0 +1,2540 @@
+{
+  "data": {
+    "idsse_matches": [
+      "J03WMX",
+      "J03WN1",
+      "J03WOH",
+      "J03WOY",
+      "J03WPY",
+      "J03WQQ",
+      "J03WR9"
+    ],
+    "skillcorner_matches": [
+      "1874553",
+      "1886347",
+      "1899585",
+      "1925299",
+      "1927964",
+      "1953632",
+      "1959846",
+      "1986691",
+      "1996435",
+      "1996436",
+      "2006229",
+      "2006363",
+      "2007448",
+      "2007721",
+      "2010085",
+      "2011166",
+      "2013725",
+      "2015213",
+      "2016236",
+      "2017461"
+    ],
+    "pass_rows": {
+      "idsse": 3464,
+      "skillcorner": 14844
+    },
+    "value_rows": {
+      "idsse": 22123,
+      "skillcorner": 60568
+    },
+    "shot_rows_open_play": {
+      "idsse": 168,
+      "skillcorner": 526
+    },
+    "pass_completion_weighted": {
+      "idsse": 0.7965839163069268,
+      "skillcorner": 0.8487791772860209
+    }
+  },
+  "skillcorner_sync": {
+    "1874553": {
+      "events": 861,
+      "kept": 832,
+      "dropped": {
+        "far": 27,
+        "no_position": 2
+      },
+      "passes": 835,
+      "passes_kept": 809,
+      "offside_dropped": 2,
+      "shots": 26,
+      "shots_kept": 23,
+      "goals": 5,
+      "score": [
+        2,
+        3
+      ],
+      "actor_ball_median_m": 1.1548577547073364,
+      "actor_ball_p90_m": 1.9757776975631725,
+      "actor_ball_within_3m": 0.9685681024447031,
+      "event_ball_median_m": 1.1548586962910408,
+      "actor_detected_share": 0.9790454016298021
+    },
+    "1886347": {
+      "events": 877,
+      "kept": 838,
+      "dropped": {
+        "far": 39
+      },
+      "passes": 850,
+      "passes_kept": 813,
+      "offside_dropped": 2,
+      "shots": 27,
+      "shots_kept": 25,
+      "goals": 1,
+      "score": [
+        2,
+        0
+      ],
+      "actor_ball_median_m": 1.1703920364379883,
+      "actor_ball_p90_m": 2.199560546875,
+      "actor_ball_within_3m": 0.9555302166476625,
+      "event_ball_median_m": 1.191987512198001,
+      "actor_detected_share": 0.9794754846066135
+    },
+    "1899585": {
+      "events": 764,
+      "kept": 721,
+      "dropped": {
+        "far": 42,
+        "no_position": 1
+      },
+      "passes": 737,
+      "passes_kept": 696,
+      "offside_dropped": 4,
+      "shots": 27,
+      "shots_kept": 25,
+      "goals": 2,
+      "score": [
+        2,
+        1
+      ],
+      "actor_ball_median_m": 1.2231063842773438,
+      "actor_ball_p90_m": 2.299844932556153,
+      "actor_ball_within_3m": 0.944954128440367,
+      "event_ball_median_m": 1.2128263076081711,
+      "actor_detected_share": 0.9737876802096985
+    },
+    "1925299": {
+      "events": 937,
+      "kept": 871,
+      "dropped": {
+        "far": 66
+      },
+      "passes": 907,
+      "passes_kept": 843,
+      "offside_dropped": 5,
+      "shots": 30,
+      "shots_kept": 28,
+      "goals": 0,
+      "score": [
+        0,
+        1
+      ],
+      "actor_ball_median_m": 1.2254385948181152,
+      "actor_ball_p90_m": 2.4437882900238037,
+      "actor_ball_within_3m": 0.9295624332977588,
+      "event_ball_median_m": 1.244025518370544,
+      "actor_detected_share": 0.9530416221985059
+    },
+    "1927964": {
+      "events": 1024,
+      "kept": 996,
+      "dropped": {
+        "far": 28
+      },
+      "passes": 994,
+      "passes_kept": 970,
+      "offside_dropped": 2,
+      "shots": 30,
+      "shots_kept": 26,
+      "goals": 5,
+      "score": [
+        4,
+        1
+      ],
+      "actor_ball_median_m": 1.1441824436187744,
+      "actor_ball_p90_m": 1.9456015229225163,
+      "actor_ball_within_3m": 0.97265625,
+      "event_ball_median_m": 1.1441816287784352,
+      "actor_detected_share": 0.9814453125
+    },
+    "1953632": {
+      "events": 876,
+      "kept": 829,
+      "dropped": {
+        "far": 46,
+        "no_position": 1
+      },
+      "passes": 861,
+      "passes_kept": 815,
+      "offside_dropped": 4,
+      "shots": 15,
+      "shots_kept": 14,
+      "goals": 2,
+      "score": [
+        1,
+        1
+      ],
+      "actor_ball_median_m": 1.299576759338379,
+      "actor_ball_p90_m": 2.3310161590576173,
+      "actor_ball_within_3m": 0.9474285714285714,
+      "event_ball_median_m": 1.257814823579996,
+      "actor_detected_share": 0.976
+    },
+    "1959846": {
+      "events": 847,
+      "kept": 813,
+      "dropped": {
+        "far": 33,
+        "no_position": 1
+      },
+      "passes": 813,
+      "passes_kept": 785,
+      "offside_dropped": 2,
+      "shots": 34,
+      "shots_kept": 28,
+      "goals": 7,
+      "score": [
+        3,
+        4
+      ],
+      "actor_ball_median_m": 1.276313602924347,
+      "actor_ball_p90_m": 2.1965659856796265,
+      "actor_ball_within_3m": 0.9609929078014184,
+      "event_ball_median_m": 1.276313723772853,
+      "actor_detected_share": 0.9822695035460993
+    },
+    "1986691": {
+      "events": 794,
+      "kept": 769,
+      "dropped": {
+        "far": 25
+      },
+      "passes": 762,
+      "passes_kept": 739,
+      "offside_dropped": 4,
+      "shots": 32,
+      "shots_kept": 30,
+      "goals": 1,
+      "score": [
+        0,
+        1
+      ],
+      "actor_ball_median_m": 1.2305691242218018,
+      "actor_ball_p90_m": 2.0826209783554086,
+      "actor_ball_within_3m": 0.9685138539042821,
+      "event_ball_median_m": 1.2305687552267734,
+      "actor_detected_share": 0.982367758186398
+    },
+    "1996435": {
+      "events": 904,
+      "kept": 854,
+      "dropped": {
+        "far": 49,
+        "no_position": 1
+      },
+      "passes": 874,
+      "passes_kept": 827,
+      "offside_dropped": 4,
+      "shots": 30,
+      "shots_kept": 27,
+      "goals": 5,
+      "score": [
+        4,
+        1
+      ],
+      "actor_ball_median_m": 1.2159353494644165,
+      "actor_ball_p90_m": 2.3361532211303717,
+      "actor_ball_within_3m": 0.9457364341085271,
+      "event_ball_median_m": 1.2461542681597326,
+      "actor_detected_share": 0.9745293466223699
+    },
+    "1996436": {
+      "events": 691,
+      "kept": 639,
+      "dropped": {
+        "far": 51,
+        "no_position": 1
+      },
+      "passes": 658,
+      "passes_kept": 608,
+      "offside_dropped": 2,
+      "shots": 33,
+      "shots_kept": 31,
+      "goals": 3,
+      "score": [
+        2,
+        1
+      ],
+      "actor_ball_median_m": 1.280734658241272,
+      "actor_ball_p90_m": 2.481099748611452,
+      "actor_ball_within_3m": 0.9260869565217391,
+      "event_ball_median_m": 1.2807340709245658,
+      "actor_detected_share": 0.9652173913043478
+    },
+    "2006229": {
+      "events": 877,
+      "kept": 841,
+      "dropped": {
+        "far": 36
+      },
+      "passes": 860,
+      "passes_kept": 825,
+      "offside_dropped": 1,
+      "shots": 17,
+      "shots_kept": 16,
+      "goals": 1,
+      "score": [
+        2,
+        0
+      ],
+      "actor_ball_median_m": 1.337647557258606,
+      "actor_ball_p90_m": 2.3187137126922606,
+      "actor_ball_within_3m": 0.9589509692132269,
+      "event_ball_median_m": 1.364844035785681,
+      "actor_detected_share": 0.9726339794754846
+    },
+    "2006363": {
+      "events": 868,
+      "kept": 822,
+      "dropped": {
+        "far": 46
+      },
+      "passes": 844,
+      "passes_kept": 803,
+      "offside_dropped": 1,
+      "shots": 24,
+      "shots_kept": 19,
+      "goals": 3,
+      "score": [
+        3,
+        0
+      ],
+      "actor_ball_median_m": 1.3263821005821228,
+      "actor_ball_p90_m": 2.282589769363404,
+      "actor_ball_within_3m": 0.9470046082949308,
+      "event_ball_median_m": 1.326382415749839,
+      "actor_detected_share": 0.9746543778801844
+    },
+    "2007448": {
+      "events": 775,
+      "kept": 728,
+      "dropped": {
+        "far": 46,
+        "no_position": 1
+      },
+      "passes": 749,
+      "passes_kept": 707,
+      "offside_dropped": 3,
+      "shots": 26,
+      "shots_kept": 21,
+      "goals": 4,
+      "score": [
+        1,
+        3
+      ],
+      "actor_ball_median_m": 1.275185763835907,
+      "actor_ball_p90_m": 2.4114937067031863,
+      "actor_ball_within_3m": 0.9405684754521964,
+      "event_ball_median_m": 1.2751857177260582,
+      "actor_detected_share": 0.9677002583979328
+    },
+    "2007721": {
+      "events": 868,
+      "kept": 811,
+      "dropped": {
+        "far": 57
+      },
+      "passes": 845,
+      "passes_kept": 794,
+      "offside_dropped": 2,
+      "shots": 23,
+      "shots_kept": 17,
+      "goals": 4,
+      "score": [
+        2,
+        2
+      ],
+      "actor_ball_median_m": 1.186244547367096,
+      "actor_ball_p90_m": 2.3235058307647707,
+      "actor_ball_within_3m": 0.934331797235023,
+      "event_ball_median_m": 1.1862446942066058,
+      "actor_detected_share": 0.9735023041474654
+    },
+    "2010085": {
+      "events": 849,
+      "kept": 807,
+      "dropped": {
+        "far": 42
+      },
+      "passes": 834,
+      "passes_kept": 796,
+      "offside_dropped": 2,
+      "shots": 15,
+      "shots_kept": 11,
+      "goals": 1,
+      "score": [
+        1,
+        0
+      ],
+      "actor_ball_median_m": 1.2827115058898926,
+      "actor_ball_p90_m": 2.338230323791504,
+      "actor_ball_within_3m": 0.950530035335689,
+      "event_ball_median_m": 1.28271156594027,
+      "actor_detected_share": 0.9811542991755006
+    },
+    "2011166": {
+      "events": 657,
+      "kept": 604,
+      "dropped": {
+        "far": 53
+      },
+      "passes": 625,
+      "passes_kept": 576,
+      "offside_dropped": 5,
+      "shots": 32,
+      "shots_kept": 28,
+      "goals": 5,
+      "score": [
+        2,
+        3
+      ],
+      "actor_ball_median_m": 1.3803271055221558,
+      "actor_ball_p90_m": 2.742406463623046,
+      "actor_ball_within_3m": 0.9193302891933028,
+      "event_ball_median_m": 1.358431159554367,
+      "actor_detected_share": 0.9619482496194824
+    },
+    "2013725": {
+      "events": 783,
+      "kept": 721,
+      "dropped": {
+        "far": 62
+      },
+      "passes": 758,
+      "passes_kept": 700,
+      "offside_dropped": 8,
+      "shots": 25,
+      "shots_kept": 21,
+      "goals": 1,
+      "score": [
+        1,
+        0
+      ],
+      "actor_ball_median_m": 1.3677881956100464,
+      "actor_ball_p90_m": 2.7125226020813016,
+      "actor_ball_within_3m": 0.9208173690932312,
+      "event_ball_median_m": 1.3343828092768169,
+      "actor_detected_share": 0.9527458492975734
+    },
+    "2015213": {
+      "events": 755,
+      "kept": 690,
+      "dropped": {
+        "far": 64,
+        "no_position": 1
+      },
+      "passes": 733,
+      "passes_kept": 671,
+      "offside_dropped": 3,
+      "shots": 22,
+      "shots_kept": 19,
+      "goals": 6,
+      "score": [
+        4,
+        2
+      ],
+      "actor_ball_median_m": 1.3898006677627563,
+      "actor_ball_p90_m": 2.7631590843200686,
+      "actor_ball_within_3m": 0.9151193633952255,
+      "event_ball_median_m": 1.424770276012731,
+      "actor_detected_share": 0.9456233421750663
+    },
+    "2016236": {
+      "events": 846,
+      "kept": 772,
+      "dropped": {
+        "far": 74
+      },
+      "passes": 820,
+      "passes_kept": 751,
+      "offside_dropped": 3,
+      "shots": 26,
+      "shots_kept": 21,
+      "goals": 4,
+      "score": [
+        3,
+        2
+      ],
+      "actor_ball_median_m": 1.4123989343643188,
+      "actor_ball_p90_m": 2.7707552909851074,
+      "actor_ball_within_3m": 0.9125295508274232,
+      "event_ball_median_m": 1.412399467250667,
+      "actor_detected_share": 0.9397163120567376
+    },
+    "2017461": {
+      "events": 683,
+      "kept": 656,
+      "dropped": {
+        "far": 27
+      },
+      "passes": 651,
+      "passes_kept": 626,
+      "offside_dropped": 3,
+      "shots": 32,
+      "shots_kept": 30,
+      "goals": 1,
+      "score": [
+        0,
+        1
+      ],
+      "actor_ball_median_m": 1.355323076248169,
+      "actor_ball_p90_m": 2.318843269348145,
+      "actor_ball_within_3m": 0.9604685212298683,
+      "event_ball_median_m": 1.343318024226161,
+      "actor_detected_share": 0.9707174231332357
+    }
+  },
+  "skillcorner_detection": {
+    "1874553": {
+      "players_detected": 0.5794324448718264,
+      "players_detected_in_play": 0.6501188759183305,
+      "players_per_frame": 16.14690952523141,
+      "players_per_frame_in_play": 21.605672377590455,
+      "detected_per_frame_in_play": 14.046255439578832,
+      "ball_detected_in_play": 0.9384376616658044,
+      "in_play_share": 0.545121263395375
+    },
+    "1886347": {
+      "players_detected": 0.5928168890339262,
+      "players_detected_in_play": 0.6613155991899219,
+      "players_per_frame": 16.193150638528504,
+      "players_per_frame_in_play": 21.61572949747805,
+      "detected_per_frame_in_play": 14.294819104551964,
+      "ball_detected_in_play": 0.9353322124665296,
+      "in_play_share": 0.5439856373429084
+    },
+    "1899585": {
+      "players_detected": 0.5518792556721811,
+      "players_detected_in_play": 0.6284137931034482,
+      "players_per_frame": 14.790401745137247,
+      "players_per_frame_in_play": 21.418020679468242,
+      "detected_per_frame_in_play": 13.459379615952733,
+      "ball_detected_in_play": 0.8960991003088492,
+      "in_play_share": 0.49227413197600434
+    },
+    "1925299": {
+      "players_detected": 0.5787836438727099,
+      "players_detected_in_play": 0.6265095736625429,
+      "players_per_frame": 17.210991808361346,
+      "players_per_frame_in_play": 21.6068905826842,
+      "detected_per_frame_in_play": 13.536923807130693,
+      "ball_detected_in_play": 0.9247284808889633,
+      "in_play_share": 0.5844619953656865
+    },
+    "1927964": {
+      "players_detected": 0.6145437484386076,
+      "players_detected_in_play": 0.6712903801004487,
+      "players_per_frame": 16.67538229665882,
+      "players_per_frame_in_play": 21.686878994575434,
+      "detected_per_frame_in_play": 14.55819324346098,
+      "ball_detected_in_play": 0.9356571244427735,
+      "in_play_share": 0.6306074410255542
+    },
+    "1953632": {
+      "players_detected": 0.621137937031087,
+      "players_detected_in_play": 0.7067601739110846,
+      "players_per_frame": 16.31010788269656,
+      "players_per_frame_in_play": 21.59071011673152,
+      "detected_per_frame_in_play": 15.25945403696498,
+      "ball_detected_in_play": 0.9162816147859922,
+      "in_play_share": 0.5553848491499384
+    },
+    "1959846": {
+      "players_detected": 0.5704530033246195,
+      "players_detected_in_play": 0.6440411059726942,
+      "players_per_frame": 16.063999179935763,
+      "players_per_frame_in_play": 21.77304443628351,
+      "detected_per_frame_in_play": 14.022735619136647,
+      "ball_detected_in_play": 0.950055086301873,
+      "in_play_share": 0.5117371694116039
+    },
+    "1986691": {
+      "players_detected": 0.5883565199773761,
+      "players_detected_in_play": 0.6663975190571461,
+      "players_per_frame": 16.042931387652146,
+      "players_per_frame_in_play": 21.08047281323877,
+      "detected_per_frame_in_play": 14.047974783293933,
+      "ball_detected_in_play": 0.8961071710007881,
+      "in_play_share": 0.5370655651673409
+    },
+    "1996435": {
+      "players_detected": 0.6579898129024039,
+      "players_detected_in_play": 0.7332396392059781,
+      "players_per_frame": 16.62584632478039,
+      "players_per_frame_in_play": 21.632503796448383,
+      "detected_per_frame_in_play": 15.861809278829764,
+      "ball_detected_in_play": 0.918492577556017,
+      "in_play_share": 0.5601715218221589
+    },
+    "1996436": {
+      "players_detected": 0.5539489071741893,
+      "players_detected_in_play": 0.6681274579547132,
+      "players_per_frame": 15.722473905179138,
+      "players_per_frame_in_play": 21.94007214900979,
+      "detected_per_frame_in_play": 14.658764632260914,
+      "ball_detected_in_play": 0.9412132813075168,
+      "in_play_share": 0.45080566203680655
+    },
+    "2006229": {
+      "players_detected": 0.6292476964524235,
+      "players_detected_in_play": 0.7211630177731873,
+      "players_per_frame": 16.400769607264014,
+      "players_per_frame_in_play": 21.7002357696194,
+      "detected_per_frame_in_play": 15.64940751400839,
+      "ball_detected_in_play": 0.9385774212315136,
+      "in_play_share": 0.5511974481443351
+    },
+    "2006363": {
+      "players_detected": 0.5299015819456887,
+      "players_detected_in_play": 0.5813568344472704,
+      "players_per_frame": 16.516014355362948,
+      "players_per_frame_in_play": 21.727372865797687,
+      "detected_per_frame_in_play": 12.63135671011566,
+      "ball_detected_in_play": 0.941466250535463,
+      "in_play_share": 0.5532570422535211
+    },
+    "2007448": {
+      "players_detected": 0.5398449641048381,
+      "players_detected_in_play": 0.603958197503567,
+      "players_per_frame": 16.779063759429576,
+      "players_per_frame_in_play": 21.64159367438056,
+      "detected_per_frame_in_play": 13.07061790668348,
+      "ball_detected_in_play": 0.928939027299683,
+      "in_play_share": 0.5053391202507664
+    },
+    "2007721": {
+      "players_detected": 0.5958023983489996,
+      "players_detected_in_play": 0.688608843156483,
+      "players_per_frame": 17.700705571582496,
+      "players_per_frame_in_play": 21.83467032475472,
+      "detected_per_frame_in_play": 15.035547073032536,
+      "ball_detected_in_play": 0.9402677959025437,
+      "in_play_share": 0.5827569427548573
+    },
+    "2010085": {
+      "players_detected": 0.5536715322198945,
+      "players_detected_in_play": 0.5975409072561866,
+      "players_per_frame": 16.981991453571187,
+      "players_per_frame_in_play": 21.766834603096584,
+      "detected_per_frame_in_play": 13.006574096829688,
+      "ball_detected_in_play": 0.9437208159252888,
+      "in_play_share": 0.5519907752831852
+    },
+    "2011166": {
+      "players_detected": 0.5241795113767432,
+      "players_detected_in_play": 0.5917918676308438,
+      "players_per_frame": 14.47632058287796,
+      "players_per_frame_in_play": 21.70843276184882,
+      "detected_per_frame_in_play": 12.846873967473108,
+      "ball_detected_in_play": 0.9495209075223026,
+      "in_play_share": 0.4594043041219726
+    },
+    "2013725": {
+      "players_detected": 0.5395029823483771,
+      "players_detected_in_play": 0.6168372407035656,
+      "players_per_frame": 17.42893365262713,
+      "players_per_frame_in_play": 21.424813594035008,
+      "detected_per_frame_in_play": 13.215622899932798,
+      "ball_detected_in_play": 0.9223335146724695,
+      "in_play_share": 0.5502359487251726
+    },
+    "2015213": {
+      "players_detected": 0.5253566733213225,
+      "players_detected_in_play": 0.619264577985489,
+      "players_per_frame": 17.82785215852559,
+      "players_per_frame_in_play": 21.77867348276314,
+      "detected_per_frame_in_play": 13.486761043387075,
+      "ball_detected_in_play": 0.925645562983353,
+      "in_play_share": 0.5094320723848953
+    },
+    "2016236": {
+      "players_detected": 0.49098429087263035,
+      "players_detected_in_play": 0.5395441564891528,
+      "players_per_frame": 16.079177908797174,
+      "players_per_frame_in_play": 21.66178672942327,
+      "detected_per_frame_in_play": 11.687490448974602,
+      "ball_detected_in_play": 0.9161649194657538,
+      "in_play_share": 0.5449352120182539
+    },
+    "2017461": {
+      "players_detected": 0.5115548865548866,
+      "players_detected_in_play": 0.5841697273052296,
+      "players_per_frame": 15.207144323547526,
+      "players_per_frame_in_play": 21.42847193202396,
+      "detected_per_frame_in_play": 12.517864605098204,
+      "ball_detected_in_play": 0.9276709848168269,
+      "in_play_share": 0.49127489221925685
+    }
+  },
+  "xg_proxy": {
+    "fit_on": "IDSSE open-play shots",
+    "n_idsse": 168,
+    "penalty_xg": 0.767,
+    "weights": {
+      "features": [
+        "goal_dist",
+        "goal_angle",
+        "cone_defenders"
+      ],
+      "link": "logit",
+      "mean": [
+        17.139983030477374,
+        0.42834573117594993,
+        1.494047619047619
+      ],
+      "scale": [
+        7.298144263519172,
+        0.20220112313152352,
+        0.8309276500617792
+      ],
+      "coef": [
+        -0.28754737600580516,
+        0.34639002216057035,
+        -0.16491599122840508
+      ],
+      "intercept": -2.4190924054627994
+    },
+    "idsse_lomo": {
+      "pearson_vs_provider_xg": 0.44491140860366074,
+      "mae_vs_provider_xg": 0.06709347234627923,
+      "proxy_vs_goals": {
+        "n": 168,
+        "positive_rate": 0.09523809523809523,
+        "log_loss": 0.29996912369846707,
+        "brier": 0.08438557852381233,
+        "auc": 0.6739309210526316
+      },
+      "provider_vs_goals": {
+        "n": 168,
+        "positive_rate": 0.09523809523809523,
+        "log_loss": 0.24853800487436936,
+        "brier": 0.06993255875,
+        "auc": 0.8127055921052632
+      }
+    },
+    "skillcorner": {
+      "shots": 526,
+      "open_play_with_features": 526,
+      "penalties": 0,
+      "goals_from_shots": 61,
+      "sum_proxy_xg": 51.507072215328414,
+      "proxy_vs_goals_open_play": {
+        "n": 526,
+        "positive_rate": 0.11596958174904944,
+        "log_loss": 0.31934559682858604,
+        "brier": 0.0932383527532875,
+        "auc": 0.7505376344086021
+      }
+    }
+  },
+  "pass": {
+    "same": {
+      "logistic": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.3776084753797301,
+          "brier": 0.12449886393811506,
+          "auc": 0.8379664923967036,
+          "mean_pred": 0.7973123085568488
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.3094292808360432,
+          "brier": 0.09595456589790434,
+          "auc": 0.8597083145933421,
+          "mean_pred": 0.8486558134240516
+        }
+      },
+      "boosting": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.38114196171274034,
+          "brier": 0.12393560977672112,
+          "auc": 0.8385188597842708,
+          "mean_pred": 0.807266323576538
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.3008982475781535,
+          "brier": 0.09397515878566622,
+          "auc": 0.8655656054657397,
+          "mean_pred": 0.8492920825273841
+        }
+      },
+      "distance_only": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.5046422008882215,
+          "brier": 0.16164040241700925,
+          "auc": 0.4972925991093768,
+          "mean_pred": 0.7965667714391408
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.40772792130149155,
+          "brier": 0.1220697881012953,
+          "auc": 0.6002465898670553,
+          "mean_pred": 0.8486178917323667
+        }
+      },
+      "target_control_only": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.4705988633419109,
+          "brier": 0.15165632480544178,
+          "auc": 0.7390606350086917,
+          "mean_pred": 0.7964453500990059
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.4021666566355155,
+          "brier": 0.12300186151676476,
+          "auc": 0.7217847174174895,
+          "mean_pred": 0.8486129506735217
+        }
+      },
+      "base_rate": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.5066959760240741,
+          "brier": 0.16255185185618712,
+          "auc": 0.43850046012039934,
+          "mean_pred": 0.7964086445949181
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.4252356955063375,
+          "brier": 0.12845980841417987,
+          "auc": 0.4322397866801886,
+          "mean_pred": 0.8486218988470676
+        }
+      }
+    },
+    "other": {
+      "logistic": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.3986168547359014,
+          "brier": 0.1331998882680158,
+          "auc": 0.8391586517176077,
+          "mean_pred": 0.835810530131147
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.33015767972947707,
+          "brier": 0.10217861662483364,
+          "auc": 0.8369637219194531,
+          "mean_pred": 0.8096585621865771
+        }
+      },
+      "boosting": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.38689501229256035,
+          "brier": 0.12831634771875025,
+          "auc": 0.8409187738872357,
+          "mean_pred": 0.8314032895071962
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.33194195338057647,
+          "brier": 0.10455692028576893,
+          "auc": 0.8340366664393325,
+          "mean_pred": 0.8206298635219755
+        }
+      },
+      "distance_only": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.5215564912660194,
+          "brier": 0.16441191958762977,
+          "auc": 0.5068546209289999,
+          "mean_pred": 0.835851679957649
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.4237508721588277,
+          "brier": 0.1276591852345577,
+          "auc": 0.6028672789938996,
+          "mean_pred": 0.8007162581896866
+        }
+      },
+      "target_control_only": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.4794642915612981,
+          "brier": 0.15449069290294393,
+          "auc": 0.7697497199091197,
+          "mean_pred": 0.8475164217214685
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.41147960697450087,
+          "brier": 0.1266496462157468,
+          "auc": 0.7424241056221939,
+          "mean_pred": 0.7984626248045666
+        }
+      },
+      "base_rate": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.5148607429216323,
+          "brier": 0.1647623258567217,
+          "auc": 0.5,
+          "mean_pred": 0.8487791772860225
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.43385115703649246,
+          "brier": 0.13107743076036196,
+          "auc": 0.5,
+          "mean_pred": 0.7965839163069285
+        }
+      }
+    },
+    "all": {
+      "logistic": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.3908770257723521,
+          "brier": 0.13061037759968977,
+          "auc": 0.8407753178895228,
+          "mean_pred": 0.829177102282348
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.3102624778781058,
+          "brier": 0.09599181363424693,
+          "auc": 0.8573811894884424,
+          "mean_pred": 0.8406689091886778
+        }
+      },
+      "boosting": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.37566153371076133,
+          "brier": 0.12433803521819589,
+          "auc": 0.8454481093966378,
+          "mean_pred": 0.827114865019616
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.301096914244589,
+          "brier": 0.09402688023189056,
+          "auc": 0.8650041836728345,
+          "mean_pred": 0.8426032511764601
+        }
+      },
+      "distance_only": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.5153038749412157,
+          "brier": 0.16326409544393705,
+          "auc": 0.5056082279913326,
+          "mean_pred": 0.8305640493437744
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.40845794308114997,
+          "brier": 0.12259794517243179,
+          "auc": 0.600476954873554,
+          "mean_pred": 0.8401419313646491
+        }
+      },
+      "target_control_only": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.476261294198302,
+          "brier": 0.15350566266792,
+          "auc": 0.7561008204123508,
+          "mean_pred": 0.8385832515309831
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.4025274823589164,
+          "brier": 0.12321596819472141,
+          "auc": 0.7248178960629023,
+          "mean_pred": 0.8381971965992514
+        }
+      },
+      "base_rate": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.5118694388502497,
+          "brier": 0.16397799345810576,
+          "auc": 0.43682333153529757,
+          "mean_pred": 0.839698787506907
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.4255821729378553,
+          "brier": 0.12855785711813603,
+          "auc": 0.43226785348635094,
+          "mean_pred": 0.8379222709212987
+        }
+      }
+    },
+    "all+league": {
+      "logistic": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.3865517316332104,
+          "brier": 0.1282956032061207,
+          "auc": 0.8398486036382362,
+          "mean_pred": 0.7970354938241843
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.309968290999962,
+          "brier": 0.09607719310334098,
+          "auc": 0.8572821244325445,
+          "mean_pred": 0.8486976071859634
+        }
+      },
+      "boosting": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.3689025717129923,
+          "brier": 0.12179920577145803,
+          "auc": 0.8461485588784949,
+          "mean_pred": 0.8041726003156676
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.3007952764793233,
+          "brier": 0.09392527850535555,
+          "auc": 0.865331004582599,
+          "mean_pred": 0.8485629978432686
+        }
+      },
+      "distance_only": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.5153038749412157,
+          "brier": 0.16326409544393705,
+          "auc": 0.5056082279913326,
+          "mean_pred": 0.8305640493437744
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.40845794308114997,
+          "brier": 0.12259794517243179,
+          "auc": 0.600476954873554,
+          "mean_pred": 0.8401419313646491
+        }
+      },
+      "target_control_only": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.476261294198302,
+          "brier": 0.15350566266792,
+          "auc": 0.7561008204123508,
+          "mean_pred": 0.8385832515309831
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.4025274823589164,
+          "brier": 0.12321596819472141,
+          "auc": 0.7248178960629023,
+          "mean_pred": 0.8381971965992514
+        }
+      },
+      "base_rate": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.5118694388502497,
+          "brier": 0.16397799345810576,
+          "auc": 0.43682333153529757,
+          "mean_pred": 0.839698787506907
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.4255821729378553,
+          "brier": 0.12855785711813603,
+          "auc": 0.43226785348635094,
+          "mean_pred": 0.8379222709212987
+        }
+      }
+    }
+  },
+  "pass_interceptor_removed": {
+    "same": {
+      "logistic": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.4263556428540375,
+          "brier": 0.13856969450932907,
+          "auc": 0.7736199632351021,
+          "mean_pred": 0.7973596173122399
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.34735732313127604,
+          "brier": 0.10580212235007258,
+          "auc": 0.7994406399283288,
+          "mean_pred": 0.8486040548367237
+        }
+      }
+    },
+    "other": {
+      "logistic": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.45798320223330385,
+          "brier": 0.1495247166434274,
+          "auc": 0.7632016949646743,
+          "mean_pred": 0.8386249084368839
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.3761235260304998,
+          "brier": 0.11580036651577072,
+          "auc": 0.7603814678482143,
+          "mean_pred": 0.80372067861207
+        }
+      }
+    },
+    "all": {
+      "logistic": {
+        "idsse": {
+          "n": 3464,
+          "positive_rate": 0.7965839163069268,
+          "log_loss": 0.44580530498168414,
+          "brier": 0.14613195560465433,
+          "auc": 0.7696059585287474,
+          "mean_pred": 0.8321115966363806
+        },
+        "skillcorner": {
+          "n": 14844,
+          "positive_rate": 0.8487791772860209,
+          "log_loss": 0.3487577121225065,
+          "brier": 0.10627047183846886,
+          "auc": 0.7966570933454751,
+          "mean_pred": 0.8398261315481514
+        }
+      }
+    }
+  },
+  "pass_cross_league_detail": {
+    "logistic": {
+      "n": 14844,
+      "positive_rate": 0.8487791772860209,
+      "log_loss": 0.33015767972947707,
+      "brier": 0.10217861662483364,
+      "auc": 0.8369637219194531,
+      "mean_pred": 0.8096585621865771,
+      "reliability": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "mean_pred": null,
+          "observed": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 22,
+          "mean_pred": 0.174201773867673,
+          "observed": 0.26159040917518384
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 224,
+          "mean_pred": 0.2582730028070086,
+          "observed": 0.400128228616905
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 503,
+          "mean_pred": 0.35383730281950254,
+          "observed": 0.4070700473951464
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 724,
+          "mean_pred": 0.44936749504918005,
+          "observed": 0.49529945572765294
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 962,
+          "mean_pred": 0.5513440062285673,
+          "observed": 0.6546229016851195
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 1276,
+          "mean_pred": 0.6510981619380124,
+          "observed": 0.7232003345441708
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 1641,
+          "mean_pred": 0.75192424239169,
+          "observed": 0.8291976143780448
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 2360,
+          "mean_pred": 0.8540650644979154,
+          "observed": 0.8968462046849953
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 7132,
+          "mean_pred": 0.9637416617600686,
+          "observed": 0.9727302511252778
+        }
+      ],
+      "carrier_and_target_detected": {
+        "n": 12237,
+        "positive_rate": 0.8664769955273306,
+        "log_loss": 0.31889691514567114,
+        "brier": 0.09690540334410935,
+        "auc": 0.8237813054337232
+      },
+      "many_detected": {
+        "n": 8675,
+        "positive_rate": 0.8448029064456258,
+        "log_loss": 0.3468324294106009,
+        "brier": 0.10699283404855595,
+        "auc": 0.8225963750859389
+      },
+      "few_detected": {
+        "n": 6169,
+        "positive_rate": 0.8543833616889276,
+        "log_loss": 0.3066561689329838,
+        "brier": 0.09539342434765342,
+        "auc": 0.8566817849474736
+      },
+      "auc_range_per_match": [
+        0.7388518024032045,
+        0.9084261838440112
+      ],
+      "per_match": {
+        "1874553": {
+          "n": 789,
+          "positive_rate": 0.8515337423312883,
+          "log_loss": 0.31409434077834225,
+          "brier": 0.09726647572391597,
+          "auc": 0.8614243323442135
+        },
+        "1886347": {
+          "n": 792,
+          "positive_rate": 0.8792270531400966,
+          "log_loss": 0.28249659137719674,
+          "brier": 0.0843326648853291,
+          "auc": 0.8662551440329217
+        },
+        "1899585": {
+          "n": 679,
+          "positive_rate": 0.8280166435506242,
+          "log_loss": 0.3678779559479997,
+          "brier": 0.11731905311792035,
+          "auc": 0.8186143765023544
+        },
+        "1925299": {
+          "n": 825,
+          "positive_rate": 0.8690744920993226,
+          "log_loss": 0.3063556484226881,
+          "brier": 0.09541413277904678,
+          "auc": 0.8356732358884195
+        },
+        "1927964": {
+          "n": 958,
+          "positive_rate": 0.9114052953156823,
+          "log_loss": 0.22595019769999442,
+          "brier": 0.06602284533465692,
+          "auc": 0.8914133158984419
+        },
+        "1953632": {
+          "n": 802,
+          "positive_rate": 0.8858823529411765,
+          "log_loss": 0.23315514766842652,
+          "brier": 0.06951397782120436,
+          "auc": 0.9084261838440112
+        },
+        "1959846": {
+          "n": 761,
+          "positive_rate": 0.8527918781725888,
+          "log_loss": 0.34556552984155287,
+          "brier": 0.11052306016127278,
+          "auc": 0.8154447702834797
+        },
+        "1986691": {
+          "n": 718,
+          "positive_rate": 0.8810810810810811,
+          "log_loss": 0.2949324036873978,
+          "brier": 0.08954362673257399,
+          "auc": 0.8391993169528509
+        },
+        "1996435": {
+          "n": 815,
+          "positive_rate": 0.8549883990719258,
+          "log_loss": 0.3335650917354923,
+          "brier": 0.10141003581194231,
+          "auc": 0.8253761987680955
+        },
+        "1996436": {
+          "n": 586,
+          "positive_rate": 0.8193343898573694,
+          "log_loss": 0.4175141115107002,
+          "brier": 0.13213635729864662,
+          "auc": 0.7609241471448648
+        },
+        "2006229": {
+          "n": 812,
+          "positive_rate": 0.8441558441558441,
+          "log_loss": 0.31381749920033974,
+          "brier": 0.09694410299105538,
+          "auc": 0.8573991460453769
+        },
+        "2006363": {
+          "n": 787,
+          "positive_rate": 0.8635265700483091,
+          "log_loss": 0.3227577122662252,
+          "brier": 0.09840715533917194,
+          "auc": 0.8464577071704594
+        },
+        "2007448": {
+          "n": 694,
+          "positive_rate": 0.854421768707483,
+          "log_loss": 0.31529726267852626,
+          "brier": 0.09578961617155052,
+          "auc": 0.8532976144916441
+        },
+        "2007721": {
+          "n": 782,
+          "positive_rate": 0.8399518652226232,
+          "log_loss": 0.34975457236643054,
+          "brier": 0.10369878615285531,
+          "auc": 0.8207184628237258
+        },
+        "2010085": {
+          "n": 784,
+          "positive_rate": 0.8529769137302552,
+          "log_loss": 0.2913474784999209,
+          "brier": 0.08876579231741877,
+          "auc": 0.875039688565552
+        },
+        "2011166": {
+          "n": 562,
+          "positive_rate": 0.8045977011494253,
+          "log_loss": 0.4616080734516744,
+          "brier": 0.1455187845302271,
+          "auc": 0.7388518024032045
+        },
+        "2013725": {
+          "n": 688,
+          "positive_rate": 0.8051075268817203,
+          "log_loss": 0.3892421035670541,
+          "brier": 0.12518041809874128,
+          "auc": 0.8169211354717033
+        },
+        "2015213": {
+          "n": 666,
+          "positive_rate": 0.8255494505494505,
+          "log_loss": 0.36813748424796383,
+          "brier": 0.11716353929097356,
+          "auc": 0.8225572776280321
+        },
+        "2016236": {
+          "n": 733,
+          "positive_rate": 0.7917705735660849,
+          "log_loss": 0.3840666834790694,
+          "brier": 0.12487115321156089,
+          "auc": 0.8329445601956698
+        },
+        "2017461": {
+          "n": 611,
+          "positive_rate": 0.8034591194968552,
+          "log_loss": 0.40296845670796855,
+          "brier": 0.12402505200414575,
+          "auc": 0.8068443051201674
+        }
+      }
+    },
+    "logistic_interceptor_removed": {
+      "n": 14844,
+      "positive_rate": 0.8487791772860209,
+      "log_loss": 0.3705969588538323,
+      "brier": 0.11426766768543303,
+      "auc": 0.7722073893589483,
+      "mean_pred": 0.8026664827915826,
+      "reliability": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "mean_pred": null,
+          "observed": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "mean_pred": null,
+          "observed": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 14,
+          "mean_pred": 0.2703923996943753,
+          "observed": 0.33532793777474357
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 158,
+          "mean_pred": 0.36752429632015166,
+          "observed": 0.426829741662045
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 567,
+          "mean_pred": 0.4580718248193289,
+          "observed": 0.555442396203518
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 1177,
+          "mean_pred": 0.5556660159240344,
+          "observed": 0.6424293553852383
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 1744,
+          "mean_pred": 0.6531056781570115,
+          "observed": 0.7156343183139349
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 2332,
+          "mean_pred": 0.7515467833081269,
+          "observed": 0.8226694242098501
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 3311,
+          "mean_pred": 0.8547065908131649,
+          "observed": 0.9001050435035826
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 5541,
+          "mean_pred": 0.9449534518479147,
+          "observed": 0.9609925477116403
+        }
+      ],
+      "carrier_and_target_detected": {
+        "n": 12237,
+        "positive_rate": 0.8664769955273306,
+        "log_loss": 0.3658592810075696,
+        "brier": 0.1110700500435598,
+        "auc": 0.7372911120581811
+      },
+      "many_detected": {
+        "n": 8675,
+        "positive_rate": 0.8448029064456258,
+        "log_loss": 0.39078168298992594,
+        "brier": 0.12079800890359821,
+        "auc": 0.745955691896895
+      },
+      "few_detected": {
+        "n": 6169,
+        "positive_rate": 0.8543833616889276,
+        "log_loss": 0.3421484650964933,
+        "brier": 0.10506375832676791,
+        "auc": 0.8076575099920391
+      },
+      "auc_range_per_match": [
+        0.6945054945054948,
+        0.8699098023610561
+      ],
+      "per_match": {
+        "1874553": {
+          "n": 789,
+          "positive_rate": 0.8515337423312883,
+          "log_loss": 0.368309721539458,
+          "brier": 0.11313362264107392,
+          "auc": 0.777564185266417
+        },
+        "1886347": {
+          "n": 792,
+          "positive_rate": 0.8792270531400966,
+          "log_loss": 0.32549705935571704,
+          "brier": 0.09572869942260663,
+          "auc": 0.793051598607154
+        },
+        "1899585": {
+          "n": 679,
+          "positive_rate": 0.8280166435506242,
+          "log_loss": 0.4013629862004951,
+          "brier": 0.1288272962495964,
+          "auc": 0.7624715993282623
+        },
+        "1925299": {
+          "n": 825,
+          "positive_rate": 0.8690744920993226,
+          "log_loss": 0.35248290178461456,
+          "brier": 0.10542635152052422,
+          "auc": 0.7532605558033956
+        },
+        "1927964": {
+          "n": 958,
+          "positive_rate": 0.9114052953156823,
+          "log_loss": 0.2753851581444528,
+          "brier": 0.07889958118042946,
+          "auc": 0.8262095456031384
+        },
+        "1953632": {
+          "n": 802,
+          "positive_rate": 0.8858823529411765,
+          "log_loss": 0.27439608213454486,
+          "brier": 0.07946208672396379,
+          "auc": 0.8699098023610561
+        },
+        "1959846": {
+          "n": 761,
+          "positive_rate": 0.8527918781725888,
+          "log_loss": 0.3718358379901014,
+          "brier": 0.11603627280551193,
+          "auc": 0.7685099846390165
+        },
+        "1986691": {
+          "n": 718,
+          "positive_rate": 0.8810810810810811,
+          "log_loss": 0.34146170807998744,
+          "brier": 0.10226412109681704,
+          "auc": 0.7570439237264017
+        },
+        "1996435": {
+          "n": 815,
+          "positive_rate": 0.8549883990719258,
+          "log_loss": 0.367141898815459,
+          "brier": 0.11172624750588722,
+          "auc": 0.7725654286976638
+        },
+        "1996436": {
+          "n": 586,
+          "positive_rate": 0.8193343898573694,
+          "log_loss": 0.4380496478642847,
+          "brier": 0.13931773764429195,
+          "auc": 0.7043281966231317
+        },
+        "2006229": {
+          "n": 812,
+          "positive_rate": 0.8441558441558441,
+          "log_loss": 0.35861868027852384,
+          "brier": 0.11016013590836221,
+          "auc": 0.7958163399552693
+        },
+        "2006363": {
+          "n": 787,
+          "positive_rate": 0.8635265700483091,
+          "log_loss": 0.37415862405060335,
+          "brier": 0.1129846759321152,
+          "auc": 0.7485473021325318
+        },
+        "2007448": {
+          "n": 694,
+          "positive_rate": 0.854421768707483,
+          "log_loss": 0.3595146740963916,
+          "brier": 0.10976164298513742,
+          "auc": 0.7875457875457874
+        },
+        "2007721": {
+          "n": 782,
+          "positive_rate": 0.8399518652226232,
+          "log_loss": 0.3795096076427328,
+          "brier": 0.11555582272615803,
+          "auc": 0.7716984769616348
+        },
+        "2010085": {
+          "n": 784,
+          "positive_rate": 0.8529769137302552,
+          "log_loss": 0.33646598557423646,
+          "brier": 0.10200773762434424,
+          "auc": 0.8259639144659648
+        },
+        "2011166": {
+          "n": 562,
+          "positive_rate": 0.8045977011494253,
+          "log_loss": 0.46666558406854564,
+          "brier": 0.14900800454246713,
+          "auc": 0.6945054945054948
+        },
+        "2013725": {
+          "n": 688,
+          "positive_rate": 0.8051075268817203,
+          "log_loss": 0.4285788877552597,
+          "brier": 0.1377329707663693,
+          "auc": 0.7537268932617769
+        },
+        "2015213": {
+          "n": 666,
+          "positive_rate": 0.8255494505494505,
+          "log_loss": 0.41065528517817473,
+          "brier": 0.129699104769476,
+          "auc": 0.746479110512129
+        },
+        "2016236": {
+          "n": 733,
+          "positive_rate": 0.7917705735660849,
+          "log_loss": 0.43705779833392133,
+          "brier": 0.1435103884805254,
+          "auc": 0.7604855512274662
+        },
+        "2017461": {
+          "n": 611,
+          "positive_rate": 0.8034591194968552,
+          "log_loss": 0.44675697506457135,
+          "brier": 0.1428594293389636,
+          "auc": 0.7262800417972831
+        }
+      }
+    },
+    "target_control_only": {
+      "n": 14844,
+      "positive_rate": 0.8487791772860209,
+      "log_loss": 0.41147960697450087,
+      "brier": 0.1266496462157468,
+      "auc": 0.7424241056221939,
+      "mean_pred": 0.7984626248045666,
+      "reliability": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "mean_pred": null,
+          "observed": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "mean_pred": null,
+          "observed": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "mean_pred": null,
+          "observed": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 229,
+          "mean_pred": 0.3697271143284304,
+          "observed": 0.718240013417427
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 499,
+          "mean_pred": 0.4528035339202922,
+          "observed": 0.725587253285565
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 607,
+          "mean_pred": 0.550286249768058,
+          "observed": 0.6964756193400746
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 898,
+          "mean_pred": 0.6523904536881838,
+          "observed": 0.7001293325200385
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 1585,
+          "mean_pred": 0.7568034540231445,
+          "observed": 0.6858174836740596
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 11026,
+          "mean_pred": 0.8552901179416795,
+          "observed": 0.9016955259568873
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "mean_pred": null,
+          "observed": null
+        }
+      ],
+      "carrier_and_target_detected": {
+        "n": 12237,
+        "positive_rate": 0.8664769955273306,
+        "log_loss": 0.38733496371599446,
+        "brier": 0.1167064788752791,
+        "auc": 0.746708055178599
+      },
+      "many_detected": {
+        "n": 8675,
+        "positive_rate": 0.8448029064456258,
+        "log_loss": 0.4190849587178975,
+        "brier": 0.1298226268552726,
+        "auc": 0.7310190942494346
+      },
+      "few_detected": {
+        "n": 6169,
+        "positive_rate": 0.8543833616889276,
+        "log_loss": 0.400760570135771,
+        "brier": 0.12217762473519078,
+        "auc": 0.7594116297976204
+      },
+      "auc_range_per_match": [
+        0.6496867618362948,
+        0.8104688950789232
+      ],
+      "per_match": {
+        "1874553": {
+          "n": 789,
+          "positive_rate": 0.8515337423312883,
+          "log_loss": 0.3958295451911216,
+          "brier": 0.12050120688904635,
+          "auc": 0.7757450651528832
+        },
+        "1886347": {
+          "n": 792,
+          "positive_rate": 0.8792270531400966,
+          "log_loss": 0.3672624777327386,
+          "brier": 0.10835289557463959,
+          "auc": 0.7720006331117442
+        },
+        "1899585": {
+          "n": 679,
+          "positive_rate": 0.8280166435506242,
+          "log_loss": 0.45257017834014507,
+          "brier": 0.1428491892015479,
+          "auc": 0.6869834370575256
+        },
+        "1925299": {
+          "n": 825,
+          "positive_rate": 0.8690744920993226,
+          "log_loss": 0.3826263977884114,
+          "brier": 0.11453323901800475,
+          "auc": 0.7565670349279661
+        },
+        "1927964": {
+          "n": 958,
+          "positive_rate": 0.9114052953156823,
+          "log_loss": 0.3183409035468417,
+          "brier": 0.08842159931281103,
+          "auc": 0.7917347717118887
+        },
+        "1953632": {
+          "n": 802,
+          "positive_rate": 0.8858823529411765,
+          "log_loss": 0.34069708369253415,
+          "brier": 0.09710380337012327,
+          "auc": 0.8104688950789232
+        },
+        "1959846": {
+          "n": 761,
+          "positive_rate": 0.8527918781725888,
+          "log_loss": 0.4183504721996855,
+          "brier": 0.12964581007218237,
+          "auc": 0.7277894148861886
+        },
+        "1986691": {
+          "n": 718,
+          "positive_rate": 0.8810810810810811,
+          "log_loss": 0.3825657655427406,
+          "brier": 0.11478535671283309,
+          "auc": 0.7337064794611519
+        },
+        "1996435": {
+          "n": 815,
+          "positive_rate": 0.8549883990719258,
+          "log_loss": 0.42059714533599935,
+          "brier": 0.13075517533225542,
+          "auc": 0.7175975257946309
+        },
+        "1996436": {
+          "n": 586,
+          "positive_rate": 0.8193343898573694,
+          "log_loss": 0.45387662332148404,
+          "brier": 0.14403368159129057,
+          "auc": 0.6964734065832819
+        },
+        "2006229": {
+          "n": 812,
+          "positive_rate": 0.8441558441558441,
+          "log_loss": 0.40315085799856887,
+          "brier": 0.1234523833544459,
+          "auc": 0.7791319324012391
+        },
+        "2006363": {
+          "n": 787,
+          "positive_rate": 0.8635265700483091,
+          "log_loss": 0.3847235849328706,
+          "brier": 0.11541090104557503,
+          "auc": 0.7704451123515099
+        },
+        "2007448": {
+          "n": 694,
+          "positive_rate": 0.854421768707483,
+          "log_loss": 0.4171240295797187,
+          "brier": 0.12858661031988017,
+          "auc": 0.7132469520529219
+        },
+        "2007721": {
+          "n": 782,
+          "positive_rate": 0.8399518652226232,
+          "log_loss": 0.40646011210801375,
+          "brier": 0.12478055915352436,
+          "auc": 0.7494634020949811
+        },
+        "2010085": {
+          "n": 784,
+          "positive_rate": 0.8529769137302552,
+          "log_loss": 0.3907547210553079,
+          "brier": 0.11855565415488642,
+          "auc": 0.7922389872858546
+        },
+        "2011166": {
+          "n": 562,
+          "positive_rate": 0.8045977011494253,
+          "log_loss": 0.49525229920661185,
+          "brier": 0.16082614861839648,
+          "auc": 0.6496867618362948
+        },
+        "2013725": {
+          "n": 688,
+          "positive_rate": 0.8051075268817203,
+          "log_loss": 0.48358963847758774,
+          "brier": 0.15619799089520744,
+          "auc": 0.6935280331710832
+        },
+        "2015213": {
+          "n": 666,
+          "positive_rate": 0.8255494505494505,
+          "log_loss": 0.43363362768543817,
+          "brier": 0.1365115731908872,
+          "auc": 0.7599561994609162
+        },
+        "2016236": {
+          "n": 733,
+          "positive_rate": 0.7917705735660849,
+          "log_loss": 0.4886533274457306,
+          "brier": 0.15865363946748218,
+          "auc": 0.7475314793006613
+        },
+        "2017461": {
+          "n": 611,
+          "positive_rate": 0.8034591194968552,
+          "log_loss": 0.48847925472854176,
+          "brier": 0.15786786859014557,
+          "auc": 0.6589864158829677
+        }
+      }
+    },
+    "skillcorner_xpass_reference": {
+      "n": 14168,
+      "positive_rate": 0.8660427111183596,
+      "log_loss": 0.24833072157362684,
+      "brier": 0.07839047200687353,
+      "auc": 0.9028489281678374,
+      "rows": 14168,
+      "logistic_same_rows": {
+        "n": 14168,
+        "positive_rate": 0.8660427111183596,
+        "log_loss": 0.31006311210022713,
+        "brier": 0.09497763870713967,
+        "auc": 0.840575207379516
+      }
+    },
+    "subset_sizes": {
+      "all": 14844,
+      "carrier_and_target_detected": 12237,
+      "many_detected": 8675
+    },
+    "coefficients": {
+      "idsse": {
+        "features": [
+          "distance",
+          "forward",
+          "abs_angle",
+          "lane_defenders",
+          "receiver_space",
+          "passer_pressure",
+          "target_control",
+          "target_x",
+          "target_goal_dist"
+        ],
+        "link": "logit",
+        "mean": [
+          17.52950018640111,
+          4.170135681052298,
+          1.362447363942746,
+          0.32592378752886836,
+          9.258335173879319,
+          5.549728933650738,
+          0.8655558633365722,
+          -2.5451732138128773,
+          58.97329355988887
+        ],
+        "scale": [
+          9.550174650650806,
+          13.494950934639267,
+          0.8314928713046487,
+          0.5607010736218595,
+          6.075344669496886,
+          4.610976886381978,
+          0.21964037216014523,
+          22.301337812435627,
+          20.65799320681376
+        ],
+        "coef": [
+          -0.5323929339549599,
+          0.46438072844364137,
+          0.6959430109529682,
+          -0.12572168280997995,
+          1.7602500766543205,
+          0.32209820465387534,
+          -0.14120716755427276,
+          0.6903794125223383,
+          0.7261109893417341
+        ],
+        "intercept": 2.2732469855084925
+      },
+      "skillcorner": {
+        "features": [
+          "distance",
+          "forward",
+          "abs_angle",
+          "lane_defenders",
+          "receiver_space",
+          "passer_pressure",
+          "target_control",
+          "target_x",
+          "target_goal_dist"
+        ],
+        "link": "logit",
+        "mean": [
+          16.108869759897857,
+          3.112197820368687,
+          1.410611140875928,
+          0.346065750471571,
+          8.90259118997993,
+          4.863651153397041,
+          0.8631713999286161,
+          -0.7735678317468629,
+          57.29604570688976
+        ],
+        "scale": [
+          8.499371292986105,
+          12.237051284014989,
+          0.8450231143723632,
+          0.6016493677581601,
+          5.5460068903443975,
+          3.5335505621037435,
+          0.22289822590421965,
+          22.123372112583915,
+          20.318433563466392
+        ],
+        "coef": [
+          -0.6463532767005935,
+          -0.01751535061062817,
+          0.15985427640204894,
+          -0.3532977517006547,
+          1.3583209959050835,
+          0.35276182773035175,
+          -0.10687461227477686,
+          0.06507715619463676,
+          0.11596027497692891
+        ],
+        "intercept": 2.509319528403576
+      }
+    }
+  },
+  "value": {
+    "same": {
+      "ridge_basis": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.0486953653098298,
+          "mae": 0.012631509289974543,
+          "r2": 0.020997469298642657,
+          "pearson": 0.1451510346265624,
+          "spearman": 0.2347716462178224,
+          "mse_skill": 0.02186208044348914
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.03940945698004708,
+          "mae": 0.014677268727972342,
+          "r2": 0.05057613195668298,
+          "pearson": 0.22493569148011058,
+          "spearman": 0.27331983663274784,
+          "mse_skill": 0.050932616072757564
+        }
+      },
+      "goal_distance_only": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.04876659725335814,
+          "mae": 0.013849394051287493,
+          "r2": 0.018131190017546372,
+          "pearson": 0.13472699266133412,
+          "spearman": 0.23812144123071124,
+          "mse_skill": 0.01899833253175398
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.03948612126310177,
+          "mae": 0.01567243071249438,
+          "r2": 0.04687865917198275,
+          "pearson": 0.21652668107288084,
+          "spearman": 0.2740856248667187,
+          "mse_skill": 0.047236531593493614
+        }
+      },
+      "xt_grid": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.048785551432765036,
+          "mae": 0.012623136145503653,
+          "r2": 0.01736779313056369,
+          "pearson": 0.1323437758043554,
+          "spearman": 0.21326701565241557,
+          "mse_skill": 0.01823560984267747
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.03944111840166706,
+          "mae": 0.01445247264761701,
+          "r2": 0.049049991442164265,
+          "pearson": 0.22147734333041744,
+          "spearman": 0.2676901937597227,
+          "mse_skill": 0.049407048584545254
+        }
+      },
+      "mean": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.0492365461563144,
+          "mae": 0.012797484048119008,
+          "r2": -0.0008839358208692083,
+          "pearson": -0.04800169409983758,
+          "spearman": -0.027127841880991228,
+          "mse_skill": 0.0
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.04045311103701624,
+          "mae": 0.013697155871322654,
+          "r2": -0.0003756151798193219,
+          "pearson": -0.059179033295440435,
+          "spearman": -0.0652842269280016,
+          "mse_skill": 0.0
+        }
+      }
+    },
+    "other": {
+      "ridge_basis": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.04873319587085791,
+          "mae": 0.013728123313486211,
+          "r2": 0.019475739206419318,
+          "pearson": 0.14724179929738554,
+          "spearman": 0.23884061372723386,
+          "mse_skill": 0.019477864697066805
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.03945759633102819,
+          "mae": 0.01400515595099499,
+          "r2": 0.048255239113298654,
+          "pearson": 0.22266102999512338,
+          "spearman": 0.27354343482077115,
+          "mse_skill": 0.04825829383452529
+        }
+      },
+      "goal_distance_only": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.04881225320868338,
+          "mae": 0.014790658345131559,
+          "r2": 0.01629185139572875,
+          "pearson": 0.13873342876121036,
+          "spearman": 0.2404841173866901,
+          "mse_skill": 0.016293983788116195
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.039539883281297705,
+          "mae": 0.014997226668870735,
+          "r2": 0.044281462531057136,
+          "pearson": 0.21892385089221236,
+          "spearman": 0.27542274721720716,
+          "mse_skill": 0.04428453000652233
+        }
+      },
+      "xt_grid": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.048721276872286244,
+          "mae": 0.013431162636041879,
+          "r2": 0.019955307102102138,
+          "pearson": 0.14698813243722145,
+          "spearman": 0.2374921238486659,
+          "mse_skill": 0.0199574315531863
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.03959964264631214,
+          "mae": 0.01392449070282398,
+          "r2": 0.04139039216332696,
+          "pearson": 0.2051978757793506,
+          "spearman": 0.25131037577479415,
+          "mse_skill": 0.04139346891797557
+        }
+      },
+      "mean": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.04921485294050532,
+          "mae": 0.01283747615994554,
+          "r2": -2.1677130692676627e-06,
+          "pearson": null,
+          "spearman": null,
+          "mse_skill": 0.0
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.04044558068247911,
+          "mae": 0.01362975789187068,
+          "r2": -3.209611606713736e-06,
+          "pearson": null,
+          "spearman": null,
+          "mse_skill": 0.0
+        }
+      }
+    },
+    "all": {
+      "ridge_basis": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.04869497696610228,
+          "mae": 0.013347823491476582,
+          "r2": 0.02101308425393067,
+          "pearson": 0.14853968550427413,
+          "spearman": 0.23904591316252025,
+          "mse_skill": 0.02120693399494844
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.03940794596668125,
+          "mae": 0.014396060819494724,
+          "r2": 0.05064893502286327,
+          "pearson": 0.22535879121099833,
+          "spearman": 0.2739960192944639,
+          "mse_skill": 0.05090483100658971
+        }
+      },
+      "goal_distance_only": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.04878364955593833,
+          "mae": 0.014494869292173472,
+          "r2": 0.017444406346591723,
+          "pearson": 0.1380320992587027,
+          "spearman": 0.24011996152952592,
+          "mse_skill": 0.017638962723497187
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.0394878724997954,
+          "mae": 0.01542276204134191,
+          "r2": 0.046794114120409014,
+          "pearson": 0.21703021611461623,
+          "spearman": 0.27435696050900676,
+          "mse_skill": 0.047051049164629766
+        }
+      },
+      "xt_grid": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.048695670068703525,
+          "mae": 0.013101763667842043,
+          "r2": 0.020985215128646484,
+          "pearson": 0.14778933829413998,
+          "spearman": 0.2363853257014697,
+          "mse_skill": 0.021179070388044896
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.03943713648178804,
+          "mae": 0.01420379994482678,
+          "r2": 0.04924199490206749,
+          "pearson": 0.22226240320337745,
+          "spearman": 0.2680328188072672,
+          "mse_skill": 0.04949827012413832
+        }
+      },
+      "mean": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.04921967284733352,
+          "mae": 0.012827537932346216,
+          "r2": -0.0001980497694054062,
+          "pearson": -0.04801089087627503,
+          "spearman": -0.027127841880991228,
+          "mse_skill": 0.0
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.04045096788795797,
+          "mae": 0.013678427417215437,
+          "r2": -0.00026962099490779323,
+          "pearson": -0.05918163755103859,
+          "spearman": -0.0652842269280016,
+          "mse_skill": 0.0
+        }
+      }
+    },
+    "all+league": {
+      "ridge_basis": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.048702791288844485,
+          "mae": 0.013607127417276687,
+          "r2": 0.02069885334048127,
+          "pearson": 0.14673624318501918,
+          "spearman": 0.23715878387703124,
+          "mse_skill": 0.020892765302536143
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.03940713037895669,
+          "mae": 0.014335556399176294,
+          "r2": 0.050688230197663775,
+          "pearson": 0.22525677774045394,
+          "spearman": 0.2738776299746775,
+          "mse_skill": 0.050944115589441785
+        }
+      },
+      "goal_distance_only": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.04878364955593833,
+          "mae": 0.014494869292173472,
+          "r2": 0.017444406346591723,
+          "pearson": 0.1380320992587027,
+          "spearman": 0.24011996152952592,
+          "mse_skill": 0.017638962723497187
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.0394878724997954,
+          "mae": 0.01542276204134191,
+          "r2": 0.046794114120409014,
+          "pearson": 0.21703021611461623,
+          "spearman": 0.27435696050900676,
+          "mse_skill": 0.047051049164629766
+        }
+      },
+      "xt_grid": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.048695670068703525,
+          "mae": 0.013101763667842043,
+          "r2": 0.020985215128646484,
+          "pearson": 0.14778933829413998,
+          "spearman": 0.2363853257014697,
+          "mse_skill": 0.021179070388044896
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.03943713648178804,
+          "mae": 0.01420379994482678,
+          "r2": 0.04924199490206749,
+          "pearson": 0.22226240320337745,
+          "spearman": 0.2680328188072672,
+          "mse_skill": 0.04949827012413832
+        }
+      },
+      "mean": {
+        "idsse": {
+          "n": 22123,
+          "mean": 0.004739610360258555,
+          "rmse": 0.04921967284733352,
+          "mae": 0.012827537932346216,
+          "r2": -0.0001980497694054062,
+          "pearson": -0.04801089087627503,
+          "spearman": -0.027127841880991228,
+          "mse_skill": 0.0
+        },
+        "skillcorner": {
+          "n": 60568,
+          "mean": 0.004812070074835903,
+          "rmse": 0.04045096788795797,
+          "mae": 0.013678427417215437,
+          "r2": -0.00026962099490779323,
+          "pearson": -0.05918163755103859,
+          "spearman": -0.0652842269280016,
+          "mse_skill": 0.0
+        }
+      }
+    }
+  },
+  "value_idsse_proxy_labels": {
+    "ridge_basis": {
+      "n": 22123,
+      "mean": 0.004818991897414309,
+      "rmse": 0.031179180061137055,
+      "r2": 0.06017550211895739,
+      "spearman": 0.2400117501430363,
+      "mse_skill": 0.06036625223385028
+    },
+    "mean": {
+      "n": 22123,
+      "mean": 0.004818991897414309,
+      "rmse": 0.03216513561795875,
+      "r2": -0.00020300475088963488,
+      "spearman": -0.02838209501417886,
+      "mse_skill": 0.0
+    }
+  },
+  "shot": {
+    "same": {
+      "logistic": {
+        "idsse": {
+          "n": 168,
+          "positive_rate": 0.09523809523809523,
+          "log_loss": 0.31915814798574865,
+          "brier": 0.08868234587799365,
+          "auc": 0.6171875,
+          "mean_pred": 0.10016188724459592
+        },
+        "skillcorner": {
+          "n": 526,
+          "positive_rate": 0.11596958174904944,
+          "log_loss": 0.3220397721506665,
+          "brier": 0.09411051770164634,
+          "auc": 0.7346730125154238,
+          "mean_pred": 0.11575044194210206
+        }
+      },
+      "base_rate": {
+        "idsse": {
+          "n": 168,
+          "positive_rate": 0.09523809523809523,
+          "log_loss": 0.3196207319630933,
+          "brier": 0.08704720299730238,
+          "auc": 0.33963815789473684,
+          "mean_pred": 0.09595080474832904
+        },
+        "skillcorner": {
+          "n": 526,
+          "positive_rate": 0.11596958174904944,
+          "log_loss": 0.3616410019498097,
+          "brier": 0.10310002443067856,
+          "auc": 0.30523532522474883,
+          "mean_pred": 0.11602397944524041
+        }
+      }
+    },
+    "other": {
+      "logistic": {
+        "idsse": {
+          "n": 168,
+          "positive_rate": 0.09523809523809523,
+          "log_loss": 0.2975422039017048,
+          "brier": 0.0839213711540396,
+          "auc": 0.6858552631578947,
+          "mean_pred": 0.11482728582229769
+        },
+        "skillcorner": {
+          "n": 526,
+          "positive_rate": 0.11596958174904944,
+          "log_loss": 0.3196086157772944,
+          "brier": 0.09354983762843448,
+          "auc": 0.749303719372466,
+          "mean_pred": 0.09595864197854728
+        }
+      },
+      "base_rate": {
+        "idsse": {
+          "n": 168,
+          "positive_rate": 0.09523809523809523,
+          "log_loss": 0.3167079539516913,
+          "brier": 0.0865975949864686,
+          "auc": 0.5,
+          "mean_pred": 0.11596958174904942
+        },
+        "skillcorner": {
+          "n": 526,
+          "positive_rate": 0.11596958174904944,
+          "log_loss": 0.3611648268364429,
+          "brier": 0.10295043239095385,
+          "auc": 0.5,
+          "mean_pred": 0.09523809523809525
+        }
+      }
+    },
+    "all": {
+      "logistic": {
+        "idsse": {
+          "n": 168,
+          "positive_rate": 0.09523809523809523,
+          "log_loss": 0.30084319477088456,
+          "brier": 0.08465356084892414,
+          "auc": 0.6665296052631579,
+          "mean_pred": 0.11140730610245342
+        },
+        "skillcorner": {
+          "n": 526,
+          "positive_rate": 0.11596958174904944,
+          "log_loss": 0.32092914486185065,
+          "brier": 0.09378120617591881,
+          "auc": 0.7377754274634232,
+          "mean_pred": 0.11080610243483667
+        }
+      },
+      "base_rate": {
+        "idsse": {
+          "n": 168,
+          "positive_rate": 0.09523809523809523,
+          "log_loss": 0.31682857384023355,
+          "brier": 0.08661891057480829,
+          "auc": 0.33963815789473684,
+          "mean_pred": 0.11165720793027789
+        },
+        "skillcorner": {
+          "n": 526,
+          "positive_rate": 0.11596958174904944,
+          "log_loss": 0.3611338949954356,
+          "brier": 0.1029771849715647,
+          "auc": 0.3057994006698397,
+          "mean_pred": 0.1107838874102272
+        }
+      }
+    }
+  },
+  "rules": {
+    "same": "trained on the other matches of the held-out match's league (leave-one-match-out)",
+    "other": "trained on every match of the other league (cross-league)",
+    "all": "trained on every other match of both leagues (combined)",
+    "all+league": "combined, with a league indicator column"
+  },
+  "value_labels": "IDSSE: provider xG; SkillCorner: xG proxy fitted on IDSSE shots (see xg_proxy)"
+}

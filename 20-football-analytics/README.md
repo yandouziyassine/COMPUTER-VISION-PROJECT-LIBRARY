@@ -334,8 +334,17 @@ matches, goal AUC 0.67 vs 0.81 for the provider; 0.75 on the A-League goals, 51.
 - **Shots are where more data helps.** The Bundesliga shot model goes from AUC 0.62 (168 shots) to 0.69 when trained
   on the 526 A-League shots (0.67 pooled). The engine still prefers the provider's xG where it exists.
 
-The exported website models are unchanged (Bundesliga only); the shot model is the one worth retraining on both
-leagues later. Limits: broadcast tracking (a third of positions extrapolated), no xG (proxy labels), goals missing
+**The website's shot model is trained on both leagues.** `coach.export` fits its shot logistic on the placed
+non-penalty Bundesliga shots of the 6 matches other than the replay match plus the 526 open-play A-League shots (663
+shots; `models.json` records them in `shot_trained_on`); the pass and value models stay Bundesliga-only. Held-out
+evidence for this exact recipe ([`coach/shot_pooled.py`](coach/shot_pooled.py),
+[`docs/coach_shot_pooled_results.json`](docs/coach_shot_pooled_results.json)): leave-one-match-out over the 7
+Bundesliga matches (160 placed open-play shots, 16 goals), each fold adding all 526 A-League shots to the training
+set, gives log-loss **0.306** vs 0.325 Bundesliga-only, Brier **0.0867** vs 0.0912 and AUC **0.677** vs 0.634 (paired
+bootstrap over shots, 95 % interval of the difference: log-loss -0.032 to -0.006, Brier -0.008 to -0.001, AUC +0.010
+to +0.074). The gain is real but rests on 16 goals, and the AUC varies a lot from match to match (0.12 to 1.00 with
+1 to 4 goals each). It differs from the 0.62 → 0.69 in the table above, which trains on the A-League shots alone and
+scores 168 shots (unplaced ones included). Limits: broadcast tracking (a third of positions extrapolated), no xG (proxy labels), goals missing
 from 5 of 66, crosses approximated (wide channel to a target in the box), set-piece deliveries absent from the
 events, 20 matches of one season.
 
@@ -403,12 +412,14 @@ python -m coach.export --match J03WOH --site <folder>        # one match (h0/h1.
 python -m coach.parity_fixtures                              # Python <-> TypeScript parity frames for the website
 python -m coach.skillcorner                                  # 20 A-League matches streamed (1.7 GB), ~5 min
 python -m coach.cross_league                                 # cross-league + combined numbers and charts (~3 min)
+python -m coach.shot_pooled                                  # held-out check of the pooled shot model (~10 s after cross_league)
 python -m coach.profiles_eval                                # player profiles held-out test + chart (~1 min after cross_league)
 python -m coach.export_profiles --match J03WOH --site <folder>   # profiles.json for the replay match, built without it
 ```
 
 All numbers: [`docs/coach_results.json`](docs/coach_results.json),
-[`docs/coach_skillcorner_results.json`](docs/coach_skillcorner_results.json). Tests: `tests/test_20_coach.py` (44), `tests/test_20_profiles.py` (15).
+[`docs/coach_skillcorner_results.json`](docs/coach_skillcorner_results.json),
+[`docs/coach_shot_pooled_results.json`](docs/coach_shot_pooled_results.json). Tests: `tests/test_20_coach.py` (47), `tests/test_20_profiles.py` (15).
 
 ## How it works
 

@@ -1,5 +1,6 @@
 """Project 20, AI coach: match report (decision quality, missed opportunities). Synthetic matches only."""
 
+import json
 import sys
 
 import pytest
@@ -10,6 +11,7 @@ pytest.importorskip("sklearn")
 from conftest import project_dir  # noqa: E402
 
 sys.path.insert(0, str(project_dir("20")))
+from coach import datasets as D  # noqa: E402
 from coach import evaluate as EV  # noqa: E402
 from coach import export as X  # noqa: E402
 from coach import match as M  # noqa: E402
@@ -142,3 +144,100 @@ def test_outcome_goal_shot_kept_lost_within_the_horizon():
     assert R.outcome(shots, 107.0, 0, True, horizon=10.0) == "kept"  # only the opponent's goal in (107, 117]
     assert R.outcome(shots, 121.0, 0, True) == "kept" and R.outcome(shots, 121.0, 0, False) == "lost"
     assert R.outcome(shots, 100.0, 1, False) == "goal" and R.outcome(np.zeros((0, 3)), 0.0, 0, True) == "kept"
+
+
+def row(carrier=0, team=0, rank=1, gap=0.0, third="middle", p_best=0.8, above=0.01, kind="pass"):
+    return {
+        "carrier": carrier,
+        "team": team,
+        "rank": rank,
+        "gap": gap,
+        "third": third,
+        "p_best": p_best,
+        "above_median": above,
+        "best": {"kind": kind},
+    }
+
+
+def test_summarise_shares_gaps_and_too_few():
+    rows = [row(rank=1), row(rank=2, gap=0.01), row(rank=3, gap=0.02), row(rank=5, gap=0.03)]
+    expected = {"n": 4, "too_few": True, "top1": 0.25, "top3": 0.75, "mean_gap": 0.015, "total_gap": 0.06}
+    assert R.summarise(rows) == expected
+    many = R.summarise(rows * 5)
+    assert many["n"] == 20 and many["too_few"] is False and many["total_gap"] == pytest.approx(0.3)
+    assert R.summarise([])["n"] == 0 and R.summarise([])["top1"] is None and R.summarise([])["too_few"] is True
+
+
+def test_players_and_teams_aggregate_with_thirds():
+    m = small_match()
+    rows = [row(carrier=0)] * 25 + [row(carrier=1, rank=4, gap=0.02, third="attacking")] * 5
+    rows += [row(carrier=3, team=1, third="defensive")] * 2
+    players = R.by_player(m, rows)
+    assert set(players) == {"0", "1", "3"} and players["0"]["n"] == 25 and players["0"]["too_few"] is False
+    assert players["1"]["too_few"] is True and players["1"]["total_gap"] == pytest.approx(0.1)
+    assert (players["0"]["name"], players["1"]["shirt"], players["3"]["team"]) == ("A", 2, 1)
+    teams = R.by_team(m, rows)
+    assert teams["0"]["n"] == 30 and teams["0"]["name"] == "Home FC" and teams["1"]["n"] == 2
+    assert teams["0"]["by_third"]["attacking"]["n"] == 5 and teams["0"]["by_third"]["defensive"]["n"] == 0
+    assert teams["0"]["top1"] == pytest.approx(25 / 30, abs=1e-3)
+
+
+def test_highlights_filter_on_best_p_and_rank_one():
+    rows = [
+        row(rank=2, gap=0.05, p_best=0.3),  # the coach asks for a miracle: not a missed opportunity
+        row(rank=2, gap=0.04, p_best=0.6),
+        row(rank=1, gap=0.0, above=0.02),
+        row(rank=3, gap=0.01, p_best=0.5),
+        row(rank=1, above=0.05),
+        row(rank=2, gap=0.03, p_best=0.9, above=0.09),  # far above the median but not the coach's best
+    ]
+    h = R.highlights(rows)
+    assert [e["decision"] for e in h["missed"]] == [1, 5, 3] and h["missed"][0]["gap"] == 0.04
+    assert [e["decision"] for e in h["best"]] == [4, 2]
+    big = [row(rank=2, gap=0.001 * i, p_best=0.9) for i in range(1, 30)]
+    assert len(R.highlights(big)["missed"]) == 10 and R.highlights(big)["missed"][0]["gap"] == pytest.approx(0.029)
+
+
+def test_build_report_on_a_synthetic_match():
+    rep = R.build(small_match(), MODELS, trained_on=["OTHER"])
+    assert rep["trained_without"] == "SYN" and rep["fps"] == 12.5 and rep["fps_src"] == 25.0
+    d0, d1 = rep["decisions"]
+    assert (d0["half"], d0["frame_src"], d0["frame"], d0["event"], d0["outcome"]) == (0, 41, 20, 0, "goal")
+    assert (d1["half"], d1["frame"], d1["carrier"], d1["target"], d1["outcome"]) == (1, 30, 1, 2, "kept")
+    assert all(d["gap"] >= 0 and 1 <= d["rank"] <= d["options"] for d in rep["decisions"])
+    assert rep["players"]["0"]["n"] == 1 and rep["players"]["0"]["too_few"] is True
+    assert rep["summary"]["n"] == 2 and rep["summary"]["open_play_passes"] == 2 and len(rep["caveats"]) >= 4
+    assert set(rep["highlights"]) == {"missed", "best"} and len(json.dumps(rep)) < 300_000
+
+
+def test_build_refuses_models_trained_on_the_match():
+    with pytest.raises(AssertionError):
+        R.build(small_match(), MODELS, trained_on=["A", "SYN"])
+
+
+def fake_tables(mid, rng):
+    nP, nV, nS = len(R.F.PASS_FEATURES), len(R.F.VALUE_FEATURES), len(R.F.SHOT_FEATURES)
+    Xp, Xs = rng.normal(size=(80, nP)), rng.normal(size=(30, nS))
+    ids = lambda n: np.array([mid] * n)
+    return {
+        "pass": {"X": Xp, "y": (Xp[:, 0] > 0).astype(int), "match": ids(80), "weight": np.ones(80)},
+        "value": {"X": rng.normal(size=(80, nV)), "y": rng.normal(size=80), "match": ids(80)},
+        "shot": {"X": Xs, "y": (Xs[:, 0] > 0).astype(int), "match": ids(30), "penalty": np.zeros(30, bool)},
+    }
+
+
+def test_held_out_models_never_see_the_target_match():
+    rng = np.random.default_rng(0)
+    tables = {mid: fake_tables(mid, rng) for mid in ("A", "B", "C")}
+    Xe = rng.normal(size=(40, len(R.F.SHOT_FEATURES)))
+    extra = {"X": Xe, "y": (Xe[:, 1] > 0).astype(int), "match": np.array(["B"] * 10 + ["s1"] * 30)}
+    models, fitted, trained_on = R.held_out_models("B", tables, extra)
+    assert trained_on == ["A", "C", "s1"] and set(models) == {"pass", "value", "shot"}
+    ref = X.fit_models(
+        {k: D.stack([tables["A"][k], tables["C"][k]]) for k in ("pass", "value", "shot")},
+        {k: v[10:] for k, v in extra.items()},
+    )
+    for k in ("pass", "shot"):
+        Xk = tables["B"][k]["X"]
+        assert np.allclose(fitted[k].predict_proba(Xk), ref[k].predict_proba(Xk))
+    assert np.allclose(models["value"](tables["B"]["value"]["X"]), ref["value"].predict(tables["B"]["value"]["X"]))

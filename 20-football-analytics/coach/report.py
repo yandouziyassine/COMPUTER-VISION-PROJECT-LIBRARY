@@ -21,7 +21,11 @@ from pathlib import Path
 
 import numpy as np
 
+from . import advice as A
 from . import datasets as D
+from . import evaluate as EV
+from . import export as X
+from . import features as F
 
 SITE_FPS = 12.5
 HORIZON = D.HORIZON
@@ -107,3 +111,171 @@ def decision_row(d: dict, step: int, shots: list, horizon: float = HORIZON) -> d
         "outcome": outcome(shots[e["half"]], d["t"], e["team"], bool(e["success"]), horizon),
         "net_xg": _r(d["outcome"], 4),
     }
+
+
+CAVEATS = [
+    "Everything here is the model's opinion. A missed opportunity means the model valued another option more, "
+    "not that the player made a mistake.",
+    "The value model is weak: on held-out matches it explains about 2 % of the variance of the net xG in the next "
+    "15 s, little more than 'closer to the goal is better'.",
+    "The coach is bolder than professional players: its top-ranked options are riskier, and pros complete more of the "
+    "passes it ranks lower.",
+    "Only passes the event sync placed on the tracking are included (about two thirds of open-play passes in the "
+    "Bundesliga data); the intended receiver of a failed pass is inferred from the ball's path.",
+    f"Player and team numbers need at least {MIN_DECISIONS} decisions; below that they are flagged too_few.",
+]
+FIELDS = {
+    "event": "index in the match's events (= match.json events)",
+    "half": "0 or 1",
+    "frame": "frame index in the half at the site's rate (fps)",
+    "frame_src": "frame index in the half at the source rate (fps_src)",
+    "team": "0 home, 1 guest",
+    "carrier": "player index (match.json players) of the passer",
+    "target": "player index of the receiver the passer chose (given or inferred)",
+    "best": "the coach's best option: kind (pass / carry / shot), target player (pass) or angle in degrees (carry, "
+    "relative to the attacking direction)",
+    "gap": "score(best) - score(chosen), expected goals, >= 0",
+    "rank": "rank of the chosen pass among all options by coach score (1 = the coach's best)",
+    "options": "number of options",
+    "p_chosen": "success probability of the chosen pass",
+    "p_best": "success probability of the best option",
+    "score_chosen": "coach score of the chosen pass (expected change of the net xG)",
+    "above_median": "score(chosen) - median score of the options, expected goals",
+    "third": "pitch third of the passer (defensive / middle / attacking, for the passing team)",
+    "outcome": "within horizon_s: goal / shot by the passing team, else kept / lost (pass completed or not)",
+    "net_xg": "xG of the passing team minus xG against within horizon_s",
+}
+
+
+def summarise(rows) -> dict:
+    """n, share of choices that were the coach's top-1 / top-3 option, mean and total gap (expected goals);
+    too_few when n < MIN_DECISIONS."""
+    n = len(rows)
+    gaps = np.array([r["gap"] for r in rows], float)
+    ranks = np.array([r["rank"] for r in rows], int)
+    return {
+        "n": n,
+        "too_few": n < MIN_DECISIONS,
+        "top1": _r(np.mean(ranks == 1), 3) if n else None,
+        "top3": _r(np.mean(ranks <= 3), 3) if n else None,
+        "mean_gap": _r(gaps.mean(), 5) if n else None,
+        "total_gap": _r(gaps.sum(), 4),
+    }
+
+
+def by_player(m, rows) -> dict:
+    """Per passer (key: player index as a string): name, team, shirt and summarise()."""
+    out = {}
+    for pid in sorted({r["carrier"] for r in rows}):
+        info = {"name": m.names[pid], "team": int(m.team[pid]), "shirt": int(m.shirt[pid])}
+        out[str(pid)] = {**info, **summarise([r for r in rows if r["carrier"] == pid])}
+    return out
+
+
+def by_team(m, rows) -> dict:
+    """Per team ("0" home, "1" guest): name, summarise() and the same per pitch third of the passer."""
+    out = {}
+    for t in (0, 1):
+        mine = [r for r in rows if r["team"] == t]
+        out[str(t)] = {
+            "name": m.meta.get(("home", "guest")[t], str(t)),
+            **summarise(mine),
+            "by_third": {k: summarise([r for r in mine if r["third"] == k]) for k in THIRDS},
+        }
+    return out
+
+
+def highlights(rows, k: int = N_HIGHLIGHTS, min_best_p: float = MIN_BEST_P) -> dict:
+    """missed: the k largest gaps among decisions whose best option succeeds with p >= min_best_p (the coach is not
+    asking for a miracle); best: the k decisions where the chosen pass was the coach's best option, by how far its score
+    is above the median option (the player found the rare good option). Entries point into "decisions"."""
+    missed = [i for i, r in enumerate(rows) if r["gap"] > 0 and r["p_best"] >= min_best_p]
+    missed = sorted(missed, key=lambda i: (-rows[i]["gap"], i))[:k]
+    best = sorted((i for i, r in enumerate(rows) if r["rank"] == 1), key=lambda i: (-rows[i]["above_median"], i))[:k]
+    return {
+        "missed": [{"decision": i, "gap": rows[i]["gap"]} for i in missed],
+        "best": [{"decision": i, "above_median": rows[i]["above_median"]} for i in best],
+    }
+
+
+def gap_summary(rows) -> dict:
+    """summarise() plus the gap distribution, the kind of the best option and the highlight candidate counts."""
+    out = summarise(rows)
+    if not rows:
+        return out
+    gaps = np.array([r["gap"] for r in rows], float)
+    kinds = [r["best"]["kind"] for r in rows]
+    q = np.percentile(gaps, [50, 75, 90, 99])
+    out.update(
+        {
+            "gap_median": _r(q[0], 5),
+            "gap_p75": _r(q[1], 5),
+            "gap_p90": _r(q[2], 5),
+            "gap_p99": _r(q[3], 5),
+            "gap_max": _r(gaps.max(), 5),
+            "best_kind": {kd: _r(kinds.count(kd) / len(kinds), 3) for kd in ("pass", "carry", "shot")},
+            "missed_candidates": sum(r["gap"] > 0 and r["p_best"] >= MIN_BEST_P for r in rows),
+            "best_candidates": sum(r["rank"] == 1 for r in rows),
+        }
+    )
+    return out
+
+
+def build(m, models: dict, trained_on, horizon: float = HORIZON) -> dict:
+    """The report of match m. `models`: advice.from_fitted-style functions; `trained_on`: every match id any of the
+    models learned from (asserted not to contain m)."""
+    trained_on = [str(t) for t in trained_on]
+    assert str(m.match_id) not in trained_on, f"match {m.match_id} is in the training set"
+    fps_src = F.match_fps(m)
+    step = site_step(fps_src)
+    shots = shots_with_goals(m)
+    rows = [decision_row(d, step, shots, horizon) for d in EV.pass_decisions(m, models, horizon)]
+    open_play = sum(
+        e["type"] == "pass" and not e.get("set_piece") and not e.get("cross") and e["team"] >= 0 for e in m.events
+    )
+    return {
+        "match_id": str(m.match_id),
+        "fps": fps_src / step,
+        "fps_src": fps_src,
+        "horizon_s": horizon,
+        "trained_without": str(m.match_id),
+        "trained_on": trained_on,
+        "thresholds": {
+            "min_decisions": MIN_DECISIONS,
+            "missed_min_best_p": MIN_BEST_P,
+            "highlights": N_HIGHLIGHTS,
+            "third_x_m": round(THIRD_M, 2),
+        },
+        "fields": FIELDS,
+        "caveats": CAVEATS,
+        "summary": {
+            **gap_summary(rows),
+            "open_play_passes": open_play,
+            "usable_share": _r(len(rows) / open_play, 3) if open_play else None,
+        },
+        "teams": by_team(m, rows),
+        "players": by_player(m, rows),
+        "highlights": highlights(rows),
+        "decisions": rows,
+    }
+
+
+def match_tables(m) -> dict:
+    """The training tables of one match (pass, value at the main horizon, shot with penalties flagged)."""
+    return {"pass": D.pass_table(m), "value": D.value_table(m), "shot": D.shot_table(m)}
+
+
+def held_out_models(target: str, tables: dict, extra_shots=None) -> tuple:
+    """(advice functions, fitted models, trained_on) for match `target` with the site's recipe (export.fit_models):
+    pass and value models on the other matches of `tables` (match id -> match_tables), shot model on their
+    non-penalty shots plus the `extra_shots` rows (X, y, match) of matches other than `target`."""
+    others = [mid for mid in tables if mid != target]
+    stacked = {k: D.stack([tables[mid][k] for mid in others]) for k in ("pass", "value", "shot")}
+    stacked["shot"] = D.drop_penalties(stacked["shot"])
+    trained_on = list(others)
+    if extra_shots is not None:
+        keep = extra_shots["match"] != target
+        extra_shots = {k: v[keep] for k, v in extra_shots.items()}
+        trained_on += sorted(set(extra_shots["match"].tolist()) - set(trained_on))
+    fitted = X.fit_models(stacked, extra_shots)
+    return A.from_fitted(fitted), fitted, trained_on

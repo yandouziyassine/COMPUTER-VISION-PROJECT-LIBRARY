@@ -15,6 +15,7 @@ sys.path.insert(0, str(project_dir("20")))
 from coach import advice as A  # noqa: E402
 from coach import explain as EX  # noqa: E402
 from coach import features as F  # noqa: E402
+from coach import ghosts as GH  # noqa: E402
 from coach import models as ML  # noqa: E402
 
 
@@ -151,3 +152,68 @@ def test_explain_options_follow_the_advice_order_and_value_terms_rebuild_the_sco
             z = w["pass"]["intercept"] + sum(c["contribution"] for c in e["contributions"])
             assert 1 / (1 + math.exp(-z)) == pytest.approx(o["p"], abs=1e-12)
     json.dumps(ex, allow_nan=False)
+
+
+# ------------------------------------------------------------------ ghosts
+
+
+def test_fan_points_follow_the_heading_and_stay_on_the_pitch():
+    pts = GH.fan([0.0, 0.0], [0.0, 0.0])  # standing still: towards +x
+    assert pts.shape == (GH.FAN_N, 2) and np.allclose(np.hypot(*pts.T), GH.REACH)
+    assert np.allclose(pts[3], [GH.REACH, 0.0]) and np.allclose(pts[0], [0.0, -GH.REACH])
+    pts = GH.fan([0.0, 0.0], [0.0, 4.0])  # running towards +y
+    assert np.allclose(pts[3], [0.0, GH.REACH])
+    assert np.all(GH.fan([50.0, 33.0], [3.0, 3.0]) <= [52.5, 34.0])
+
+
+def marked_case():
+    """Carrier at the centre, teammate 1 tightly marked; teammate 2 far back and free; a third teammate unmarked."""
+    s = state([[0.0, 0.0], [15.0, 0.0], [-20.0, 10.0]], [[16.0, 0.5], [30.0, -20.0]])
+    models = {
+        "pass": lambda X: 1 / (1 + np.exp(-(X[:, F.PASS_FEATURES.index("receiver_space")] - 3.0))),
+        "value": lambda X: 0.1 * (X[:, 0] + 52.5) / 105,  # >= 0: losing the ball anywhere costs
+        "shot": lambda X: np.zeros(len(X)),
+    }
+    return s, models
+
+
+def test_ghost_runs_free_the_marked_teammate():
+    s, models = marked_case()
+    runs = GH.ghost_runs(s, 0, models)
+    assert runs and runs == GH.ghost_runs(s, 0, models)  # deterministic
+    g = next(r for r in runs if r["player"] == 1)
+    assert g["gain"] > GH.RUN_MIN_GAIN and g["score"] - g["score_now"] == pytest.approx(g["gain"])
+    assert math.dist(g["to"], s["att"][1]) == pytest.approx(GH.REACH)
+    pts = GH.fan(s["att"][1], s["att_v"][1])
+    v_now = float(A.value_at(models, [s["att"][0]])[0])
+    all_scores = GH.pass_scores([GH.moved(s, "att", 1, p) for p in pts], 0, 1, models, v_now)
+    assert g["fan_index"] == int(np.argmax(all_scores)) and g["score"] == pytest.approx(all_scores.max())
+    now = next(o for o in A.options(s, 0, models) if o["kind"] == "pass" and o["target"] == 1)
+    assert g["score_now"] == pytest.approx(now["score"])  # same formula as advice.options
+    assert [r["gain"] for r in runs] == sorted((r["gain"] for r in runs), reverse=True) and len(runs) <= GH.MAX_GHOSTS
+
+
+def test_no_ghosts_when_position_does_not_matter():
+    s, _ = marked_case()
+    flat = {
+        "pass": lambda X: np.full(len(X), 0.7),
+        "value": lambda X: np.zeros(len(X)),
+        "shot": lambda X: np.zeros(len(X)),
+    }
+    assert GH.ghost_runs(s, 0, flat) == [] and GH.ghost_defence(s, 0, flat) == []
+
+
+def test_ghost_defence_is_greedy_and_lowers_the_best_option():
+    s, models = marked_case()
+    s["def"][0] = [15.0, 9.0]  # teammate 1 unmarked, a defender 9 m away can close him down
+    dfn = GH.ghost_defence(s, 0, models)
+    assert 1 <= len(dfn) <= GH.MAX_GHOSTS and dfn == GH.ghost_defence(s, 0, models)
+    assert dfn[0]["best_before"] == pytest.approx(GH.best_score(s, 0, models))
+    cur = s
+    for a, b in zip(dfn, dfn[1:] + [None]):
+        assert a["gain"] > GH.DEF_MIN_GAIN and a["best_after"] == pytest.approx(a["best_before"] - a["gain"])
+        cur = GH.moved(cur, "def", a["row"], a["to"])
+        assert GH.best_score(cur, 0, models) == pytest.approx(a["best_after"])
+        if b is not None:
+            assert b["best_before"] == a["best_after"] and b["row"] != a["row"]
+    assert len({d["row"] for d in dfn}) == len(dfn)

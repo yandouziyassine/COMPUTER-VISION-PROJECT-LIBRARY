@@ -16,6 +16,7 @@ from coach import advice as A  # noqa: E402
 from coach import explain as EX  # noqa: E402
 from coach import features as F  # noqa: E402
 from coach import ghosts as GH  # noqa: E402
+from coach import ghosts_eval as GE  # noqa: E402
 from coach import models as ML  # noqa: E402
 
 
@@ -217,3 +218,55 @@ def test_ghost_defence_is_greedy_and_lowers_the_best_option():
         if b is not None:
             assert b["best_before"] == a["best_after"] and b["row"] != a["row"]
     assert len({d["row"] for d in dfn}) == len(dfn)
+
+
+# ------------------------------------------------------------------ association and timing
+
+
+def test_progress_along_the_ghost_run():
+    assert GE.progress([0, 0], [3.75, 0], [7.5, 0]) == pytest.approx(0.5)
+    assert GE.progress([0, 0], [0, 5], [7.5, 0]) == pytest.approx(0.0)
+    assert GE.progress([0, 0], [-7.5, 0], [7.5, 0]) == pytest.approx(-1.0)
+
+
+def test_association_summary_differences_with_match_bootstrap():
+    recs = []
+    for m in "ABC":
+        for i in range(20):
+            followed = i % 2 == 0
+            recs.append(
+                {
+                    "match": m,
+                    "event": i // 2,
+                    "followed": followed,
+                    "received": followed and i % 4 == 0,
+                    "gain": 0.008,
+                    "score_release": 0.01 if followed else 0.0,
+                    "change": 0.004 if followed else -0.001,
+                }
+            )
+    out = GE.association_summary(recs)
+    assert out["label"].startswith("association") and out["records"] == 60 and out["passes"] == 30
+    assert out["followed"]["n"] == 30 and out["followed"]["received"] == pytest.approx(0.5)
+    assert out["not_followed"]["received"] == 0.0 and out["followed"]["realised_share"] == pytest.approx(0.5)
+    d = out["difference"]
+    assert d["received"]["value"] == pytest.approx(0.5) and d["change"]["value"] == pytest.approx(0.005)
+    assert d["score_release"]["ci95"][0] == pytest.approx(0.01) and len(d["received_score"]["ci95"]) == 2
+
+
+def test_association_records_on_a_synthetic_match():
+    from test_20_report import MODELS, small_match
+
+    m = small_match()
+    recs = GE.association_records(m, MODELS)
+    for r in recs:  # players stand still: nobody follows a ghost
+        assert r["match"] == "SYN" and not r["followed"] and r["progress"] == pytest.approx(0.0)
+        assert r["change"] == pytest.approx(r["score_release"] - r["score_anchor"])
+
+
+def test_timing_counts_model_rows():
+    s, models = marked_case()
+    out = GE.timing([(s, 0)], models)
+    assert out["frames"] == 1 and out["runs_pass_rows_mean"] == 2 * (GH.FAN_N + 1)  # 2 teammates x (now + fan)
+    assert out["defence_options_calls_max"] == GH.FAN_N * (2 + 1) + 1  # 2 defenders: 2 + 1 candidates over the steps
+    assert out["runs_ms_mean"] >= 0 and out["ghost_runs_per_frame"] >= 1

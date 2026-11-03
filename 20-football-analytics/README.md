@@ -408,6 +408,60 @@ are keyed by their index in `match.json`, with the DFL PersonId kept in `id` / `
 term and team-level offsets. Season aggregates include every match of the season, so they are never used in the
 held-out offsets. Numbers: [`docs/coach_profiles_results.json`](docs/coach_profiles_results.json).
 
+### Match report: decision quality and missed opportunities
+
+Design: section A of [`docs/superpowers/specs/2026-11-02-coach-insight-design.md`](../docs/superpowers/specs/2026-11-02-coach-insight-design.md).
+[`coach/report.py`](coach/report.py) goes through every pass the sync placed on the tracking. The models are always
+trained **without** that match (the code checks this). For each pass it keeps the coach's options at the release frame
+(passes, carries, shot), the pass the player chose and the coach's best option. It records the **gap** =
+score(best) − score(chosen) in expected goals (≥ 0), the rank of the chosen pass among all options, and what happened
+within 15 s (goal or shot by the passing team, otherwise the pass completed or lost, plus net xG). The report then sums
+this up per player, per team and per third of the pitch. It also lists 10 **biggest missed opportunities** (largest gap,
+counted only when the best option succeeds with p ≥ 0.5, so the coach isn't asking for a miracle) and 10 **best
+decisions** (the chosen pass was the coach's best option, ranked by how far it scores above the median option). The
+per-pass work is shared with the held-out advice evaluation (`evaluate.pass_decisions`). The models use the website's
+recipe (`export.fit_models`).
+
+**Held-out, 7 Bundesliga matches** (each match scored with models trained on the other 6, shot model also on the
+A-League shots; [`docs/coach_report_results.json`](docs/coach_report_results.json)):
+
+| | All 7 matches | Per match |
+|---|---|---|
+| Decisions (synced open-play passes) | 3,464 of 5,241 (66 %) | 385–587 |
+| Chosen pass = the coach's best option (top-1) | 8.8 % (random choice: 6.7 %) | 5.9–10.6 % |
+| Chosen pass in the coach's top 3 | 30.6 % (random choice: 20.0 %) | 26.7–34.3 % |
+| Gap to the best option: median / 90th pct / max | 0.0037 / 0.011 / 0.13 xG | median 0.0031–0.0043 |
+| Best option is a pass / carry / shot | 83.5 / 7.2 / 9.3 % | |
+| Missed-opportunity candidates (gap > 0, best p ≥ 0.5) | 2,296 | 248–413 |
+| Best-decision candidates (chosen = best) | 304 | 25–59 |
+
+<img src="docs/coach_report_gaps.png" alt="Distribution of the gap to the coach's best option and of the coach's rank of the chosen pass, 7 held-out matches" width="80%">
+
+- **The gaps are small.** Half of the passes are within 0.004 xG of the coach's best option, and 90 % within 0.011.
+  Large gaps (> 0.04 xG) are rare: 61 passes over the 7 matches. In J03WOH all 8 of them are passes
+  in the attacking third where the coach would rather shoot (xG 0.06–0.12). The p ≥ 0.5 filter keeps them out of the
+  missed-opportunity list, whose 10 entries there are passes with gaps of 0.010–0.017 xG.
+- **Players rarely make the coach's first choice.** The share is only a little above a random pick among the ~15
+  options (8.8 % vs 6.7 % top-1, 31 % vs 20 % top-3). The ranking counts carries and shots too, which a passer has by
+  definition not chosen. This matches what we already knew: the coach is a value opinion, bolder than the pros, not a
+  model of what players do.
+- **Honesty, repeated in every report** (`caveats`): it is the model's opinion. A "missed opportunity" means the model
+  valued another option more, not a mistake. The value model explains about 2 % of the variance of the next 15 s.
+  Only synced passes are included (two thirds in this data), and failed-pass targets are inferred. Player and team
+  numbers need **n ≥ 20** decisions; below that they are flagged `too_few` (22 of the 29 passers in J03WOH). There are
+  no "good / bad player" labels.
+
+**Website export.** [`coach/export_report.py`](coach/export_report.py) writes `report.json` for J03WOH into the site
+export: **117 KB** (limit 300 KB), 385 decisions, 29 passers. Before writing, it checks that each decision's `frame`
+equals the frame of the same event in the site's `match.json` (12.5 fps; `frame_src` keeps the 25 fps index, `event`
+the index in the events list). It also checks that the pass model is identical to `models.json`. Schema: `summary`,
+`teams` (+ `by_third`), `players` (keyed by `match.json` player index, with name, team, shirt, `n`, `too_few`, `top1`,
+`top3`, `mean_gap`, `total_gap`), `highlights.missed` / `highlights.best` (indices into `decisions`), `decisions`
+(half, frame, carrier, chosen target, best option kind / target / angle, gap, rank, p of the chosen and best options,
+outcome, net xG), plus `fields`, `caveats`, `thresholds` and `trained_on`. The report also runs on a SkillCorner
+match (10 fps, `frame` = `frame_src`). The 20 A-League matches are not summarised here: their tracking is not cached,
+so it would mean streaming 1.7 GB again.
+
 ### Run the coach
 
 ```bash
@@ -421,11 +475,15 @@ python -m coach.cross_league                                 # cross-league + co
 python -m coach.shot_pooled                                  # held-out check of the pooled shot model (~10 s after cross_league)
 python -m coach.profiles_eval                                # player profiles held-out test + chart (~1 min after cross_league)
 python -m coach.export_profiles --match J03WOH --site <folder>   # profiles.json for the replay match, built without it
+python -m coach.report                                       # match report held-out summary, 7 matches + chart (~12 min)
+python -m coach.export_report --match J03WOH --site <folder>     # report.json for the replay match, built without it (~3 min)
 ```
 
 All numbers: [`docs/coach_results.json`](docs/coach_results.json),
 [`docs/coach_skillcorner_results.json`](docs/coach_skillcorner_results.json),
-[`docs/coach_shot_pooled_results.json`](docs/coach_shot_pooled_results.json). Tests: `tests/test_20_coach.py` (47), `tests/test_20_profiles.py` (15).
+[`docs/coach_shot_pooled_results.json`](docs/coach_shot_pooled_results.json),
+[`docs/coach_report_results.json`](docs/coach_report_results.json). Tests: `tests/test_20_coach.py` (47),
+`tests/test_20_profiles.py` (15), `tests/test_20_report.py` (14).
 
 ## How it works
 

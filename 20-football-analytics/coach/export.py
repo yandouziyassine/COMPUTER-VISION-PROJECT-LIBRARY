@@ -77,35 +77,51 @@ def pack_match(m, out: Path, fps: int = 10):
     (out / "match.json").write_text(json.dumps(meta, ensure_ascii=False), encoding="utf-8")
 
 
-def export_models(out: Path, matches, exclude=None, extra_shots=None):
-    """Fit on every match but `exclude` (the replay match must stay unseen) and write models.json. `extra_shots`
-    (X, y, match: open-play shots of another league) is added to the shot model's training rows only."""
-    train = [m for m in matches if m.match_id != exclude]
-    tables = {
+def training_tables(train) -> dict:
+    """Stacked pass / value / shot (penalties out) tables of the training matches."""
+    return {
         "pass": D.stack([D.pass_table(m) for m in train]),
         "value": D.stack([D.value_table(m) for m in train]),
         "shot": D.drop_penalties(D.stack([D.shot_table(m) for m in train])),
     }
+
+
+def fit_models(tables: dict, extra_shots=None) -> dict:
+    """The website's three models (fitted sklearn objects) from training tables; `extra_shots` (X, y, match: open-play
+    shots of another league) is added to the shot model's rows only. Also used by coach.report."""
     p, v, s = tables["pass"], tables["value"], tables["shot"]
-    n_extra = 0 if extra_shots is None else len(extra_shots["y"])
-    if n_extra:
+    if extra_shots is not None and len(extra_shots["y"]):
         s = {"X": np.vstack([s["X"], extra_shots["X"]]), "y": np.concatenate([s["y"], extra_shots["y"]])}
+    return {
+        "pass": ML.fit_logistic(p["X"], p["y"], p["weight"]),
+        "value": ML.fit_ridge(v["X"], v["y"]),
+        "shot": ML.fit_logistic(s["X"], s["y"]),
+    }
+
+
+def export_models(out: Path, matches, exclude=None, extra_shots=None):
+    """Fit on every match but `exclude` (the replay match must stay unseen) and write models.json. `extra_shots`
+    (X, y, match: open-play shots of another league) is added to the shot model's training rows only."""
+    train = [m for m in matches if m.match_id != exclude]
+    tables = training_tables(train)
+    fitted = fit_models(tables, extra_shots)
+    n_extra = 0 if extra_shots is None else len(extra_shots["y"])
     weights = {
         "trained_without": exclude,
         "trained_on": [m.match_id for m in train],
         "shot_trained_on": {
             "idsse": [m.match_id for m in train],
             "skillcorner_matches": len(set(extra_shots["match"].tolist())) if n_extra else 0,
-            "shots": len(s["y"]),
+            "shots": len(tables["shot"]["y"]) + n_extra,
         },
-        "pass": ML.export_logistic(ML.fit_logistic(p["X"], p["y"], p["weight"]), D.F.PASS_FEATURES),
+        "pass": ML.export_logistic(fitted["pass"], D.F.PASS_FEATURES),
         "value": {
-            **ML.export_ridge(ML.fit_ridge(v["X"], v["y"]), D.F.VALUE_FEATURES),
+            **ML.export_ridge(fitted["value"], D.F.VALUE_FEATURES),
             "horizon_s": D.HORIZON,
             "target": "net expected goals (provider xG for minus against) within horizon_s, team in possession",
             "basis": D.F.VALUE_BASIS,
         },
-        "shot": ML.export_logistic(ML.fit_logistic(s["X"], s["y"]), D.F.SHOT_FEATURES),
+        "shot": ML.export_logistic(fitted["shot"], D.F.SHOT_FEATURES),
         "pitch_control": {"reaction": PC.REACTION, "vmax": PC.VMAX, "sigma": PC.SIGMA},
         "advice": {
             "carry_dist": A.CARRY_DIST,

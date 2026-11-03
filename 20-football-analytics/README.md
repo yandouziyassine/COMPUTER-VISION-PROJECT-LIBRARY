@@ -193,6 +193,12 @@ smoothing + ball (→ GS-HOTA), S5 action spotting + replays, S6 OpenVINO, demo 
 
 ## v3 · AI coach (phase 1: engine, models, evaluation)
 
+<img src="docs/coach_replay.webp" alt="Football replay on a 2D pitch: play at 2x, pause on a shooting chance with the coach's option arrows, then the same moment in a 3D stadium view" width="100%">
+
+*Try it: [yandouziyassine.github.io/demos/football](https://yandouziyassine.github.io/demos/football/) (pause, ask
+the coach, follow or refuse; 2D or 3D). Own rendering of Bundesliga tracking data (Bassek et al. 2025, DFL / Sportec
+Solutions, CC BY 4.0).*
+
 **What it does.** Give it one tracking frame (22 players + ball, in metres) and it ranks what the player on the ball
 can do: a pass to each teammate, a carry in five directions, or a shot. Each option comes with the chance that it
 works and what it is worth in **expected goals** (xG), counting the cost of losing the ball. This engine will run the

@@ -9,19 +9,15 @@ Everything is scored on held-out matches: models are refitted on the six other m
 import json
 from pathlib import Path
 
-import matplotlib
+import numpy as np
+from scipy.stats import spearmanr
 
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
-from scipy.stats import spearmanr  # noqa: E402
-
-from . import advice as A  # noqa: E402
-from . import datasets as D  # noqa: E402
-from . import features as F  # noqa: E402
-from . import models as ML  # noqa: E402
-from .match import load  # noqa: E402
-from .prepare import MATCHES, OUT  # noqa: E402
+from . import advice as A
+from . import datasets as D
+from . import features as F
+from . import models as ML
+from .match import load
+from .prepare import MATCHES, OUT
 
 DOCS = Path(__file__).resolve().parents[1] / "docs"
 BUCKETS = (("1", 1, 1), ("2-3", 2, 3), ("4-6", 4, 6), ("7+", 7, 99))
@@ -40,15 +36,33 @@ def summary(r):
 # ---------------------------------------------------------------- advice on the pass the pro actually played
 
 
+def pass_decisions(m, models, horizon=D.HORIZON):
+    """Per usable pass (datasets.pass_samples): every option of the carrier sorted by coach score (advice.options), the
+    pass option the player chose, the release time on the tracking clock and the passing team's net xG within
+    `horizon` s. Shared by the held-out advice evaluation and the match report (coach.report)."""
+    shots = D.shots_by_half(m)
+    for p in D.pass_samples(m):
+        e, s = p["event"], p["state"]
+        target = int(s["att_idx"][p["target"]])
+        opts = A.options(s, p["carrier"], models)
+        chosen = next(o for o in opts if o["kind"] == "pass" and o["target"] == target)
+        t = D.when(m, e)
+        yield {
+            "sample": p,
+            "options": opts,
+            "chosen": chosen,
+            "t": t,
+            "outcome": D.net_xg(shots[e["half"]], t, e["team"], horizon),
+        }
+
+
 def advice_records(m, models, xt_model, horizon, w_fail) -> list:
     """One record per usable pass (completed or not): the coach's view of the option the pro chose, and what came next."""
-    shots = D.shots_by_half(m)
     out = []
-    for p in D.pass_samples(m):
+    for d in pass_decisions(m, models, horizon):
+        p, chosen = d["sample"], d["chosen"]
         e, s, c = p["event"], p["state"], p["carrier"]
-        target = int(s["att_idx"][p["target"]])
-        passes = [o for o in A.options(s, c, models) if o["kind"] == "pass"]  # sorted by coach score
-        chosen = next(o for o in passes if o["target"] == target)
+        passes = [o for o in d["options"] if o["kind"] == "pass"]  # sorted by coach score
         here = s["att"][c]
         dist = lambda o, here=here: float(np.hypot(o["to"][0] - here[0], o["to"][1] - here[1]))
         xt = float(
@@ -64,7 +78,7 @@ def advice_records(m, models, xt_model, horizon, w_fail) -> list:
                 "p": chosen["p"],
                 "value": chosen["value"],
                 "xt": xt,
-                "outcome": D.net_xg(shots[e["half"]], D.when(m, e), e["team"], horizon),
+                "outcome": d["outcome"],
                 "rank_coach": 1 + passes.index(chosen),
                 "rank_p": 1 + sum(o["p"] > chosen["p"] for o in passes),
                 "rank_value": 1 + sum(o["value"] > chosen["value"] for o in passes),
@@ -167,7 +181,18 @@ def advice_summary(recs) -> dict:
 # ---------------------------------------------------------------------------------------------- charts
 
 
+def _pyplot():
+    """matplotlib only for the charts (the report and the tests import this module without it)."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    return plt
+
+
 def reliability_chart(results, path, title):
+    plt = _pyplot()
     fig, ax = plt.subplots(figsize=(5, 5))
     ax.plot([0, 1], [0, 1], "k--", lw=1)
     for name, r in results.items():
@@ -182,6 +207,7 @@ def reliability_chart(results, path, title):
 
 
 def decile_chart(curves, path, title, xlabel, ylabel):
+    plt = _pyplot()
     fig, ax = plt.subplots(figsize=(5, 5))
     lo = min(min(c["mean_pred"], c["observed"]) for cs in curves.values() for c in cs)
     hi = max(max(c["mean_pred"], c["observed"]) for cs in curves.values() for c in cs)
@@ -196,6 +222,7 @@ def decile_chart(curves, path, title, xlabel, ylabel):
 
 
 def bucket_chart(buckets, path):
+    plt = _pyplot()
     fig, ax = plt.subplots(figsize=(5, 4))
     ax.bar([b["rank"] for b in buckets], [b["completion"] for b in buckets], color="#4c78a8")
     for i, b in enumerate(buckets):

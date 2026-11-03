@@ -217,6 +217,9 @@ def gap_summary(rows) -> dict:
             "best_kind": {kd: _r(kinds.count(kd) / len(kinds), 3) for kd in ("pass", "carry", "shot")},
             "missed_candidates": sum(r["gap"] > 0 and r["p_best"] >= MIN_BEST_P for r in rows),
             "best_candidates": sum(r["rank"] == 1 for r in rows),
+            # what a player choosing an option at random would score (every option counts, as for top1 / top3)
+            "random_top1": _r(np.mean([1 / r["options"] for r in rows]), 3),
+            "random_top3": _r(np.mean([min(3, r["options"]) / r["options"] for r in rows]), 3),
         }
     )
     return out
@@ -311,7 +314,8 @@ def gap_chart(summary: dict, path: Path) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(9, 3.6))
     h = summary["gap_histogram"]
     e = h["edges"]
-    labels = ["0"] + [f"{e[i] * 1000:g}–{e[i + 1] * 1000:g}" for i in range(1, len(e) - 2)] + [f">{e[-2] * 1000:g}"]
+    lo = lambda i: 0 if i == 1 else e[i] * 1000  # bin 1 starts just above 0 (bin 0 is gap = 0)
+    labels = ["0"] + [f"{lo(i):g}–{e[i + 1] * 1000:g}" for i in range(1, len(e) - 2)] + [f">{e[-2] * 1000:g}"]
     axes[0].bar(labels, h["counts"], color="#4c78a8")
     axes[0].set(xlabel="gap to the coach's best option (milli-xG)", ylabel="passes")
     rc = summary["rank_counts"]

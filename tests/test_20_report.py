@@ -267,3 +267,5 @@ def test_held_out_summary_pools_matches():
     assert set(s["matches"]) == {"A1", "A2"} and s["pooled"]["n"] == 4 and s["pooled"]["open_play_passes"] == 4
     assert sum(s["rank_counts"].values()) == 4 and sum(s["gap_histogram"]["counts"]) == 4
     assert s["pooled"]["outcome_share"] == {"goal": 0.5, "shot": 0.0, "kept": 0.5, "lost": 0.0}
+    n_opt = [d["options"] for rep in reps for d in rep["decisions"]]
+    assert s["pooled"]["random_top1"] == pytest.approx(np.mean([1 / k for k in n_opt]), abs=1e-3)

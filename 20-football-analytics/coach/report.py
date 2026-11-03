@@ -17,6 +17,7 @@ SkillCorner. "event" is the index in m.events, which is also the index in the si
 carry n and too_few (n < MIN_DECISIONS): below it the site shows "too few decisions" instead of the numbers.
 """
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -279,3 +280,70 @@ def held_out_models(target: str, tables: dict, extra_shots=None) -> tuple:
         trained_on += sorted(set(extra_shots["match"].tolist()) - set(trained_on))
     fitted = X.fit_models(stacked, extra_shots)
     return A.from_fitted(fitted), fitted, trained_on
+
+
+GAP_BINS = (0.0, 1e-9, 0.0025, 0.005, 0.01, 0.02, 0.04, 1.0)
+
+
+def held_out_summary(reports) -> dict:
+    """Per match and pooled numbers of several held-out reports: gap distribution, top-1 / top-3, candidates."""
+    rows = [r for rep in reports for r in rep["decisions"]]
+    ranks = [min(r["rank"], 10) for r in rows]
+    counts, _ = np.histogram([r["gap"] for r in rows], bins=GAP_BINS)
+    outcomes = [r["outcome"] for r in rows]
+    share = {k: _r(outcomes.count(k) / len(rows), 3) for k in ("goal", "shot", "kept", "lost")} if rows else {}
+    return {
+        "matches": {rep["match_id"]: rep["summary"] for rep in reports},
+        "trained_on": {rep["match_id"]: rep["trained_on"] for rep in reports},
+        "pooled": {
+            **gap_summary(rows),
+            "open_play_passes": sum(rep["summary"]["open_play_passes"] for rep in reports),
+            "outcome_share": share,
+        },
+        "rank_counts": {("10+" if k == 10 else str(k)): ranks.count(k) for k in range(1, 11)},
+        "gap_histogram": {"edges": list(GAP_BINS), "counts": counts.tolist(), "note": "first bin: gap = 0"},
+    }
+
+
+def gap_chart(summary: dict, path: Path) -> None:
+    """Two plain panels: distribution of the gap, and the coach's rank of the pass the player chose."""
+    plt = EV._pyplot()
+    fig, axes = plt.subplots(1, 2, figsize=(9, 3.6))
+    h = summary["gap_histogram"]
+    e = h["edges"]
+    labels = ["0"] + [f"{e[i] * 1000:g}–{e[i + 1] * 1000:g}" for i in range(1, len(e) - 2)] + [f">{e[-2] * 1000:g}"]
+    axes[0].bar(labels, h["counts"], color="#4c78a8")
+    axes[0].set(xlabel="gap to the coach's best option (milli-xG)", ylabel="passes")
+    rc = summary["rank_counts"]
+    axes[1].bar(list(rc), list(rc.values()), color="#4c78a8")
+    axes[1].set(xlabel="coach rank of the pass the player chose (all options)", ylabel="passes")
+    for ax in axes:
+        ax.tick_params(axis="x", labelsize=8)
+    fig.tight_layout()
+    fig.savefig(path, dpi=120)
+    plt.close(fig)
+
+
+def main():
+    from . import cross_league as CL
+    from .match import load
+    from .prepare import MATCHES, OUT
+
+    matches = {mid: load(OUT / mid) for mid in MATCHES}
+    tables = {mid: match_tables(m) for mid, m in matches.items()}
+    extra = CL.skillcorner_shots()[0]
+    reports = []
+    for mid, m in matches.items():
+        models, _, trained_on = held_out_models(mid, tables, extra)
+        reports.append(build(m, models, trained_on))
+        s = reports[-1]["summary"]
+        print(mid, s["n"], s["top1"], s["top3"], s["gap_median"], s["gap_p90"], s["missed_candidates"], flush=True)
+    res = held_out_summary(reports)
+    DOCS.mkdir(exist_ok=True)
+    (DOCS / "coach_report_results.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
+    gap_chart(res, DOCS / "coach_report_gaps.png")
+    print(json.dumps(res["pooled"], indent=1))
+
+
+if __name__ == "__main__":
+    main()

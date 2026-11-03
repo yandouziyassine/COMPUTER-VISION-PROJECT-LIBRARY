@@ -14,6 +14,7 @@ sys.path.insert(0, str(project_dir("20")))
 from coach import datasets as D  # noqa: E402
 from coach import evaluate as EV  # noqa: E402
 from coach import export as X  # noqa: E402
+from coach import export_report as XR  # noqa: E402
 from coach import match as M  # noqa: E402
 from coach import report as R  # noqa: E402
 
@@ -241,3 +242,28 @@ def test_held_out_models_never_see_the_target_match():
         Xk = tables["B"][k]["X"]
         assert np.allclose(fitted[k].predict_proba(Xk), ref[k].predict_proba(Xk))
     assert np.allclose(models["value"](tables["B"]["value"]["X"]), ref["value"].predict(tables["B"]["value"]["X"]))
+
+
+def test_report_frames_match_the_site_export_and_the_size_limit(tmp_path, monkeypatch):
+    m = small_match()
+    X.pack_match(m, tmp_path)  # the real site export: match.json with events at 12.5 fps
+    site = json.loads((tmp_path / "match.json").read_text(encoding="utf-8"))
+    rep = R.build(m, MODELS, trained_on=["OTHER"])
+    XR.check_against_site(rep, site)
+    assert [site["events"][d["event"]]["frame"] for d in rep["decisions"]] == [20, 30]
+    site["events"][2]["frame"] = 31
+    with pytest.raises(AssertionError):
+        XR.check_against_site(rep, site)
+    path = XR.write(rep, tmp_path)
+    assert json.loads(path.read_text(encoding="utf-8"))["decisions"] == rep["decisions"]
+    monkeypatch.setattr(XR, "MAX_BYTES", 100)
+    with pytest.raises(AssertionError):
+        XR.write(rep, tmp_path)
+
+
+def test_held_out_summary_pools_matches():
+    reps = [R.build(small_match(match_id=mid), MODELS, trained_on=["OTHER"]) for mid in ("A1", "A2")]
+    s = R.held_out_summary(reps)
+    assert set(s["matches"]) == {"A1", "A2"} and s["pooled"]["n"] == 4 and s["pooled"]["open_play_passes"] == 4
+    assert sum(s["rank_counts"].values()) == 4 and sum(s["gap_histogram"]["counts"]) == 4
+    assert s["pooled"]["outcome_share"] == {"goal": 0.5, "shot": 0.0, "kept": 0.5, "lost": 0.0}

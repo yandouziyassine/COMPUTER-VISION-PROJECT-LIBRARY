@@ -266,7 +266,7 @@ def chart(res, path) -> None:
 
 def summarise(rows, reps=EV.BOOTSTRAPS) -> dict:
     comp = [r for r in rows if r["success"]]
-    out = {"passes": len(rows), "completed": len(comp), "goals_15s": int(sum(r["goal_15s"] for r in rows))}
+    out = {"passes": len(rows), "n_completed": len(comp), "goals_15s": int(sum(r["goal_15s"] for r in rows))}
     for name, rs in (("all", rows), ("completed", comp)):
         out[name] = {
             "agreement": agreement(rs, reps=reps),

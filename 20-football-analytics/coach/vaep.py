@@ -17,6 +17,12 @@ shot_freekick, shot_penalty) and carries taken from the tracking:
 - carry: after a completed pass, when the recipient plays the next action of the half CARRY_MIN_M..CARRY_MAX_M away
   from where he received the ball and within CARRY_MAX_S, a carry from the reception point to that action's start
   (the way socceraction adds dribbles). Carries succeed by construction.
+
+VAEP: the game state of an action is the action and the two before it (features()); labels: the acting team scores /
+concedes within the next K actions of the half, the action included (labels()); two gradient-boosting classifiers
+(ML.fit_boosting) give P_score and P_concede; value = (P_score(a_i) - P_score(a_i-1)) - (P_concede(a_i) -
+P_concede(a_i-1)), where the previous pair is swapped when a_i-1 was by the other team and set to 0 at the start of a
+half or after a goal (values()). lomo() fits the classifiers without the match it scores.
 """
 
 import numpy as np
@@ -24,6 +30,7 @@ import numpy as np
 from . import datasets as D
 from . import features as F
 from . import geometry as G
+from . import models as ML
 from .sync import event_xy
 
 TYPES = (
@@ -155,3 +162,144 @@ def actions(m) -> dict:
         "xg": np.array(xg, float),
         "goal": np.array([int(r["type"] in SHOTS and r["result"] == 1) for r in rows], int),
     }
+
+
+K = 10  # labels: goal within the next K actions of the half (the action included)
+BLOCK = tuple(f"type_{t}" for t in TYPES) + (
+    "result",
+    "x0",
+    "y0",
+    "x1",
+    "y1",
+    "dx",
+    "dy",
+    "length",
+    "start_goal_dist",
+    "start_goal_angle",
+    "end_goal_dist",
+    "end_goal_angle",
+)
+FEATURES = tuple(f"a{lag}_{name}" for lag in range(3) for name in BLOCK) + (
+    "team_1",
+    "team_2",
+    "dt_1",
+    "dt_2",
+    "gap_x",
+    "gap_y",
+    "goals_for",
+    "goals_against",
+    "goal_diff",
+    "half",
+    "t",
+)
+
+
+def labels(a, k: int = K) -> tuple:
+    """(scores, concedes): 1 when the acting team scores / concedes within actions i .. i + k - 1 of the same half."""
+    n = len(a["team"])
+    scores, concedes = np.zeros(n, int), np.zeros(n, int)
+    for i in range(n):
+        for j in range(i, min(n, i + k)):
+            if a["half"][j] != a["half"][i] or a["match"][j] != a["match"][i]:
+                break
+            if a["goal"][j]:
+                if a["team"][j] == a["team"][i]:
+                    scores[i] = 1
+                else:
+                    concedes[i] = 1
+    return scores, concedes
+
+
+def score_before(a) -> tuple:
+    """(goals for, goals against) of the acting team before each action, per match."""
+    n = len(a["team"])
+    gf, ga, tally = np.zeros(n), np.zeros(n), {}
+    for i in range(n):
+        g = tally.setdefault(a["match"][i], [0, 0])
+        gf[i], ga[i] = g[a["team"][i]], g[1 - a["team"][i]]
+        if a["goal"][i]:
+            g[a["team"][i]] += 1
+    return gf, ga
+
+
+def _previous(a, idx, fallback):
+    """idx where it is an action of the same half and match as each row, else `fallback`."""
+    j = np.maximum(idx, 0)
+    ok = (idx >= 0) & (a["half"][j] == a["half"]) & (a["match"][j] == a["match"])
+    return np.where(ok, j, fallback)
+
+
+def _block(a, idx, ref_team):
+    """BLOCK features of the actions idx, seen from ref_team (an action by the other team is rotated by 180 deg)."""
+    flip = np.where(a["team"][idx] == ref_team, 1.0, -1.0)
+    x0, y0, x1, y1 = (a[k][idx] * flip for k in ("x0", "y0", "x1", "y1"))
+    dx, dy = x1 - x0, y1 - y0
+    d0, g0 = G.goal_geometry(np.c_[x0, y0])
+    d1, g1 = G.goal_geometry(np.c_[x1, y1])
+    onehot = (a["type"][idx][:, None] == np.array(TYPES)[None]).astype(float)
+    cols = [a["result"][idx], x0, y0, x1, y1, dx, dy, np.hypot(dx, dy), d0, g0, d1, g1]
+    return np.column_stack([onehot] + cols)
+
+
+def features(a) -> np.ndarray:
+    """Game state of each action: BLOCK of the action and of the two before it (from the acting team's side; at the
+    start of a half the missing ones repeat the earliest available), plus team / time / gap / score features."""
+    n = len(a["team"])
+    i = np.arange(n)
+    p1 = _previous(a, i - 1, i)
+    p2 = _previous(a, i - 2, p1)
+    ref = a["team"]
+    flip1 = np.where(a["team"][p1] == ref, 1.0, -1.0)
+    gf, ga = score_before(a)
+    extra = [
+        (a["team"][p1] == ref).astype(float),
+        (a["team"][p2] == ref).astype(float),
+        a["t"] - a["t"][p1],
+        a["t"] - a["t"][p2],
+        a["x0"] - a["x1"][p1] * flip1,
+        a["y0"] - a["y1"][p1] * flip1,
+        gf,
+        ga,
+        gf - ga,
+        a["half"].astype(float),
+        a["t"],
+    ]
+    return np.column_stack([_block(a, idx, ref) for idx in (i, p1, p2)] + extra).reshape(n, len(FEATURES))
+
+
+def values(a, p_score, p_concede) -> dict:
+    """offensive = P_score(i) - P_score(i-1), defensive = -(P_concede(i) - P_concede(i-1)), value = their sum; the
+    previous pair is swapped when action i-1 was by the other team and is 0 at the start of a half or after a goal."""
+    n = len(p_score)
+    prev = np.arange(n) - 1
+    j = np.maximum(prev, 0)
+    start = (prev < 0) | (a["half"][j] != a["half"]) | (a["match"][j] != a["match"]) | (a["goal"][j] == 1)
+    same = a["team"][j] == a["team"]
+    ps = np.where(start, 0.0, np.where(same, p_score[j], p_concede[j]))
+    pc = np.where(start, 0.0, np.where(same, p_concede[j], p_score[j]))
+    off, dfn = p_score - ps, -(p_concede - pc)
+    return {"offensive": off, "defensive": dfn, "value": off + dfn}
+
+
+def fit(a) -> dict:
+    """The two classifiers (ML.fit_boosting: depth 3, 300 trees) on an action table (several matches stacked)."""
+    X = features(a)
+    scores, concedes = labels(a)
+    return {"score": ML.fit_boosting(X, scores), "concede": ML.fit_boosting(X, concedes)}
+
+
+def predict(models, a) -> dict:
+    X = features(a)
+    ps = models["score"].predict_proba(X)[:, 1]
+    pc = models["concede"].predict_proba(X)[:, 1]
+    return {"p_score": ps, "p_concede": pc, **values(a, ps, pc)}
+
+
+def lomo(tables: dict) -> dict:
+    """match id -> predict() on that match with the classifiers fitted on the other matches, plus "trained_on"."""
+    out = {}
+    for mid in tables:
+        others = [o for o in tables if o != mid]
+        models = fit(D.stack([tables[o] for o in others]))
+        out[mid] = {**predict(models, tables[mid]), "trained_on": others}
+    return out

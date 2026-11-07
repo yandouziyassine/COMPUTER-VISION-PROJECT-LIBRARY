@@ -157,3 +157,49 @@ def test_xt_goal_source_and_action_values():
     assert np.allclose(v[ok & ~shot], (end - start)[ok & ~shot])
     assert np.allclose(v[failed & ~shot], -start[failed & ~shot])
     assert np.isnan(v[shot]).all()
+
+
+def test_vaep_labels_window_and_halves():
+    a = V.actions(toy_match())
+    scores, concedes = V.labels(a)
+    assert list(scores) == [0, 0, 0, 1, 0]
+    assert list(concedes) == [1, 1, 1, 0, 0]  # the kick-off of half 1 is out of the window
+    scores, concedes = V.labels(a, k=2)
+    assert list(concedes) == [0, 0, 1, 0, 0]
+
+
+def test_vaep_values_formula():
+    a = {
+        "match": np.array(["A"] * 4),
+        "half": np.array([0, 0, 0, 1]),
+        "team": np.array([0, 0, 1, 1]),
+        "goal": np.array([0, 0, 0, 0]),
+    }
+    ps, pc = np.array([0.1, 0.2, 0.3, 0.4]), np.array([0.05, 0.1, 0.02, 0.03])
+    v = V.values(a, ps, pc)
+    # 0: start of the half; 1: same team; 2: other team (previous probabilities swapped); 3: new half
+    assert np.allclose(v["value"], [0.05, 0.05, 0.2 + 0.18, 0.37])
+    a["goal"] = np.array([0, 1, 0, 0])  # after a goal the previous probabilities are 0
+    assert V.values(a, ps, pc)["value"][2] == pytest.approx(0.3 - 0.02)
+
+
+def test_vaep_features_mirror_previous_opponent_action():
+    a = V.actions(toy_match())
+    X = V.features(a)
+    assert X.shape == (5, len(V.FEATURES))
+    f = {k: X[:, i] for i, k in enumerate(V.FEATURES)}
+    assert f["a0_x0"][3] == pytest.approx(32.5)
+    assert f["a1_x0"][3] == pytest.approx(-7.5)  # failed pass by the other team, seen from the shooter's side
+    assert f["team_1"][3] == 0 and f["team_1"][2] == 1
+    assert f["a1_x0"][0] == f["a0_x0"][0] and f["dt_1"][0] == 0  # first action: its own "previous"
+    assert f["a1_x0"][4] == f["a0_x0"][4]  # a new half starts a new game state
+    assert f["goals_against"][4] == 1 and f["goals_for"][3] == 0  # the score before the action
+
+
+def test_vaep_lomo_held_out():
+    tables = {mid: V.actions(toy_match(mid)) for mid in ("A", "B", "C")}
+    out = V.lomo(tables)
+    for mid, r in out.items():
+        assert mid not in r["trained_on"] and len(r["trained_on"]) == 2
+        assert len(r["value"]) == len(tables[mid]["type"])
+        assert np.allclose(r["value"], V.values(tables[mid], r["p_score"], r["p_concede"])["value"])

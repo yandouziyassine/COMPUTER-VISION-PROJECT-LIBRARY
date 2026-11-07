@@ -256,3 +256,12 @@ def test_benchmark_disagreements():
     assert gaps == sorted(gaps, reverse=True) and gaps[0] > 0.9
     assert top[0]["pair"] == "coach_score~xt"  # xt = -coach: the extremes disagree most
     assert set(B.pct_rank(np.array([3.0, 1.0, 2.0]))) == {1 / 6, 3 / 6, 5 / 6}
+
+
+def test_vaep_inner_selection_uses_training_matches_only():
+    tables = {mid: V.actions(toy_match(mid)) for mid in ("A", "B", "C")}
+    choice, scores = V.select({k: v for k, v in tables.items() if k != "A"})
+    assert set(choice) == {"score", "concede"} and all(c in V.CANDIDATES for c in choice.values())
+    assert set(scores["score"]) == set(V.CANDIDATES)
+    out = V.lomo(tables, select_inner=True)
+    assert all(set(r["config"]) == {"score", "concede"} for r in out.values())

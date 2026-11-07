@@ -19,10 +19,11 @@ shot_freekick, shot_penalty) and carries taken from the tracking:
   (the way socceraction adds dribbles). Carries succeed by construction.
 
 VAEP: the game state of an action is the action and the two before it (features()); labels: the acting team scores /
-concedes within the next K actions of the half, the action included (labels()); two gradient-boosting classifiers
-(ML.fit_boosting) give P_score and P_concede; value = (P_score(a_i) - P_score(a_i-1)) - (P_concede(a_i) -
-P_concede(a_i-1)), where the previous pair is swapped when a_i-1 was by the other team and set to 0 at the start of a
-half or after a goal (values()). lomo() fits the classifiers without the match it scores.
+concedes within the next K actions of the half, the action included (labels()); two classifiers give P_score and
+P_concede; value = (P_score(a_i) - P_score(a_i-1)) - (P_concede(a_i) - P_concede(a_i-1)), where the previous pair is
+swapped when a_i-1 was by the other team and set to 0 at the start of a half or after a goal (values()). lomo() fits
+the classifiers without the match it scores; with select_inner each classifier is chosen among CANDIDATES (gradient
+boosting with more or less regularisation, or the base rate) by leave-one-match-out on the training matches only.
 """
 
 import numpy as np
@@ -281,11 +282,43 @@ def values(a, p_score, p_concede) -> dict:
     return {"offensive": off, "defensive": dfn, "value": off + dfn}
 
 
-def fit(a) -> dict:
-    """The two classifiers (ML.fit_boosting: depth 3, 300 trees) on an action table (several matches stacked)."""
+# Classifier candidates. "boost_300" is the coach's ML.fit_boosting; with 7 matches (19 goals) it overfits, so lomo()
+# picks per held-out match, by inner leave-one-match-out log-loss on the training matches only, among these.
+CANDIDATES = {
+    "boost_300": {"max_iter": 300, "learning_rate": 0.05, "max_depth": 3},
+    "boost_50_leaf200": {
+        "max_iter": 50,
+        "learning_rate": 0.05,
+        "max_depth": 3,
+        "min_samples_leaf": 200,
+        "l2_regularization": 1.0,
+    },
+    "boost_30_leaf400": {
+        "max_iter": 30,
+        "learning_rate": 0.05,
+        "max_depth": 3,
+        "min_samples_leaf": 400,
+        "l2_regularization": 1.0,
+    },
+    "base_rate": None,
+}
+TARGETS = ("score", "concede")
+
+
+def fit_classifier(name: str, X, y):
+    if CANDIDATES[name] is None:
+        return ML.fit_base_rate(X, y)
+    from sklearn.ensemble import HistGradientBoostingClassifier
+
+    return HistGradientBoostingClassifier(random_state=0, early_stopping=False, **CANDIDATES[name]).fit(X, y)
+
+
+def fit(a, config=None) -> dict:
+    """The two classifiers on an action table (several matches stacked); config: target -> CANDIDATES name."""
+    config = config or {t: "boost_300" for t in TARGETS}
     X = features(a)
-    scores, concedes = labels(a)
-    return {"score": ML.fit_boosting(X, scores), "concede": ML.fit_boosting(X, concedes)}
+    y = dict(zip(TARGETS, labels(a)))
+    return {t: fit_classifier(config[t], X, y[t]) for t in TARGETS}
 
 
 def predict(models, a) -> dict:
@@ -295,11 +328,46 @@ def predict(models, a) -> dict:
     return {"p_score": ps, "p_concede": pc, **values(a, ps, pc)}
 
 
-def lomo(tables: dict) -> dict:
-    """match id -> predict() on that match with the classifiers fitted on the other matches, plus "trained_on"."""
-    out = {}
+def _xy(tables: dict) -> dict:
+    """match id -> (features, {target: labels}); features of one match equal its rows in a stacked table."""
+    return {mid: (features(a), dict(zip(TARGETS, labels(a)))) for mid, a in tables.items()}
+
+
+def select(tables: dict, xy=None, cache=None) -> tuple:
+    """(target -> chosen CANDIDATES name, target -> name -> pooled inner log-loss) by leave-one-match-out over
+    `tables` (the training matches only). `cache` shares the inner fits between outer folds (keyed by the matches
+    trained on)."""
+    xy = _xy(tables) if xy is None else xy
+    cache = {} if cache is None else cache
+    ids = list(tables)
+    scores = {}
+    for t in TARGETS:
+        scores[t] = {}
+        for name in CANDIDATES:
+            ys, ps = [], []
+            for mid in ids:
+                train = tuple(sorted(o for o in ids if o != mid))
+                key = (train, t, name)
+                if key not in cache:
+                    X = np.vstack([xy[o][0] for o in train])
+                    y = np.concatenate([xy[o][1][t] for o in train])
+                    cache[key] = fit_classifier(name, X, y) if 0 < y.sum() < len(y) else ML.fit_base_rate(X, y)
+                ys.append(xy[mid][1][t])
+                ps.append(cache[key].predict_proba(xy[mid][0])[:, 1])
+            scores[t][name] = ML.metrics(np.concatenate(ys), np.concatenate(ps))["log_loss"]
+    return {t: min(scores[t], key=scores[t].get) for t in TARGETS}, scores
+
+
+def lomo(tables: dict, select_inner: bool = False) -> dict:
+    """match id -> predict() on that match with the classifiers fitted on the other matches, plus "trained_on" and
+    "config" (with select_inner, chosen by select() on the other matches only; else boost_300)."""
+    out, xy, cache = {}, (_xy(tables) if select_inner else None), {}
     for mid in tables:
         others = [o for o in tables if o != mid]
-        models = fit(D.stack([tables[o] for o in others]))
-        out[mid] = {**predict(models, tables[mid]), "trained_on": others}
+        config, inner = None, None
+        if select_inner:
+            config, inner = select({o: tables[o] for o in others}, {o: xy[o] for o in others}, cache)
+        config = config or {t: "boost_300" for t in TARGETS}
+        models = fit(D.stack([tables[o] for o in others]), config)
+        out[mid] = {**predict(models, tables[mid]), "trained_on": others, "config": config, "inner_log_loss": inner}
     return out

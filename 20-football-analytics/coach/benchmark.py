@@ -2,8 +2,10 @@
 KDD 2019), on the same held-out passes (coach insight, part C).
 
     python -m coach.benchmark            # from 20-football-analytics/ (~15 min on CPU)
-    python -m coach.benchmark --reuse    # metrics and chart again from the cached pass rows (seconds)
+    python -m coach.benchmark --reuse    # metrics and chart again from the cached pass rows (minutes)
                                          # -> docs/coach_benchmark_results.json + docs/coach_benchmark.png
+    python -m coach.benchmark --set aleague   # the 20 A-League matches (raw store, proxy xG) -> *_aleague_*
+    python -m coach.benchmark --set pooled    # all 27 matches, each scored with models fitted on the 26 others
 
 For every pass of the 7 IDSSE matches that the match report scores (datasets.pass_samples), with every model fitted
 WITHOUT the match (asserted): the coach (report.held_out_models, the site's recipe), xT (coach.xt on the other
@@ -277,25 +279,80 @@ def summarise(rows, reps=EV.BOOTSTRAPS) -> dict:
     return out
 
 
-def main():
+SETS = ("idsse", "aleague", "pooled")
+
+
+def attach_proxy_xg(m, shots) -> int:
+    """Give every shot of m (SkillCorner: no provider xG) the xG of cross_league.xg_proxy. `shots` is the match's
+    cross_league.shot_rows table after xg_proxy filled its "xg"; rows are matched in order and checked on time and
+    team. Returns the number of shots."""
+    ev = [e for e in m.events if e["type"] == "shot" and e.get("half") is not None and e["team"] in (0, 1)]
+    assert len(ev) == len(shots["xg"]), (len(ev), len(shots["xg"]))
+    assert np.allclose([D.when(m, e) for e in ev], shots["t"]) and [e["team"] for e in ev] == list(shots["team"])
+    for e, x in zip(ev, shots["xg"]):
+        e["xg"], e["xg_source"] = float(x), "proxy"
+    return len(ev)
+
+
+def load_set(name: str) -> tuple:
+    """(matches by id, extra shot rows for the coach's shot model, info) of a benchmark set: "idsse" (7 Bundesliga
+    matches; shot model also on the A-League shots, the site's recipe), "aleague" (20 A-League matches from the raw
+    store, xG = cross_league proxy; same-league training only) or "pooled" (all 27; each held-out match is scored
+    with models fitted on the 26 others)."""
     from . import cross_league as CL
+    from . import skillcorner as SC
     from .match import load
     from .prepare import MATCHES, OUT
 
+    matches, info = {}, {}
+    if name in ("idsse", "pooled"):
+        matches.update({mid: load(OUT / mid) for mid in MATCHES})
+    if name in ("aleague", "pooled"):
+        idsse_d, sc_d = CL.load_all()
+        px = CL.xg_proxy(idsse_d, sc_d)  # fitted on IDSSE shots only: no A-League labels leak into it
+        info["xg_proxy"] = {k: v for k, v in px.items() if k != "weights"}
+        missing = [mid for mid in SC.MATCHES if mid not in SC.stored_matches()]
+        assert not missing, f"not in the raw store yet: {missing} (python -m coach.skillcorner --store-raw ...)"
+        for mid, d in zip(SC.MATCHES, sc_d):
+            m = SC.load_raw_match(mid)
+            attach_proxy_xg(m, d["shot"])
+            matches[str(m.match_id)] = m
+    extra = CL.skillcorner_shots()[0] if name == "idsse" else None
+    return matches, extra, info
+
+
+def paths(name: str) -> tuple:
+    """(row cache outside the repo, results JSON, chart) of a set; "idsse" keeps the original names."""
+    from . import skillcorner as SC
+    from .prepare import OUT
+
+    if name == "idsse":
+        return OUT / "benchmark_rows.json", DOCS / "coach_benchmark_results.json", DOCS / "coach_benchmark.png"
+    return (
+        SC.OUT / f"benchmark_rows_{name}.json",
+        DOCS / f"coach_benchmark_{name}_results.json",
+        DOCS / f"coach_benchmark_{name}.png",
+    )
+
+
+def main():
+    from . import cross_league as CL
+
     ap = argparse.ArgumentParser()
+    ap.add_argument("--set", choices=SETS, default="idsse")
     ap.add_argument("--reuse", action="store_true", help="metrics from the cached pass rows")
     args = ap.parse_args()
-    cache = OUT / "benchmark_rows.json"
-    matches = {mid: load(OUT / mid) for mid in MATCHES}
+    cache, results_path, chart_path = paths(args.set)
+    matches, extra, info = load_set(args.set)
     acts = {mid: V.actions(m) for mid, m in matches.items()}
     vaep = V.lomo(acts, select_inner=True)
+    print("vaep", {mid: v["config"] for mid, v in vaep.items()}, flush=True)
     tables = None
     if args.reuse and cache.exists():
         saved = json.loads(cache.read_text(encoding="utf-8"))
         rows, timing = saved["rows"], saved["timing"]
     else:
         tables = {mid: R.match_tables(m) for mid, m in matches.items()}
-        extra = CL.skillcorner_shots()[0]
         rows, coach_s, iters = [], 0.0, {}
         for mid, m in matches.items():
             models, _, trained_on = R.held_out_models(mid, tables, extra)
@@ -306,11 +363,13 @@ def main():
             t0 = time.perf_counter()
             new = pass_rows(m, models, xt_model, vaep[mid], acts[mid])
             coach_s += time.perf_counter() - t0
+            for r in new:
+                r["league"] = CL.league_of(m)
             rows += new
             print(mid, len(new), "passes", flush=True)
         timing = {"coach_ms": round(1000 * coach_s / len(rows), 2), "xt_iterations": iters}
         cache.write_text(json.dumps({"rows": rows, "timing": timing}), encoding="utf-8")
-    # cost: models fitted on all 7 matches (size and timing only, never used for the held-out numbers)
+    # cost: models fitted on every match of the set (size and timing only, never used for the held-out numbers)
     all_acts = D.stack(list(acts.values()))
     n_all = len(all_acts["type"])
     xt_all = XT.ExpectedThreat().fit(all_acts)
@@ -325,7 +384,7 @@ def main():
     timing["vaep_ms"] = round(1000 * (time.perf_counter() - t0) / n_all, 4)
     if tables is None:
         tables = {mid: R.match_tables(m) for mid, m in matches.items()}
-    fitted = R.held_out_models(MATCHES[-1], tables, CL.skillcorner_shots()[0])[1]
+    fitted = R.held_out_models(list(matches)[-1], tables, extra)[1]
     lab = {mid: V.labels(acts[mid]) for mid in acts}
     heldout = {}
     for i, (name, key) in enumerate((("scores", "p_score"), ("concedes", "p_concede"))):
@@ -333,13 +392,21 @@ def main():
         heldout[name] = ML.metrics(y, np.concatenate([vaep[mid][key] for mid in acts]))
         heldout[name]["constant_log_loss"] = ML.metrics(y, np.full(len(y), y.mean()))["log_loss"]
     types, counts = np.unique(all_acts["type"], return_counts=True)
+    if args.set == "pooled":  # one summary per league of the held-out match (leagues are not mixed in a metric)
+        leagues = sorted({r["league"] for r in rows})
+        summary = {"by_league": {lg: summarise([r for r in rows if r["league"] == lg]) for lg in leagues}}
+    else:
+        summary = summarise(rows)
     res = {
+        "set": args.set,
         "matches": list(matches),
         "horizon_s": D.HORIZON,
         "vaep_k": V.K,
         "xt_grid": [XT.NX, XT.NY],
         "actions": {str(t): int(c) for t, c in zip(types, counts)},
-        **summarise(rows),
+        "goals": int(all_acts["goal"].sum()),
+        **info,
+        **summary,
         "vaep_heldout": heldout,
         "vaep_config": {mid: vaep[mid]["config"] for mid in acts},
         "vaep_inner_log_loss": {mid: vaep[mid]["inner_log_loss"] for mid in acts},
@@ -348,11 +415,14 @@ def main():
         "cost": cost(fitted, xt_all, vaep_all, timing, common),
     }
     DOCS.mkdir(exist_ok=True)
-    (DOCS / "coach_benchmark_results.json").write_text(json.dumps(res, indent=2, ensure_ascii=False), encoding="utf-8")
-    chart(res, DOCS / "coach_benchmark.png")
-    for name in ("all", "completed"):
-        print(name, {k: round(v["spearman"], 3) for k, v in res[name]["agreement"].items()})
-        print(name, {k: round(v["spearman_net_xg"], 3) for k, v in res[name]["calibration"].items()})
+    results_path.write_text(json.dumps(res, indent=2, ensure_ascii=False), encoding="utf-8")
+    parts = res["by_league"] if args.set == "pooled" else {args.set: res}
+    for lg, r in parts.items():
+        if args.set != "pooled":
+            chart(r, chart_path)
+        for name in ("all", "completed"):
+            print(lg, name, {k: round(v["spearman"], 3) for k, v in r[name]["agreement"].items()})
+            print(lg, name, {k: round(v["spearman_net_xg"], 3) for k, v in r[name]["calibration"].items()})
 
 
 if __name__ == "__main__":

@@ -364,3 +364,14 @@ def test_vaep_inner_folds_lomo_up_to_7_then_grouped():
     tables = {str(i): V.actions(toy_match(str(i))) for i in range(9)}
     choice, scores = V.select(tables)
     assert set(choice) == {"score", "concede"}
+
+
+def test_attach_proxy_xg_aligns_on_time_and_team():
+    m = toy_match()
+    m.events[2]["xg"] = None  # SkillCorner: no provider xG
+    t = V.D.when(m, m.events[2])
+    n = B.attach_proxy_xg(m, {"t": np.array([t]), "team": np.array([1]), "xg": np.array([0.42])})
+    assert n == 1 and m.events[2]["xg"] == pytest.approx(0.42) and m.events[2]["xg_source"] == "proxy"
+    assert V.actions(m)["xg"][3] == pytest.approx(0.42)
+    with pytest.raises(AssertionError):
+        B.attach_proxy_xg(m, {"t": np.array([t + 5]), "team": np.array([1]), "xg": np.array([0.1])})

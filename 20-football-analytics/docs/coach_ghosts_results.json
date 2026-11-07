@@ -1,0 +1,88 @@
+{
+  "params": {
+    "speed": 5.0,
+    "horizon_s": 1.5,
+    "reach_m": 7.5,
+    "fan_deg": [
+      -90.0,
+      -60.0,
+      -30.0,
+      0.0,
+      30.0,
+      60.0,
+      90.0
+    ],
+    "min_speed": 1.0,
+    "run_min_gain": 0.005,
+    "def_min_gain": 0.002,
+    "max_ghosts": 3,
+    "tie": 1e-09,
+    "follow": 0.5
+  },
+  "timing_python": {
+    "frames": 30,
+    "runs_ms_mean": 224.70268668451658,
+    "defence_ms_mean": 1656.1318200314417,
+    "defence_ms_max": 3627.7364999987185,
+    "runs_pass_rows_mean": 80.0,
+    "defence_pass_rows_mean": 1125.3333333333333,
+    "defence_options_calls_max": 211,
+    "ghost_runs_per_frame": 1.6333333333333333,
+    "ghost_defenders_per_frame": 0.5
+  },
+  "association": {
+    "label": "association only, not causation",
+    "records": 2070,
+    "passes": 1058,
+    "followed": {
+      "n": 335,
+      "received": 0.11940298507462686,
+      "score_release": -0.004577831227476153,
+      "change": 0.0001989165554952375,
+      "predicted_gain": 0.0071069455151913695,
+      "realised_share": 0.027989036228017468,
+      "received_n": 40,
+      "received_score": -0.002085368060617253
+    },
+    "not_followed": {
+      "n": 1735,
+      "received": 0.044956772334293946,
+      "score_release": -0.003435368512445273,
+      "change": -0.0002721771572579142,
+      "predicted_gain": 0.0076991291846418355,
+      "realised_share": -0.03535168078499723,
+      "received_n": 78,
+      "received_score": -0.004636278445610801
+    },
+    "difference": {
+      "received": {
+        "value": 0.07444621274033292,
+        "ci95": [
+          0.03699655467594852,
+          0.12012303935567986
+        ]
+      },
+      "score_release": {
+        "value": -0.0011424627150308795,
+        "ci95": [
+          -0.0017622559464516275,
+          -0.0006175876502023882
+        ]
+      },
+      "change": {
+        "value": 0.00047109371275315165,
+        "ci95": [
+          -0.00010226328168285404,
+          0.0010013231036974952
+        ]
+      },
+      "received_score": {
+        "value": 0.0025509103849935474,
+        "ci95": [
+          0.0017683496626178716,
+          0.003655922463426958
+        ]
+      }
+    }
+  }
+}

@@ -11,6 +11,7 @@ pytest.importorskip("scipy")
 from conftest import project_dir  # noqa: E402
 
 sys.path.insert(0, str(project_dir("20")))
+from coach import benchmark as B  # noqa: E402
 from coach import match as M  # noqa: E402
 from coach import vaep as V  # noqa: E402
 from coach import xt as XT  # noqa: E402
@@ -203,3 +204,55 @@ def test_vaep_lomo_held_out():
         assert mid not in r["trained_on"] and len(r["trained_on"]) == 2
         assert len(r["value"]) == len(tables[mid]["type"])
         assert np.allclose(r["value"], V.values(tables[mid], r["p_score"], r["p_concede"])["value"])
+
+
+def fake_rows(n_matches=4, n=50, seed=0):
+    rng = np.random.default_rng(seed)
+    rows = []
+    for g in range(n_matches):
+        for i in range(n):
+            base = float(rng.normal())
+            rows.append(
+                {
+                    **{k: 0 for k in B.KEEP},
+                    "match": f"M{g}",
+                    "event": i,
+                    "success": int(i % 3 > 0),
+                    "coach_score": base,
+                    "coach_dv": 2 * base,
+                    "xt": -base,
+                    "vaep": float(rng.normal()),
+                    "net_xg": base + 0.1 * float(rng.normal()),
+                    "goal_15s": int(base > 1.5),
+                    "scores_10": int(base > 1.2),
+                }
+            )
+    return rows
+
+
+def test_benchmark_agreement_and_ci():
+    ag = B.agreement(fake_rows(), reps=50)
+    assert ag["coach_score~coach_dv"]["spearman"] == pytest.approx(1.0)
+    assert ag["coach_score~coach_dv"]["ci95"] == pytest.approx([1.0, 1.0])
+    assert ag["coach_score~xt"]["spearman"] == pytest.approx(-1.0)
+    assert len(ag) == 6
+
+
+def test_benchmark_calibration():
+    cal = B.calibration(fake_rows(), reps=50)
+    assert cal["coach_score"]["spearman_net_xg"] > 0.9 and cal["xt"]["spearman_net_xg"] < -0.9
+    assert cal["coach_score"]["auc_goal_15s"] == pytest.approx(1.0)
+    assert cal["xt"]["auc_goal_15s"] == pytest.approx(0.0)
+    assert cal["coach_dv"]["slope_net_xg"] == pytest.approx(0.5, abs=0.05)
+    assert len(cal["vaep"]["deciles"]) == 10
+    assert np.isnan(B.auc(np.array([0.1, 0.2]), np.array([0, 0])))
+
+
+def test_benchmark_disagreements():
+    rows = fake_rows()
+    top = B.disagreements(rows)
+    assert len(top) == B.N_DISAGREE
+    gaps = [r["max_gap"] for r in top]
+    assert gaps == sorted(gaps, reverse=True) and gaps[0] > 0.9
+    assert top[0]["pair"] == "coach_score~xt"  # xt = -coach: the extremes disagree most
+    assert set(B.pct_rank(np.array([3.0, 1.0, 2.0]))) == {1 / 6, 3 / 6, 5 / 6}

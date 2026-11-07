@@ -9,6 +9,11 @@ state the way the browser does: int16 cm -> float64 metres, 12.5 fps, velocity =
 rule and ranks the options with the library's own features.py / advice.py on the exported weights. It writes the
 state, features and ranked options of up to `per_half` frames per half to the site's tests/fixtures/coach-parity.json;
 the site's vitest asserts |diff| < 1e-6 and the same option order.
+
+Part B (explanations and ghosts) adds, per frame, "v_now", "explanations" (coach.explain, aligned with "options":
+contributions, value terms, phrases, signs, fragile) and "ghosts" ({"runs", "defence"}, coach.ghosts), and at the top
+"explain" (the phrase table and its constants) and "ghost_params"; the earlier fields are unchanged. The site compares
+numbers at the tolerance, and phrases / ghost choices exactly unless flagged fragile (a boundary within 1e-6 / 1e-9).
 """
 
 import argparse
@@ -19,7 +24,9 @@ from types import SimpleNamespace
 import numpy as np
 
 from . import advice as A
+from . import explain as EX
 from . import features as F
+from . import ghosts as GH
 from .models import linear_predictor
 from .prepare import CV_DATA, HERE
 
@@ -69,11 +76,13 @@ def frame_record(meta: dict, half: int, h, team_of, frame: int, models: dict):
     direction = meta["halves"][half]["attack"][team]
     s = F.state(m, half, frame, team, fps=meta["fps"], back_frames=BACK_SITE, direction=direction)
     row = int(np.flatnonzero(s["att_idx"] == player)[0])
-    opts = A.options(s, row, predictors(models))
+    pred = predictors(models)
+    opts = A.options(s, row, pred)
     scores = [o["score"] for o in opts]
     if any(abs(a - b) < TIE for a, b in zip(scores, scores[1:])):
         return None
     here = s["att"][row]
+    v_now = float(A.value_at(pred, [here])[0])
     return {
         "half": half,
         "frame": frame,
@@ -96,6 +105,9 @@ def frame_record(meta: dict, half: int, h, team_of, frame: int, models: dict):
         "value_features": F.value_features(here),
         "shot_features": F.shot_features(here, s["def"]),
         "options": opts,
+        "v_now": v_now,
+        "explanations": EX.explain_options(s, row, opts, models, v_now),
+        "ghosts": {"runs": GH.ghost_runs(s, row, pred), "defence": GH.ghost_defence(s, row, pred)},
     }
 
 
@@ -135,6 +147,8 @@ def build(export: Path, per_half: int = 15) -> dict:
         "tolerance": 1e-6,
         "models": models,
         "frames": frames,
+        "explain": {"phrases": EX.PHRASES, "top_features": EX.TOP_FEATURES, "fragile": EX.FRAGILE},
+        "ghost_params": GH.params(),
     }
 
 

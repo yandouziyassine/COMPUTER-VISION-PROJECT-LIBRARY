@@ -270,3 +270,30 @@ def test_timing_counts_model_rows():
     assert out["frames"] == 1 and out["runs_pass_rows_mean"] == 2 * (GH.FAN_N + 1)  # 2 teammates x (now + fan)
     assert out["defence_options_calls_max"] == GH.FAN_N * (2 + 1) + 1  # 2 defenders: 2 + 1 candidates over the steps
     assert out["runs_ms_mean"] >= 0 and out["ghost_runs_per_frame"] >= 1
+
+
+# ------------------------------------------------------------------ parity fixture
+
+
+def test_parity_fixture_carries_explanations_and_ghosts(tmp_path):
+    from coach import export as X
+    from coach import parity_fixtures as PF
+    from test_20_report import small_match
+
+    m = small_match()
+    m.halves[0].xy[:, 4] = [-4.5, -3.5]  # a guest on the right carry point: carries left and right no longer tie
+    X.pack_match(m, tmp_path, fps=10)
+    w = {
+        "trained_without": "TEST",
+        "pass": weights(F.PASS_FEATURES, [-0.05, 0, 0, -0.5, 0.1, 0, 0, 0, 0], intercept=2.0),
+        "value": weights(F.VALUE_FEATURES, [0.002] + [0.0] * 9, link="identity", intercept=0.01),
+        "shot": weights(F.SHOT_FEATURES, [-0.1, 0, 0]),
+    }
+    (tmp_path / "models.json").write_text(json.dumps(w), encoding="utf-8")
+    fx = PF.build(tmp_path, per_half=2)
+    assert fx["frames"] and fx["explain"]["phrases"] == EX.PHRASES and fx["ghost_params"]["fan_deg"] == list(GH.FAN_DEG)
+    for rec in fx["frames"]:
+        assert {"state", "pass_features", "value_features", "shot_features", "options"} <= set(rec)
+        assert [e["kind"] for e in rec["explanations"]] == [o["kind"] for o in rec["options"]]
+        assert set(rec["ghosts"]) == {"runs", "defence"} and np.isfinite(rec["v_now"])
+    json.dumps(fx, allow_nan=False)

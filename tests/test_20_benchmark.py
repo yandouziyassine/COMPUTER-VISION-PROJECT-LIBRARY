@@ -1,5 +1,6 @@
 """Project 20, AI coach: benchmark against xT and VAEP (coach insight C). Synthetic data only."""
 
+import contextlib
 import sys
 
 import pytest
@@ -13,6 +14,7 @@ from conftest import project_dir  # noqa: E402
 sys.path.insert(0, str(project_dir("20")))
 from coach import benchmark as B  # noqa: E402
 from coach import match as M  # noqa: E402
+from coach import skillcorner as SC  # noqa: E402
 from coach import vaep as V  # noqa: E402
 from coach import xt as XT  # noqa: E402
 
@@ -275,3 +277,81 @@ def test_benchmark_paired_differences():
     assert out["coach_after-xt_after"]["diff"] == pytest.approx(0.0)
     assert out["coach_after-xt_after"]["ci95"] == pytest.approx([0.0, 0.0])
     assert out["coach_after-vaep_after"]["diff"] > 0.8
+
+
+# ------------------------------------------------------------------ SkillCorner raw store (D:), restartable
+
+
+def fake_tracking(frames=5, players=3):
+    rng = np.random.default_rng(0)
+    xy = rng.uniform(-50, 50, (frames, players, 2)).astype(np.float32)
+    xy[0, 1] = np.nan
+    return {
+        "frame": np.arange(frames),
+        "period": np.ones(frames, int),
+        "player_ids": np.arange(players),
+        "xy": xy,
+        "detected": np.ones((frames, players), bool),
+        "ball": rng.uniform(-50, 50, (frames, 3)).astype(np.float32),
+        "ball_detected": np.ones(frames, bool),
+        "poss_player": np.zeros(frames, int),
+        "poss_group": np.zeros(frames, np.int8),
+    }
+
+
+def fake_source(calls):
+    """(get, open_lines) that record every URL; files get small valid contents."""
+
+    def get(url):
+        calls.append(url)
+        return b'{"a": 1}' if url.endswith(".json") else b"h\nv\n"
+
+    @contextlib.contextmanager
+    def open_lines(url):
+        calls.append(url)
+        yield iter([b"{}"])
+
+    return get, open_lines
+
+
+def test_store_raw_writes_once_and_round_trips(tmp_path, monkeypatch):
+    monkeypatch.setattr(SC, "read_tracking", lambda lines: fake_tracking())
+    calls = []
+    get, open_lines = fake_source(calls)
+    n = SC.store_raw("123", tmp_path, get=get, open_lines=open_lines)
+    names = sorted(p.name for p in (tmp_path / "123").iterdir())
+    assert names == ["123_dynamic_events.csv", "123_match.json", "123_phases_of_play.csv", "123_tracking.npz"]
+    assert len(calls) == 4 and n == 8 + 4 + 4
+    assert SC.store_raw("123", tmp_path, get=get, open_lines=open_lines) == 0 and len(calls) == 4  # restart: no-op
+    back = SC.load_tracking(tmp_path / "123" / "123_tracking.npz")
+    assert np.allclose(back["xy"], fake_tracking()["xy"], atol=0.006, equal_nan=True)
+
+
+def test_store_raw_interrupted_write_leaves_no_final_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(SC, "read_tracking", lambda lines: fake_tracking())
+    get, open_lines = fake_source([])
+
+    def broken(raw, f):
+        f.write(b"half a file")
+        raise OSError("USB key gone")
+
+    monkeypatch.setattr(SC, "save_tracking", broken)
+    with pytest.raises(OSError):
+        SC.store_raw("9", tmp_path, get=get, open_lines=open_lines)
+    assert not (tmp_path / "9" / "9_tracking.npz").exists()  # only the .part file, never a truncated npz
+    monkeypatch.undo()
+    monkeypatch.setattr(SC, "read_tracking", lambda lines: fake_tracking())
+    SC.store_raw("9", tmp_path, get=get, open_lines=open_lines)  # the restart completes it
+    assert (tmp_path / "9" / "9_tracking.npz").exists()
+    assert not list((tmp_path / "9").glob("*.part"))
+
+
+def test_load_raw_match_reads_the_stored_files(tmp_path, monkeypatch):
+    monkeypatch.setattr(SC, "read_tracking", lambda lines: fake_tracking())
+    get, open_lines = fake_source([])
+    SC.store_raw("7", tmp_path, get=get, open_lines=open_lines)
+    monkeypatch.setattr(SC, "build_match", lambda sheet, raw, events, phases: (sheet, raw, events, phases))
+    sheet, raw, events, phases = SC.load_raw_match("7", tmp_path)
+    assert sheet == {"a": 1} and events == [{"h": "v"}] and phases == [{"h": "v"}]
+    assert raw["xy"].shape == (5, 3, 2)
+    assert SC.stored_matches(tmp_path) == ["7"]

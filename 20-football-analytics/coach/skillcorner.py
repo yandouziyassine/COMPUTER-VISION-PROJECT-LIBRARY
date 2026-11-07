@@ -2,9 +2,11 @@
 
     python -m coach.skillcorner                  # from 20-football-analytics/: all 20 matches, restartable
     python -m coach.skillcorner --only 1886347
+    python -m coach.skillcorner --store-raw D:/cv-data/skillcorner-raw   # raw files kept (benchmark), restartable
 
 Source: github.com/SkillCorner/opendata (MIT; credit SkillCorner). The 89 MB tracking .jsonl of each match is a
-Git LFS file: it is streamed from media.githubusercontent.com and parsed in memory, never written to disk; the match
+Git LFS file: it is streamed from media.githubusercontent.com and parsed in memory, never written to disk (--store-raw
+keeps its compact form, below); the match
 sheet, dynamic events and phases of play (raw.githubusercontent.com) are read in memory too. Only the small derived
 tables (cross_league.derive: pass / value / shot rows, ~1 MB a match) and audit.json are written to
 cv-data/skillcorner/. With --keep-tracking the compact tracking is cached as <id>_tracking.npz (int16 centimetres,
@@ -29,6 +31,7 @@ Conventions (checked on the data, see audit()):
 """
 
 import argparse
+import contextlib
 import csv
 import io
 import json
@@ -448,6 +451,66 @@ def fetch_match(mid: str, keep_tracking: bool = False) -> tuple:
     return build_match(json.loads(sheet_b), raw, rows(events_b), rows(phases_b)), nbytes
 
 
+# Raw store (benchmark on the A-League, coach insight C): the three small files as downloaded and the compact tracking
+# (save_tracking) of each match under RAW_DIR/<id>/, on the USB key by default. Restartable: complete files are
+# skipped; every file is written to <name>.part and renamed, so an interrupted run (the key can disconnect) never
+# leaves a truncated file. The raw 89 MB .jsonl is not kept: the compact file is exact to 1 cm.
+RAW_DIR = Path(os.environ.get("SKILLCORNER_RAW", "D:/cv-data/skillcorner-raw"))
+RAW_FILES = ("match.json", "dynamic_events.csv", "phases_of_play.csv")
+
+
+def _atomic(path: Path, write) -> None:
+    """write(file object) into <path>.part, then rename it to path."""
+    tmp = path.with_name(path.name + ".part")
+    with open(tmp, "wb") as f:
+        write(f)
+    os.replace(tmp, path)
+
+
+@contextlib.contextmanager
+def _open_lfs(url: str):
+    with urllib.request.urlopen(url, timeout=300) as r:
+        yield _Counted(r)
+
+
+def store_raw(mid: str, raw_dir: Path = RAW_DIR, get=_get, open_lines=_open_lfs) -> int:
+    """Download what is missing of match `mid` into raw_dir/<mid>/; returns the bytes downloaded (0 if complete)."""
+    d = Path(raw_dir) / mid
+    d.mkdir(parents=True, exist_ok=True)
+    nbytes = 0
+    for k in RAW_FILES:
+        path = d / f"{mid}_{k}"
+        if not path.exists():
+            data = get(f"{RAW_URL}/matches/{mid}/{mid}_{k}")
+            _atomic(path, lambda f, data=data: f.write(data))
+            nbytes += len(data)
+    trk = d / f"{mid}_tracking.npz"
+    if not trk.exists():
+        with open_lines(f"{LFS_URL}/matches/{mid}/{mid}_tracking_extrapolated.jsonl") as lines:
+            raw = read_tracking(lines)
+            nbytes += getattr(lines, "bytes", 0)
+        _atomic(trk, lambda f: save_tracking(raw, f))
+    return nbytes
+
+
+def stored_matches(raw_dir: Path = RAW_DIR) -> list:
+    """Ids of the matches whose four raw files are all in raw_dir."""
+    names = lambda mid: [f"{mid}_{k}" for k in RAW_FILES] + [f"{mid}_tracking.npz"]
+    root = Path(raw_dir)
+    if not root.exists():
+        return []
+    return sorted(d.name for d in root.iterdir() if d.is_dir() and all((d / n).exists() for n in names(d.name)))
+
+
+def load_raw_match(mid: str, raw_dir: Path = RAW_DIR) -> Match:
+    """The match rebuilt from the raw store (same parsing as fetch_match)."""
+    d = Path(raw_dir) / mid
+    sheet_b, events_b, phases_b = ((d / f"{mid}_{k}").read_bytes() for k in RAW_FILES)
+    rows = lambda b: list(csv.DictReader(io.StringIO(b.decode("utf-8-sig"))))
+    raw = load_tracking(d / f"{mid}_tracking.npz")
+    return build_match(json.loads(sheet_b), raw, rows(events_b), rows(phases_b))
+
+
 def main():
     import pickle
 
@@ -457,7 +520,16 @@ def main():
     ap.add_argument("--only", nargs="*", default=MATCHES)
     ap.add_argument("--keep-tracking", action="store_true", help="also cache the compact tracking (~2 MB a match)")
     ap.add_argument("--max-download-gb", type=float, default=3.0)
+    ap.add_argument("--store-raw", type=Path, help="only download the raw files (compact tracking) into this folder")
     args = ap.parse_args()
+    if args.store_raw:
+        total = 0
+        for mid in args.only:
+            n = store_raw(mid, args.store_raw)
+            total += n
+            print(mid, n // 2**20, "MB downloaded" if n else "already stored", flush=True)
+        print(f"downloaded {total / 2**30:.2f} GB; stored: {len(stored_matches(args.store_raw))} matches")
+        return
     DERIVED.mkdir(parents=True, exist_ok=True)
     audit_path = OUT / "audit.json"
     audit = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.exists() else {}

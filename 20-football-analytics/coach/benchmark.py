@@ -46,6 +46,14 @@ METHODS = ("coach_score", "coach_dv", "xt", "vaep")
 LEVELS = ("coach_after", "xt_after", "vaep_after")
 DISAGREE = ("coach_score", "xt", "vaep")
 N_DISAGREE = 10
+PAIRS = (
+    ("coach_after", "xt_after"),
+    ("coach_after", "vaep_after"),
+    ("xt_after", "vaep_after"),
+    ("coach_dv", "xt"),
+    ("coach_dv", "vaep"),
+    ("xt", "vaep"),
+)
 KEEP = (
     "match",
     "event",
@@ -108,6 +116,16 @@ def calibration(rows, methods=METHODS, reps=EV.BOOTSTRAPS) -> dict:
             out[k][name] = fn(rows)
             out[k][f"{name}_ci95"] = EV.bootstrap_ci(rows, fn, reps)
         out[k]["deciles"] = ML.calibration(col(rows, "net_xg"), col(rows, k))
+    return out
+
+
+def paired(rows, pairs=PAIRS, reps=EV.BOOTSTRAPS) -> dict:
+    """Spearman with the net xG of method a minus that of method b, on the same passes and the same resamples."""
+    out = {}
+    sp = lambda rs, k: EV.spearman(col(rs, k), col(rs, "net_xg"))
+    for a, b in pairs:
+        fn = lambda rs, a=a, b=b: sp(rs, a) - sp(rs, b)
+        out[f"{a}-{b}"] = {"diff": fn(rows), "ci95": EV.bootstrap_ci(rows, fn, reps)}
     return out
 
 
@@ -253,6 +271,7 @@ def summarise(rows, reps=EV.BOOTSTRAPS) -> dict:
         out[name] = {
             "agreement": agreement(rs, reps=reps),
             "calibration": calibration(rs, METHODS + LEVELS, reps=reps),
+            "paired_spearman_net_xg": paired(rs, reps=reps),
         }
     out["disagreements"] = disagreements(rows)
     return out

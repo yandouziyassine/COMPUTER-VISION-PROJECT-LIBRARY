@@ -592,6 +592,50 @@
           }
         ]
       }
+    },
+    "paired_spearman_net_xg": {
+      "coach_after-xt_after": {
+        "diff": -0.017476045252722283,
+        "ci95": [
+          -0.027676787946986692,
+          -0.00553393349227943
+        ]
+      },
+      "coach_after-vaep_after": {
+        "diff": 0.06810891831363064,
+        "ci95": [
+          0.02356185104831074,
+          0.12239435108336777
+        ]
+      },
+      "xt_after-vaep_after": {
+        "diff": 0.08558496356635292,
+        "ci95": [
+          0.04368760005158122,
+          0.14003588384694207
+        ]
+      },
+      "coach_dv-xt": {
+        "diff": -0.036393254040653154,
+        "ci95": [
+          -0.07274163891586322,
+          -0.009256056821054627
+        ]
+      },
+      "coach_dv-vaep": {
+        "diff": -0.025570473842882975,
+        "ci95": [
+          -0.08808005397252625,
+          0.019099652529697326
+        ]
+      },
+      "xt-vaep": {
+        "diff": 0.01082278019777018,
+        "ci95": [
+          -0.025429900866430835,
+          0.047880404492529394
+        ]
+      }
     }
   },
   "goals_15s": 28,
@@ -1157,6 +1201,50 @@
             "mean_pred": 0.04755112836263503,
             "observed": 0.025678901734104042
           }
+        ]
+      }
+    },
+    "paired_spearman_net_xg": {
+      "coach_after-xt_after": {
+        "diff": -0.01326468464199454,
+        "ci95": [
+          -0.04081602048005393,
+          0.012242330563231485
+        ]
+      },
+      "coach_after-vaep_after": {
+        "diff": 0.054715132706550706,
+        "ci95": [
+          0.008993618908952401,
+          0.1106667957290904
+        ]
+      },
+      "xt_after-vaep_after": {
+        "diff": 0.06797981734854525,
+        "ci95": [
+          0.026514827968534965,
+          0.1149436404204024
+        ]
+      },
+      "coach_dv-xt": {
+        "diff": -0.0685913904117966,
+        "ci95": [
+          -0.10651948060617747,
+          -0.0380870422250589
+        ]
+      },
+      "coach_dv-vaep": {
+        "diff": -0.031027999154205448,
+        "ci95": [
+          -0.08061003661566199,
+          0.010681907188560713
+        ]
+      },
+      "xt-vaep": {
+        "diff": 0.037563391257591144,
+        "ci95": [
+          0.013771830561685594,
+          0.06411842005677104
         ]
       }
     }
@@ -1818,7 +1906,7 @@
       "parameters": 192,
       "json_bytes": 1926,
       "inputs": "start and end location (and the result)",
-      "ms_per_action": 0.00016,
+      "ms_per_action": 0.00044,
       "browser": "yes in principle: a 16 x 12 lookup table (not shipped)"
     },
     "vaep": {
@@ -1844,7 +1932,7 @@
       },
       "pickle_bytes": 100275,
       "inputs": "the current and two previous actions (type, result, start / end), times, score",
-      "ms_per_action": 0.0022,
+      "ms_per_action": 0.0024,
       "browser": "not shipped: needs the event stream and a tree-ensemble runtime (or a JSON export of 296 nodes)"
     }
   }

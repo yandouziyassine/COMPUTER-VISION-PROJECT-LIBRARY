@@ -265,3 +265,13 @@ def test_vaep_inner_selection_uses_training_matches_only():
     assert set(scores["score"]) == set(V.CANDIDATES)
     out = V.lomo(tables, select_inner=True)
     assert all(set(r["config"]) == {"score", "concede"} for r in out.values())
+
+
+def test_benchmark_paired_differences():
+    rows = fake_rows()
+    for r in rows:
+        r.update(coach_after=r["coach_score"], xt_after=r["coach_score"], vaep_after=r["vaep"])
+    out = B.paired(rows, pairs=(("coach_after", "xt_after"), ("coach_after", "vaep_after")), reps=50)
+    assert out["coach_after-xt_after"]["diff"] == pytest.approx(0.0)
+    assert out["coach_after-xt_after"]["ci95"] == pytest.approx([0.0, 0.0])
+    assert out["coach_after-vaep_after"]["diff"] > 0.8

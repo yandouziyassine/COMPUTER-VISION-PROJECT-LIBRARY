@@ -355,3 +355,12 @@ def test_load_raw_match_reads_the_stored_files(tmp_path, monkeypatch):
     assert sheet == {"a": 1} and events == [{"h": "v"}] and phases == [{"h": "v"}]
     assert raw["xy"].shape == (5, 3, 2)
     assert SC.stored_matches(tmp_path) == ["7"]
+
+
+def test_vaep_inner_folds_lomo_up_to_7_then_grouped():
+    assert V.inner_folds(list("abc")) == [["a"], ["b"], ["c"]]
+    folds = V.inner_folds([str(i) for i in range(12)])
+    assert len(folds) == V.INNER_FOLDS and sorted(sum(folds, [])) == sorted(str(i) for i in range(12))
+    tables = {str(i): V.actions(toy_match(str(i))) for i in range(9)}
+    choice, scores = V.select(tables)
+    assert set(choice) == {"score", "concede"}

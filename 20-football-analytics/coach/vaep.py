@@ -23,7 +23,8 @@ concedes within the next K actions of the half, the action included (labels()); 
 P_concede; value = (P_score(a_i) - P_score(a_i-1)) - (P_concede(a_i) - P_concede(a_i-1)), where the previous pair is
 swapped when a_i-1 was by the other team and set to 0 at the start of a half or after a goal (values()). lomo() fits
 the classifiers without the match it scores; with select_inner each classifier is chosen among CANDIDATES (gradient
-boosting with more or less regularisation, or the base rate) by leave-one-match-out on the training matches only.
+boosting with more or less regularisation, or the base rate) by cross-validation over the training matches only
+(leave-one-match-out up to 7 of them, else 5 groups of matches).
 """
 
 import numpy as np
@@ -333,10 +334,22 @@ def _xy(tables: dict) -> dict:
     return {mid: (features(a), dict(zip(TARGETS, labels(a)))) for mid, a in tables.items()}
 
 
+INNER_LOMO_MAX, INNER_FOLDS = 7, 5
+
+
+def inner_folds(ids) -> list:
+    """Held-out groups of the inner selection: one match each (leave-one-match-out) for up to INNER_LOMO_MAX training
+    matches, else INNER_FOLDS groups of whole matches (19-26 training matches: LOMO would be thousands of fits)."""
+    ids = list(ids)
+    if len(ids) <= INNER_LOMO_MAX:
+        return [[mid] for mid in ids]
+    return [ids[i::INNER_FOLDS] for i in range(INNER_FOLDS)]
+
+
 def select(tables: dict, xy=None, cache=None) -> tuple:
-    """(target -> chosen CANDIDATES name, target -> name -> pooled inner log-loss) by leave-one-match-out over
-    `tables` (the training matches only). `cache` shares the inner fits between outer folds (keyed by the matches
-    trained on)."""
+    """(target -> chosen CANDIDATES name, target -> name -> pooled inner log-loss) by cross-validation over whole
+    matches of `tables` (the training matches only; inner_folds). `cache` shares the inner fits between outer folds
+    (keyed by the matches trained on)."""
     xy = _xy(tables) if xy is None else xy
     cache = {} if cache is None else cache
     ids = list(tables)
@@ -345,15 +358,16 @@ def select(tables: dict, xy=None, cache=None) -> tuple:
         scores[t] = {}
         for name in CANDIDATES:
             ys, ps = [], []
-            for mid in ids:
-                train = tuple(sorted(o for o in ids if o != mid))
+            for fold in inner_folds(ids):
+                train = tuple(sorted(o for o in ids if o not in fold))
                 key = (train, t, name)
                 if key not in cache:
                     X = np.vstack([xy[o][0] for o in train])
                     y = np.concatenate([xy[o][1][t] for o in train])
                     cache[key] = fit_classifier(name, X, y) if 0 < y.sum() < len(y) else ML.fit_base_rate(X, y)
-                ys.append(xy[mid][1][t])
-                ps.append(cache[key].predict_proba(xy[mid][0])[:, 1])
+                for mid in fold:
+                    ys.append(xy[mid][1][t])
+                    ps.append(cache[key].predict_proba(xy[mid][0])[:, 1])
             scores[t][name] = ML.metrics(np.concatenate(ys), np.concatenate(ps))["log_loss"]
     return {t: min(scores[t], key=scores[t].get) for t in TARGETS}, scores
 

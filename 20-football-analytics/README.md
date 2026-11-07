@@ -462,6 +462,68 @@ outcome, net xG), plus `fields`, `caveats`, `thresholds` and `trained_on`. The r
 match (10 fps, `frame` = `frame_src`). The 20 A-League matches are not summarised here: their tracking is not cached,
 so it would mean streaming 1.7 GB again.
 
+### Explanations and ghosts
+
+Design: section B of [`docs/superpowers/specs/2026-11-02-coach-insight-design.md`](../docs/superpowers/specs/2026-11-02-coach-insight-design.md).
+Both are the **model's suggestion, not ground truth**.
+
+**Explanations** ([`coach/explain.py`](coach/explain.py)). The pass and shot models are logistic regressions, so each
+feature's share of the logit is exact: `coef · (x − mean) / scale` (the shares plus the intercept give the logit back).
+The score splits exactly too: score = p · gain + (1 − p) · loss, with gain = V(target) − V(now) and loss =
+−V_opp(loss point) − V(now). Each option gets 2–3 phrases: the two features with the largest |share| (marked as
+helping or hurting), then the value terms. A carry's p is pitch control, not a fitted model, so it gets its control and
+the value terms. The wording lives in one table (`PHRASES`) with one rounding rule (`fmt`: half away from zero, the
+same IEEE operations as `Math.floor(Math.abs(y) * 10 ** nd + 0.5)`), so the site's TypeScript port prints the same
+text. Example (J03WOH, first half, 3:24, the coach's top option):
+*long pass (49 m)* · *receiver has 3.8 m of space* · *+0.007 xG if it arrives, -0.002 if lost there*.
+
+**Ghosts** ([`coach/ghosts.py`](coach/ghosts.py)). Pure functions of one frame. For each player: a fan of 7 points,
+7.5 m away (5 m/s for 1.5 s), from −90° to +90° around his running direction (towards the opponent goal when he moves
+slower than 1 m/s). The moved player stands still at the point. Nobody else reacts.
+- *Ghost runs*: for each teammate of the carrier, the pass to each fan point is scored with the same formula
+  (advice.py). If the best point beats the pass to his real position by more than 0.005 xG, a ghost is drawn there.
+  At most 3, largest gain first. In the example above: three runs, worth +0.011, +0.009 and +0.006 xG.
+- *Ghost defence*: greedy, one defender at a time, at most 3. Each step tries every remaining defender at every fan
+  point and keeps the move that lowers the attacking team's best option (all options) the most, if by more than
+  0.002 xG. In the example: one defender, −0.003 xG.
+
+On the 30 parity frames: 1.6 ghost runs and 0.5 ghost defenders per frame.
+
+**Cost per pause.** Ghost runs take 70 pass evaluations. Ghost defence needs at most 7 × (11 + 10 + 9) + 1 = 211 full
+option rankings. Python (NumPy, one row at a time): 0.2 s for the runs and 1.7 s on average for the defence (max
+3.6 s). That is fine for offline analysis, too slow to be a guide for the browser. Browser estimate: the site's own
+TypeScript port, run in node (V8) on the same 30 frames with every defence step forced: one ranking 0.02–0.04 ms,
+ghost runs 0.1–0.2 ms, ghost defence 3–6 ms on average and at most 4.3–7.6 ms. That is 6× or more under the spec's
+50 ms on a laptop, so the 7-point fan stays.
+
+**Association check** ([`coach/ghosts_eval.py`](coach/ghosts_eval.py), [`docs/coach_ghosts_results.json`](docs/coach_ghosts_results.json)).
+Held-out passes of the 7 Bundesliga matches, models trained without the match. The ghosts are computed 1.5 s before
+the release, for the 1,058 passes whose passer already had the ball then, which gives 2,070 ghost runs. A teammate
+"followed" his ghost if he covered at least half of the ghost run by the release (projection of his real movement on
+it): 335 did. Followed minus not followed, 95 % intervals from resampling whole matches:
+
+| | Followed (n = 335) | Not followed (n = 1,735) | Difference [95 % CI] |
+|---|---|---|---|
+| Received the pass | 11.9 % | 4.5 % | **+7.4 pts** [+3.7, +12.0] |
+| Score of the pass when he received it | −0.0021 xG (n = 40) | −0.0046 xG (n = 78) | **+0.0026** [+0.0018, +0.0037] |
+| Score of the pass to him at the release | −0.0046 xG | −0.0034 xG | −0.0011 [−0.0018, −0.0006] |
+| Change since the ghost was computed | +0.0002 xG | −0.0003 xG | +0.0005 [−0.0001, +0.0010] |
+| Share of the predicted gain realised | 3 % | | |
+
+**This is association only, not causation.** Players who make the run the model suggests get the ball more often,
+and the passes they get score higher. But almost none of the gain the ghost promised is still there at the release
+(3 %): in reality the defenders react, and in the ghost they don't. Treat ghosts as "the model sees space there now",
+not "run there and the chance will still exist". Other limits: the moved player stands still at his point, and the
+other options are not re-scored after a ghost run. The value model is weak (about 2 % of variance), so every gain is a
+few thousandths of an xG.
+
+**Parity.** [`coach/parity_fixtures.py`](coach/parity_fixtures.py) now also writes, for each frame, `v_now`,
+`explanations` (shares, value terms, phrases, signs, aligned with `options`) and `ghosts` (`runs`, `defence`). At the
+top it writes the phrase table (`explain`) and `ghost_params`. The earlier fields are unchanged (checked key by key).
+Entries flagged `fragile` sit within 1e-6 of a rounding boundary (1 explanation of 453) or have a near-tie between
+ghost candidates (4 of 64 ghosts, all defence: several moves leave the same option best). For those, the site compares
+the numbers but not the text or the choice.
+
 ### Run the coach
 
 ```bash
@@ -477,13 +539,15 @@ python -m coach.profiles_eval                                # player profiles h
 python -m coach.export_profiles --match J03WOH --site <folder>   # profiles.json for the replay match, built without it
 python -m coach.report                                       # match report held-out summary, 7 matches + chart (~12 min)
 python -m coach.export_report --match J03WOH --site <folder>     # report.json for the replay match, built without it (~3 min)
+python -m coach.ghosts_eval                                  # ghost association check (held-out) + timing (~15 min)
 ```
 
 All numbers: [`docs/coach_results.json`](docs/coach_results.json),
 [`docs/coach_skillcorner_results.json`](docs/coach_skillcorner_results.json),
 [`docs/coach_shot_pooled_results.json`](docs/coach_shot_pooled_results.json),
-[`docs/coach_report_results.json`](docs/coach_report_results.json). Tests: `tests/test_20_coach.py` (47),
-`tests/test_20_profiles.py` (15), `tests/test_20_report.py` (14).
+[`docs/coach_report_results.json`](docs/coach_report_results.json),
+[`docs/coach_ghosts_results.json`](docs/coach_ghosts_results.json). Tests: `tests/test_20_coach.py` (47),
+`tests/test_20_profiles.py` (15), `tests/test_20_report.py` (14), `tests/test_20_explain.py` (15).
 
 ## How it works
 

@@ -13,6 +13,7 @@ from conftest import project_dir  # noqa: E402
 sys.path.insert(0, str(project_dir("20")))
 from coach import match as M  # noqa: E402
 from coach import vaep as V  # noqa: E402
+from coach import xt as XT  # noqa: E402
 
 
 def toy_match(match_id="TOY", frames=300):
@@ -94,3 +95,65 @@ def test_action_type_mapping():
     assert V.action_type({"type": "pass", "set_piece": "CornerKick", "cross": True}) == "corner"
     assert V.action_type({"type": "pass", "set_piece": None, "cross": True}) == "cross"
     assert V.action_type({"type": "pass", "set_piece": None, "cross": False}) == "pass"
+
+
+def action_table(rows):
+    """rows: (type, result, x0, x1, xg, goal) on the centre line y = 0."""
+    n = len(rows)
+    col = lambda i, dt=float: np.array([r[i] for r in rows], dt)
+    return {
+        "match": np.array(["T"] * n),
+        "half": np.zeros(n, int),
+        "t": np.arange(n, dtype=float),
+        "team": np.zeros(n, int),
+        "player": np.zeros(n, int),
+        "type": col(0, "U16"),
+        "result": col(1, int),
+        "x0": col(2),
+        "y0": np.zeros(n),
+        "x1": col(3),
+        "y1": np.zeros(n),
+        "event": np.arange(n),
+        "xg": col(4),
+        "goal": col(5, int),
+    }
+
+
+def toy_grid():
+    """Along the centre row: from every cell 10 completed and 2 failed passes one cell forward (none from the last
+    cell); 4 shots from each of the last 4 cells, xG 0.05 .. 0.20 rising towards the goal, one goal per cell."""
+    w = 105 / XT.NX
+    rows = []
+    for cx in range(XT.NX):
+        x = -52.5 + (cx + 0.5) * w
+        if cx < XT.NX - 1:
+            rows += [("pass", 1, x, x + w, np.nan, 0)] * 10 + [("pass", 0, x, x + w, np.nan, 0)] * 2
+        if cx >= XT.NX - 4:
+            xg = 0.05 * (cx - XT.NX + 5)
+            rows += [("shot", 1, x, 52.5, xg, 1)] + [("shot", 0, x, 52.5, xg, 0)] * 3
+    return action_table(rows)
+
+
+def test_xt_converges_to_fixed_point_and_rises_towards_goal():
+    model = XT.ExpectedThreat(shrink=0.0).fit(toy_grid())
+    assert model.iterations_ < XT.MAX_ITER
+    xt = model.xt_
+    assert np.allclose(xt, model.s_ * model.g_ + model.m_ * (model.T_ @ xt), atol=1e-5)
+    row = model.grid()[:, XT.NY // 2]
+    assert np.all(np.diff(row) > 0)
+    assert row[-1] == pytest.approx(0.20)  # last cell: shots only, xT = mean xG there
+    assert np.allclose(np.delete(model.grid(), XT.NY // 2, axis=1), 0)  # no action elsewhere
+
+
+def test_xt_goal_source_and_action_values():
+    a = toy_grid()
+    goals = XT.ExpectedThreat(goal_source="goals", shrink=0.0).fit(a)
+    assert goals.g_[XT.cell(np.array([52.0]), np.array([0.0]))[0]] == pytest.approx(0.25)
+    model = XT.ExpectedThreat(shrink=0.0).fit(a)
+    v = model.action_values(a)
+    start = model.xt_[XT.cell(a["x0"], a["y0"])]
+    end = model.xt_[XT.cell(a["x1"], a["y1"])]
+    ok, failed, shot = a["result"] == 1, a["result"] == 0, a["type"] == "shot"
+    assert np.allclose(v[ok & ~shot], (end - start)[ok & ~shot])
+    assert np.allclose(v[failed & ~shot], -start[failed & ~shot])
+    assert np.isnan(v[shot]).all()

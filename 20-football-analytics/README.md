@@ -524,6 +524,38 @@ Entries flagged `fragile` sit within 1e-6 of a rounding boundary (1 explanation 
 ghost candidates (4 of 64 ghosts, all defence: several moves leave the same option best). For those, the site compares
 the numbers but not the text or the choice.
 
+### Benchmark vs xT and VAEP
+
+Design: section C of [`docs/superpowers/specs/2026-11-02-coach-insight-design.md`](../docs/superpowers/specs/2026-11-02-coach-insight-design.md).
+Full technical report: **[`docs/coach_benchmark.md`](docs/coach_benchmark.md)**.
+
+Two published methods were re-implemented on the same 7 matches. No code was copied. The first is **expected threat**
+(Singh 2019, [`coach/xt.py`](coach/xt.py)): a 16 × 12 grid with value iteration over move and shot probabilities.
+The second is **VAEP** (Decroos et al. 2019, [`coach/vaep.py`](coach/vaep.py)): a SPADL-like action table with
+passes and shots from the events and carries from the tracking, the game state of the last 3 actions, and
+P(score) / P(concede) within 10 actions. Each pass is valued by all three methods, leave-one-match-out, on the 3,464
+passes of the match report ([`coach/benchmark.py`](coach/benchmark.py)). 95 % intervals resample whole matches.
+
+| Held-out passes (n = 3,464) | Coach | xT | VAEP |
+|---|---|---|---|
+| Value after the pass vs net xG in the next 15 s (Spearman) | 0.24 [0.22, 0.26] | **0.25** [0.22, 0.28] | 0.18 [0.13, 0.23] |
+| Same, completed passes | 0.26 [0.23, 0.30] | **0.28** [0.26, 0.31] | 0.20 [0.14, 0.25] |
+| AUC: the passing team scores within 15 s (28 passes) | 0.74 [0.71, 0.80] | **0.77** [0.71, 0.85] | 0.66 [0.54, 0.79] |
+| Agreement with the coach's V(target) − V(start), completed passes | – | 0.66 [0.64, 0.69] | 0.25 [0.16, 0.34] |
+| Agreement with the coach's risk-aware score, all passes | – | 0.31 [0.29, 0.33] | −0.02 [−0.06, 0.03] |
+| Size / runs in the browser | 69 numbers, 2 kB / **yes, shipped** | 192 numbers, 2 kB / easy, not shipped | 296 tree nodes / not shipped (needs the action history) |
+
+- **xT and the coach are about as good, and VAEP is behind.** The paired difference coach − xT is −0.013
+  [−0.041, +0.012] on all passes and −0.017 [−0.028, −0.006] on completed passes. Both beat VAEP by 0.05–0.09.
+  As *changes* (value after minus value before), every method says little about the next 15 s (|Spearman| ≤ 0.09).
+- **They disagree on risk and on time.** The coach scores the decision before the ball is played. xT and VAEP score
+  what happened. Risky passes that came off (goalkeepers' long balls, passes into the box) get a low coach score and
+  a high xT or VAEP value. The coach also undervalues passes from the edge of the box, because it would rather
+  shoot from there; most of those passes were followed by positive net xG.
+- **VAEP is data-starved here.** 19 goals and no defensive actions in the events. Its classifiers had to be chosen
+  by inner cross-validation (the default booster did worse than a constant), and its "concede" model is a constant.
+- Only the coach values the options **not** taken, on one frame, which is what "pause and ask the coach" needs.
+
 ### Run the coach
 
 ```bash
@@ -540,14 +572,17 @@ python -m coach.export_profiles --match J03WOH --site <folder>   # profiles.json
 python -m coach.report                                       # match report held-out summary, 7 matches + chart (~12 min)
 python -m coach.export_report --match J03WOH --site <folder>     # report.json for the replay match, built without it (~3 min)
 python -m coach.ghosts_eval                                  # ghost association check (held-out) + timing (~15 min)
+python -m coach.benchmark                                    # benchmark vs xT and VAEP, held-out (~20 min)
 ```
 
 All numbers: [`docs/coach_results.json`](docs/coach_results.json),
 [`docs/coach_skillcorner_results.json`](docs/coach_skillcorner_results.json),
 [`docs/coach_shot_pooled_results.json`](docs/coach_shot_pooled_results.json),
 [`docs/coach_report_results.json`](docs/coach_report_results.json),
-[`docs/coach_ghosts_results.json`](docs/coach_ghosts_results.json). Tests: `tests/test_20_coach.py` (47),
-`tests/test_20_profiles.py` (15), `tests/test_20_report.py` (14), `tests/test_20_explain.py` (15).
+[`docs/coach_ghosts_results.json`](docs/coach_ghosts_results.json),
+[`docs/coach_benchmark_results.json`](docs/coach_benchmark_results.json). Tests: `tests/test_20_coach.py` (47),
+`tests/test_20_profiles.py` (15), `tests/test_20_report.py` (14), `tests/test_20_explain.py` (15),
+`tests/test_20_benchmark.py` (14).
 
 ## How it works
 

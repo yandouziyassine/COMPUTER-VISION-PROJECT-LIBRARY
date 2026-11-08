@@ -556,6 +556,28 @@ passes of the match report ([`coach/benchmark.py`](coach/benchmark.py)). 95 % in
   by inner cross-validation (the default booster did worse than a constant), and its "concede" model is a constant.
 - Only the coach values the options **not** taken, on one frame, which is what "pause and ask the coach" needs.
 
+**A-League (20 matches, held-out, proxy xG).** The tracking and events were streamed again and kept compact on the
+USB key (`coach.skillcorner --store-raw`). Each method is trained on the other 19 A-League matches. A-League shots get
+the xG proxy fitted on Bundesliga shots (`cross_league.xg_proxy`).
+
+| Held-out A-League passes (n = 14,844) | Coach | xT | VAEP |
+|---|---|---|---|
+| Value after the pass vs net xG in the next 15 s (Spearman) | 0.25 [0.23, 0.28] | **0.27** [0.24, 0.29] | 0.23 [0.19, 0.26] |
+| Same, completed passes | 0.27 [0.24, 0.29] | **0.29** [0.26, 0.31] | 0.25 [0.21, 0.28] |
+| AUC: the passing team scores within 15 s (150 passes) | 0.74 [0.68, 0.80] | **0.75** [0.72, 0.80] | 0.71 [0.66, 0.75] |
+
+The ranking is the same as in the Bundesliga: coach − xT −0.016 [−0.023, −0.010] on completed passes, xT − VAEP
++0.038 [+0.019, +0.061]. With all 27 matches pooled, VAEP catches up in the Bundesliga (0.18 → 0.25), so its last
+place there was a lack of data.
+
+**Cut-backs are the coach's blind spot.** 7 of the 10 biggest A-League disagreements are completed cut-backs from the
+byline area to the centre: the coach's bottom 1 %, xT's and VAEP's top 1 %. 3 of the 7 led to a goal within 15 s.
+Over all 54 completed A-League cut-backs, the coach's median percentile is 4 % (xT 99.6 %, VAEP 99.5 %). They are
+followed by 0.130 net xG vs 0.007 for other completed passes (difference +0.124 [+0.086, +0.153]), and 26 % lead to
+a goal within 15 s (1 % otherwise). The Bundesliga shows the same direction on 7 cut-backs (+0.104 [+0.033, +0.199]).
+The coach charges the pass's low completion probability and its own preference for a narrow-angle shot. It does not
+see that the ball arrives in front of goal.
+
 ### Run the coach
 
 ```bash
@@ -573,6 +595,9 @@ python -m coach.report                                       # match report held
 python -m coach.export_report --match J03WOH --site <folder>     # report.json for the replay match, built without it (~3 min)
 python -m coach.ghosts_eval                                  # ghost association check (held-out) + timing (~15 min)
 python -m coach.benchmark                                    # benchmark vs xT and VAEP, held-out (~20 min)
+python -m coach.skillcorner --store-raw D:/cv-data/skillcorner-raw   # A-League raw files kept (1.8 GB streamed, 133 MB kept)
+python -m coach.benchmark --set aleague                      # the same on the 20 A-League matches (~30 min)
+python -m coach.benchmark --set pooled                       # all 27 matches pooled (~40 min); --cutbacks: cut-back check
 ```
 
 All numbers: [`docs/coach_results.json`](docs/coach_results.json),
@@ -580,9 +605,9 @@ All numbers: [`docs/coach_results.json`](docs/coach_results.json),
 [`docs/coach_shot_pooled_results.json`](docs/coach_shot_pooled_results.json),
 [`docs/coach_report_results.json`](docs/coach_report_results.json),
 [`docs/coach_ghosts_results.json`](docs/coach_ghosts_results.json),
-[`docs/coach_benchmark_results.json`](docs/coach_benchmark_results.json). Tests: `tests/test_20_coach.py` (47),
+[`docs/coach_benchmark_results.json`](docs/coach_benchmark_results.json) (+ `_aleague`, `_pooled`, `_cutbacks`). Tests: `tests/test_20_coach.py` (47),
 `tests/test_20_profiles.py` (15), `tests/test_20_report.py` (14), `tests/test_20_explain.py` (15),
-`tests/test_20_benchmark.py` (14).
+`tests/test_20_benchmark.py` (20).
 
 ## How it works
 

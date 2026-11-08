@@ -3,7 +3,10 @@
 Project 20, coach insight C (design: section C of
 [`docs/superpowers/specs/2026-11-02-coach-insight-design.md`](../../docs/superpowers/specs/2026-11-02-coach-insight-design.md)).
 Code: [`coach/xt.py`](../coach/xt.py), [`coach/vaep.py`](../coach/vaep.py), [`coach/benchmark.py`](../coach/benchmark.py).
-Numbers: [`coach_benchmark_results.json`](coach_benchmark_results.json). Tests: `tests/test_20_benchmark.py` (14,
+Numbers: [`coach_benchmark_results.json`](coach_benchmark_results.json) (Bundesliga),
+[`coach_benchmark_aleague_results.json`](coach_benchmark_aleague_results.json),
+[`coach_benchmark_pooled_results.json`](coach_benchmark_pooled_results.json),
+[`coach_benchmark_cutbacks.json`](coach_benchmark_cutbacks.json). Tests: `tests/test_20_benchmark.py` (20,
 synthetic data).
 
 **Question.** Our coach values each pass with three small models (pass completion, position value, shot) on one
@@ -16,7 +19,10 @@ value *after* the pass predicts the next 15 s best for xT (Spearman 0.28 on comp
 On completed passes xT is ahead of the coach by 0.017 [0.006, 0.028], and both are ahead of VAEP. Every method is
 weak: the best explains little of what happens next. With 7 matches and 19 goals, VAEP is data-starved. Its
 "concede" model never beat a constant. The coach is the only one that is shipped and runs in the browser on a live
-frame.
+frame. **On the 20 A-League matches** (14,844 passes, proxy xG) the ranking is the same: xT 0.27, coach 0.25, VAEP
+0.23. With the 27 matches pooled, VAEP catches up in the Bundesliga. The clearest disagreement is **cut-backs**: the
+coach puts them at a median percentile of 4 %, xT and VAEP at 99.5–99.6 %, and they are followed by +0.12 net xG
+[+0.09, +0.15] more than other completed passes (see "The cut-back finding").
 
 ## Data
 
@@ -163,6 +169,87 @@ Patterns:
   ball after an opponent's chance (the swap term credits ending a chance the booster had overrated). These extremes
   disappeared once the classifiers were chosen by inner cross-validation.
 
+## A-League (20 matches) and pooled 27 matches
+
+**Data.** The 20 SkillCorner A-League 2024/25 matches (broadcast tracking at 10 fps, MIT). The tracking and events
+were streamed again (1.79 GB) and kept in compact form on the USB key (133 MB,
+`python -m coach.skillcorner --store-raw D:/cv-data/skillcorner-raw`). The store is restartable and never leaves a
+truncated file. **SkillCorner has no xG.** Every A-League shot gets the proxy of `cross_league.xg_proxy`: a logistic
+model fitted on the IDSSE shots only, so no A-League label leaks into it. Its quality: Pearson 0.44 with the provider
+xG on held-out IDSSE shots, AUC 0.75 for A-League goals, 51.5 proxy xG for 61 goals. Every net-xG outcome, the
+coach's value labels and xT's scoring probabilities on the A-League use this proxy. **No set pieces** in the action
+table: SkillCorner records player possessions only. That leaves 15,679 passes, 324 crosses, 4,739 carries and 526
+shots. The coach is trained on the other 19 A-League matches only (pass, value and shot models), and so are xT and
+VAEP. VAEP's classifiers are chosen by 5-fold cross-validation over the 19 training matches. **"Scores"** used the
+50-tree booster in all 20 folds: held-out log-loss 0.094 vs 0.108 for a constant, AUC 0.70. **"Concedes"** used a
+booster in 15 folds and the base rate in 5. It is still no better than a constant (0.0370 vs 0.0361).
+
+**Held-out A-League passes** (14,844, 12,722 completed; 150 followed by a goal within 15 s; 95 % intervals from
+resampling whole matches):
+
+| | Coach | xT | VAEP |
+|---|---|---|---|
+| Value after the pass vs net xG in 15 s, all passes (Spearman) | 0.25 [0.23, 0.28] | **0.27** [0.24, 0.29] | 0.23 [0.19, 0.26] |
+| Same, completed passes | 0.27 [0.24, 0.29] | **0.29** [0.26, 0.31] | 0.25 [0.21, 0.28] |
+| AUC: passing team scores within 15 s, all passes | 0.74 [0.68, 0.80] | **0.75** [0.72, 0.80] | 0.71 [0.66, 0.75] |
+| Pass value as a change vs net xG in 15 s (coach: risk-aware score) | −0.02 [−0.04, −0.01] | **0.14** [0.13, 0.17] | 0.07 [0.05, 0.09] |
+| Agreement with the coach's V(target) − V(start), completed passes | – | 0.77 [0.76, 0.78] | 0.43 [0.41, 0.45] |
+| Agreement with the coach's risk-aware score, completed passes | – | 0.62 [0.60, 0.64] | 0.32 [0.29, 0.34] |
+
+Paired differences in Spearman with the net xG (after-values): coach − xT −0.016 [−0.033, 0.000] on all passes and
+−0.016 [−0.023, −0.010] on completed passes. Coach − VAEP +0.022 [−0.001, +0.047]. xT − VAEP +0.038 [+0.019,
++0.061]. **The Bundesliga ranking holds:** xT is slightly ahead of the coach, and both are ahead of VAEP. The gaps
+are smaller here, because VAEP has 61 goals to learn from instead of 19. The methods agree more than in the
+Bundesliga (coach_score vs VAEP 0.32 instead of −0.02).
+
+<img src="coach_benchmark_aleague.png" alt="A-League: agreement between the four pass values on completed passes, and mean net xG in the next 15 s by decile of each method's pass value and value after the pass" width="100%">
+
+**Pooled 27 matches** ([`coach_benchmark_pooled_results.json`](coach_benchmark_pooled_results.json)). Each match
+is scored with all three methods fitted on the 26 others, Bundesliga and A-League together. Results stay per league.
+On the **Bundesliga**, pooling mainly helps VAEP. Its after-value rises from 0.18 to 0.25 [0.22, 0.28], level with
+the coach (0.24 [0.22, 0.26]; coach − VAEP −0.006 [−0.031, +0.015]) and xT (0.25 [0.22, 0.29]). Its goal AUC rises
+from 0.66 to 0.78 [0.71, 0.88]. On the **A-League**, pooling changes nothing that matters (coach 0.26, xT 0.27,
+VAEP 0.24). So VAEP's last place in the Bundesliga was a data-size effect, while xT's small lead over the coach is
+seen in every setting.
+
+### The cut-back finding
+
+The biggest disagreements on the A-League share one shape: **7 of the top 10 are completed cut-backs**, passes from
+the byline area back to the centre in front of goal. The coach puts each of them in its **bottom 1 %**. xT and VAEP
+put them in their **top 1 %** (VAEP: top 6 % for one). They were followed by up to 0.56 net xG, and 3 of them by a
+goal within 15 s.
+
+| Match, min | Pass | From → to (m) | p | coach_score | xT | VAEP | pct coach / xT / VAEP | Net xG 15 s |
+|---|---|---|---|---|---|---|---|---|
+| 1927964 58' | T. Payne → H. Ishige | (49, -17) → (50, 2) | 0.20 | -0.0182 | +0.217 | +0.332 | 0.00 / 1.00 / 1.00 | +0.561 (goal) |
+| 1959846 94' | R. Danzaki → H. Ibusuki | (42, -14) → (46, 1) | 0.18 | -0.0167 | +0.089 | +0.386 | 0.00 / 1.00 / 1.00 | +0.263 (goal) |
+| 2011166 9' | S. Sutton → C. Piper | (48, 14) → (48, 3) | 0.45 | -0.0167 | +0.216 | +0.304 | 0.00 / 1.00 / 1.00 | +0.517 (goal) |
+| 1874553 94' | P. Madanha → B. Folami | (51, -12) → (40, -11) | 0.81 | -0.0119 | +0.062 | -0.146 | 0.01 / 1.00 / 0.00 | +0.045 |
+| 1986691 40' | M. Antonsson → Nicolas Milanovic | (44, 4) → (38, 2) | 0.89 | -0.0017 | -0.093 | +0.140 | 0.34 / 0.00 / 0.99 | +0.075 |
+| 1925299 78' | A. Burke-Gilroy → T. Waddingham | (38, 16) → (46, -2) | 0.10 | -0.0133 | +0.217 | +0.177 | 0.01 / 1.00 / 1.00 | +0.311 |
+| 1886347 27' | F. Gallegos → N. Pijnaker | (50, 20) → (47, 5) | 0.39 | -0.0129 | +0.242 | +0.197 | 0.01 / 1.00 / 1.00 | +0.182 |
+| 1927964 92' | Juan Mata → A. Hammond | (34, -5) → (44, 1) | 0.24 | -0.0129 | +0.086 | +0.382 | 0.01 / 1.00 / 1.00 | +0.063 (goal) |
+| 2011166 45' | D. Arzani → N. Velupillay | (48, -15) → (46, 6) | 0.39 | -0.0159 | +0.061 | +0.033 | 0.00 / 1.00 / 0.94 | +0.000 |
+| 1874553 84' | H. Van Der Saag → F. Bérenguer | (46, -16) → (46, 5) | 0.43 | -0.0123 | +0.245 | +0.140 | 0.01 / 1.00 / 0.99 | +0.180 |
+Over **all** completed passes ([`coach_benchmark_cutbacks.json`](coach_benchmark_cutbacks.json), `python -m
+coach.benchmark --cutbacks`). A cut-back here is a completed pass from x ≥ 36 m and 12–25 m from the centre line to
+|y| < 8 m, still at x ≥ 36 m.
+
+| | Cut-backs | Coach median percentile | xT | VAEP | Net xG in 15 s: cut-backs vs other completed passes | Goal within 15 s |
+|---|---|---|---|---|---|---|
+| A-League | 54 | **4 %** | **99.6 %** | **99.5 %** | 0.130 vs 0.007, difference **+0.124 [+0.086, +0.153]** | 26 % vs 1.0 % |
+| Bundesliga | 7 | 6 % | 99.6 % | 85 % | 0.110 vs 0.006, difference +0.104 [+0.033, +0.199] | 0 % vs 0.9 % |
+
+**This is the coach's clearest blind spot.** Cut-backs are among the most dangerous passes in football. The coach
+ranks them among the worst for two reasons. Its completion probability is low (median p = 0.67 on the A-League,
+lower for the ones in the table), because the passer is under pressure near the byline. And its value of the
+current spot is already high, while it prefers a shot from a narrow angle. xT and VAEP see that the ball arrived in
+front of goal, and the data agrees with them. Two fixes to try: a value model that sees the receiver's shooting
+chance rather than only the position, and a shot model with less weight on wide positions. Until then, the site's
+"missed opportunity" and "best decision" lists will be wrong about cut-backs. Of the other 3 disagreements, one is
+a through ball into the box: also in the coach's bottom 1 %, and followed by a goal. The other two are backward
+passes out of the box, where the methods split.
+
 ## Cost
 
 | | Coach | xT | VAEP |
@@ -179,8 +266,9 @@ after the fact. That is fine for rating players, but they cannot give advice on 
 ## Limits
 
 - 7 matches, 3,464 passes, 28 passes followed by a goal within 15 s. The goal AUCs have wide intervals.
-- IDSSE only. The SkillCorner A-League cache holds model tables, not action sequences or tracking. Running C there
-  would mean streaming the 20 matches again (~1.8 GB, now possible on the D: key) and using the xG proxy for labels.
+- The A-League has no provider xG. Its outcomes and labels use a proxy fitted on Bundesliga shots (Pearson 0.44 with
+  the provider's xG), so A-League net xG is noisier than Bundesliga net xG. The A-League action table has no set
+  pieces.
 - Our xT uses shrunk provider xG per cell instead of the goal ratio. Failed moves get −xT(start), a convention: Singh
   values only successful moves.
 - Our VAEP has no defensive actions (none in the events), a constant "concede" model, and 19 goals to learn from.

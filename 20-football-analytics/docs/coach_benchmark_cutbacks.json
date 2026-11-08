@@ -1,0 +1,68 @@
+{
+  "idsse": {
+    "definition": "completed, x0 >= 36.0 and 12.0 <= |y0| <= 25.0, x1 >= 36.0 and |y1| < 8.0 (metres, passing team attacks +x)",
+    "n": 7,
+    "n_completed": 2934,
+    "median_pct": {
+      "coach_score": {
+        "cutbacks": 0.058747113163972284,
+        "other_completed": 0.5111143187066974
+      },
+      "xt": {
+        "cutbacks": 0.9958140877598153,
+        "other_completed": 0.5754907621247113
+      },
+      "vaep": {
+        "cutbacks": 0.8506062355658198,
+        "other_completed": 0.3882794457274827
+      }
+    },
+    "coach_p_median": 0.548,
+    "net_xg": {
+      "cutbacks": 0.10975714285714284,
+      "other_completed": 0.005884933378886232,
+      "difference": 0.10387220947825661,
+      "difference_ci95": [
+        0.032639183025806894,
+        0.19937411731581145
+      ]
+    },
+    "goal_15s_rate": {
+      "cutbacks": 0.0,
+      "other_completed": 0.008882815169115136
+    }
+  },
+  "aleague": {
+    "definition": "completed, x0 >= 36.0 and 12.0 <= |y0| <= 25.0, x1 >= 36.0 and |y1| < 8.0 (metres, passing team attacks +x)",
+    "n": 54,
+    "n_completed": 12722,
+    "median_pct": {
+      "coach_score": {
+        "cutbacks": 0.036142549178119106,
+        "other_completed": 0.49514955537590943
+      },
+      "xt": {
+        "cutbacks": 0.9964295338183777,
+        "other_completed": 0.5697251414713016
+      },
+      "vaep": {
+        "cutbacks": 0.9949137698733495,
+        "other_completed": 0.48315817838857456
+      }
+    },
+    "coach_p_median": 0.668,
+    "net_xg": {
+      "cutbacks": 0.13046463261822766,
+      "other_completed": 0.006948850232362717,
+      "difference": 0.12351578238586494,
+      "difference_ci95": [
+        0.08605310207222668,
+        0.15262746011531755
+      ]
+    },
+    "goal_15s_rate": {
+      "cutbacks": 0.25925925925925924,
+      "other_completed": 0.009946321439848436
+    }
+  }
+}

@@ -375,3 +375,21 @@ def test_attach_proxy_xg_aligns_on_time_and_team():
     assert V.actions(m)["xg"][3] == pytest.approx(0.42)
     with pytest.raises(AssertionError):
         B.attach_proxy_xg(m, {"t": np.array([t + 5]), "team": np.array([1]), "xg": np.array([0.1])})
+
+
+def test_cutback_definition_and_summary():
+    base = {"success": 1, "x0": 45.0, "y0": -15.0, "x1": 47.0, "y1": 2.0}
+    assert B.is_cutback(base)
+    assert not B.is_cutback({**base, "success": 0})  # completed passes only
+    assert not B.is_cutback({**base, "y1": -10.0})  # does not reach the centre
+    assert not B.is_cutback({**base, "x0": 20.0})  # not from the byline area
+    rows = fake_rows()
+    for i, r in enumerate(rows):
+        r.update(x0=0.0, y0=0.0, x1=5.0, y1=0.0, success=1, net_xg=0.0)
+        if i % 10 == 0:  # one cut-back in ten, followed by 0.2 net xG
+            r.update(x0=45.0, y0=15.0, x1=47.0, y1=1.0, net_xg=0.2)
+    out = B.cutbacks(rows, reps=50)
+    assert out["n"] == 20 and out["n_completed"] == 200
+    assert out["net_xg"]["difference"] == pytest.approx(0.2)
+    assert out["net_xg"]["difference_ci95"] == pytest.approx([0.2, 0.2])
+    assert set(out["median_pct"]) == set(B.DISAGREE)

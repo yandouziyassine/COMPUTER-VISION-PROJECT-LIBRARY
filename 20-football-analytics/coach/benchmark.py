@@ -6,6 +6,7 @@ KDD 2019), on the same held-out passes (coach insight, part C).
                                          # -> docs/coach_benchmark_results.json + docs/coach_benchmark.png
     python -m coach.benchmark --set aleague   # the 20 A-League matches (raw store, proxy xG) -> *_aleague_*
     python -m coach.benchmark --set pooled    # all 27 matches, each scored with models fitted on the 26 others
+    python -m coach.benchmark --cutbacks      # cut-back check from the cached rows -> docs/coach_benchmark_cutbacks.json
 
 For every pass of the 7 IDSSE matches that the match report scores (datasets.pass_samples), with every model fitted
 WITHOUT the match (asserted): the coach (report.held_out_models, the site's recipe), xT (coach.xt on the other
@@ -152,6 +153,60 @@ def disagreements(rows, methods=DISAGREE, k=N_DISAGREE) -> list:
         }
         for j in order
     ]
+
+
+# Cut-back: a completed pass from the byline area (x >= 36 m, 12-25 m from the centre line) to the centre
+# (|y| < 8 m, still x >= 36 m), positions with the passing team attacking +x.
+CUTBACK_X, CUTBACK_WIDE, CUTBACK_CENTRAL = 36.0, (12.0, 25.0), 8.0
+
+
+def is_cutback(r) -> bool:
+    return bool(
+        r["success"]
+        and r["x0"] >= CUTBACK_X
+        and CUTBACK_WIDE[0] <= abs(r["y0"]) <= CUTBACK_WIDE[1]
+        and r["x1"] >= CUTBACK_X
+        and abs(r["y1"]) < CUTBACK_CENTRAL
+    )
+
+
+def cutbacks(rows, reps=EV.BOOTSTRAPS) -> dict:
+    """How each method ranks the completed cut-backs (median percentile over all passes) and what followed them:
+    mean net xG in 15 s vs the other completed passes (difference with a match-bootstrap 95 % interval), goal rate."""
+    pct = {m: pct_rank(col(rows, m)) for m in DISAGREE}
+    cut = np.array([is_cutback(r) for r in rows])
+    comp = col(rows, "success") == 1
+    other = comp & ~cut
+
+    def diff(rs):
+        c = [r["net_xg"] for r in rs if is_cutback(r)]
+        o = [r["net_xg"] for r in rs if r["success"] and not is_cutback(r)]
+        return float(np.mean(c) - np.mean(o)) if c and o else float("nan")
+
+    net, goal = col(rows, "net_xg"), col(rows, "goal_15s")
+    return {
+        "definition": f"completed, x0 >= {CUTBACK_X} and {CUTBACK_WIDE[0]} <= |y0| <= {CUTBACK_WIDE[1]}, "
+        f"x1 >= {CUTBACK_X} and |y1| < {CUTBACK_CENTRAL} (metres, passing team attacks +x)",
+        "n": int(cut.sum()),
+        "n_completed": int(comp.sum()),
+        "median_pct": {
+            m: {"cutbacks": float(np.median(pct[m][cut])), "other_completed": float(np.median(pct[m][other]))}
+            for m in DISAGREE
+        }
+        if cut.any()
+        else {},
+        "coach_p_median": float(np.median(col(rows, "coach_p")[cut])) if cut.any() else None,
+        "net_xg": {
+            "cutbacks": float(net[cut].mean()) if cut.any() else None,
+            "other_completed": float(net[other].mean()),
+            "difference": diff(rows),
+            "difference_ci95": EV.bootstrap_ci(rows, diff, reps),
+        },
+        "goal_15s_rate": {
+            "cutbacks": float(goal[cut].mean()) if cut.any() else None,
+            "other_completed": float(goal[other].mean()),
+        },
+    }
 
 
 def pass_rows(m, models, xt_model, vaep_pred, acts, horizon=D.HORIZON) -> list:
@@ -341,7 +396,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--set", choices=SETS, default="idsse")
     ap.add_argument("--reuse", action="store_true", help="metrics from the cached pass rows")
+    ap.add_argument("--cutbacks", action="store_true", help="cut-back check from the cached rows of idsse + aleague")
     args = ap.parse_args()
+    if args.cutbacks:
+        out = {}
+        for name in ("idsse", "aleague"):
+            rows = json.loads(paths(name)[0].read_text(encoding="utf-8"))["rows"]
+            out[name] = cutbacks(rows)
+            print(name, out[name]["n"], out[name]["median_pct"], out[name]["net_xg"])
+        (DOCS / "coach_benchmark_cutbacks.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+        return
     cache, results_path, chart_path = paths(args.set)
     matches, extra, info = load_set(args.set)
     acts = {mid: V.actions(m) for mid, m in matches.items()}

@@ -79,10 +79,12 @@ def pack_match(m, out: Path, fps: int = 10):
 
 def training_tables(train) -> dict:
     """Stacked pass / value / shot (penalties out) tables of the training matches."""
+    passes = [D.pass_table(m) for m in train]
     return {
-        "pass": D.stack([D.pass_table(m) for m in train]),
+        "pass": D.stack(passes),
         "value": D.stack([D.value_table(m) for m in train]),
         "shot": D.drop_penalties(D.stack([D.shot_table(m) for m in train])),
+        "arrival": D.stack([D.arrival_table(m, pt) for m, pt in zip(train, passes)]),
     }
 
 
@@ -92,11 +94,14 @@ def fit_models(tables: dict, extra_shots=None) -> dict:
     p, v, s = tables["pass"], tables["value"], tables["shot"]
     if extra_shots is not None and len(extra_shots["y"]):
         s = {"X": np.vstack([s["X"], extra_shots["X"]]), "y": np.concatenate([s["y"], extra_shots["y"]])}
-    return {
+    fitted = {
         "pass": ML.fit_logistic(p["X"], p["y"], p["weight"]),
         "value": ML.fit_ridge(v["X"], v["y"]),
         "shot": ML.fit_logistic(s["X"], s["y"]),
     }
+    if "arrival" in tables:  # value of a pass that arrives (cut-back fix), same basis as the value model
+        fitted["arrival"] = ML.fit_ridge(tables["arrival"]["X"], tables["arrival"]["y"])
+    return fitted
 
 
 def export_models(out: Path, matches, exclude=None, extra_shots=None):
@@ -121,13 +126,21 @@ def export_models(out: Path, matches, exclude=None, extra_shots=None):
             "target": "net expected goals (provider xG for minus against) within horizon_s, team in possession",
             "basis": D.F.VALUE_BASIS,
         },
+        "arrival": {
+            **ML.export_ridge(fitted["arrival"], D.F.VALUE_FEATURES),
+            "horizon_s": D.HORIZON,
+            "target": "net expected goals within horizon_s after a COMPLETED pass, at the target's position at the "
+            "release; used for the V(target) of pass options only",
+            "basis": D.F.VALUE_BASIS,
+        },
         "shot": ML.export_logistic(fitted["shot"], D.F.SHOT_FEATURES),
         "pitch_control": {"reaction": PC.REACTION, "vmax": PC.VMAX, "sigma": PC.SIGMA},
         "advice": {
             "carry_dist": A.CARRY_DIST,
             "carry_angles_deg": list(A.CARRY_ANGLES),
             "shot_range": A.SHOT_RANGE,
-            "score": "p * V(target) + (1 - p) * (-V_opp(loss point)) - V(now); shot: xG - V(now)",
+            "score": "p * V(target) + (1 - p) * (-V_opp(loss point)) - V(now); shot: xG - V(now); "
+            "V(target) of a pass = the arrival model, of a carry = the value model",
         },
     }
     (out / "models.json").write_text(json.dumps(weights, indent=2), encoding="utf-8")

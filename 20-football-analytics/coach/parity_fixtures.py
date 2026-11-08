@@ -64,7 +64,7 @@ def carrier_at(meta: dict, half: int, h, team_of, frame: int):
 
 
 def predictors(models: dict) -> dict:
-    return {k: linear_predictor(models[k]) for k in ("pass", "value", "shot")}
+    return {k: linear_predictor(models[k]) for k in ("pass", "value", "shot", "arrival") if k in models}
 
 
 def frame_record(meta: dict, half: int, h, team_of, frame: int, models: dict):

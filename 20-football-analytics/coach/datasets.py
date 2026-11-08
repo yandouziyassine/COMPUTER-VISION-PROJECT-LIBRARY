@@ -185,6 +185,31 @@ def pass_table(m) -> dict:
     return table
 
 
+def arrival_rows(pass_X) -> np.ndarray:
+    """VALUE_FEATURES of each pass target's position, rebuilt from the pass table's own features: the target's x
+    (target_x) and its distance to the goal centre give |y| (the value basis is symmetric in y)."""
+    pass_X = np.asarray(pass_X, float).reshape(-1, len(F.PASS_FEATURES))
+    tx = pass_X[:, F.PASS_FEATURES.index("target_x")]
+    gd = pass_X[:, F.PASS_FEATURES.index("target_goal_dist")]
+    aty = np.sqrt(np.maximum(gd**2 - (F.G.HALF_LENGTH - tx) ** 2, 0.0))
+    return np.array(
+        [[F.value_features(np.array([x, y]))[k] for k in F.VALUE_FEATURES] for x, y in zip(tx, aty)]
+    ).reshape(len(tx), len(F.VALUE_FEATURES))
+
+
+def arrival_table(m, pt=None) -> dict:
+    """Value of a pass that arrives (the cut-back fix): one row per completed pass of the pass table `pt` (built when
+    not given), X = the value basis at the target's position at the release (what the coach sees), y = the passing team's
+    net xG within HORIZON s of the release (completion is the condition, not a feature). A ball that arrives in the box
+    is worth 2-5 times the average second of possession at the same spot, which the possession table V underrates."""
+    pt = pass_table(m) if pt is None else pt
+    done = pt["y"] == 1
+    shots = shots_by_half(m)
+    ev = [m.events[int(i)] for i in pt["event_idx"][done]]
+    y = [net_xg(shots[e["half"]], when(m, e), e["team"], HORIZON) for e in ev]
+    return {"X": arrival_rows(pt["X"][done]), "y": np.array(y, float), "match": pt["match"][done]}
+
+
 def value_table(m, horizons=(HORIZON,), every: float = 1.0) -> dict:
     """y: net xG within the first horizon; y_h maps every horizon to its labels; half / t / team locate each row
     (labels can be recomputed with another shot value, see cross_league.value_labels)."""

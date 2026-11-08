@@ -96,6 +96,7 @@ def derive(m) -> dict:
         "league": league_of(m),
         "match": m.match_id,
         "pass": pt,
+        "arrival": D.arrival_table(m, pt),
         "value": {k: vt[k] for k in ("X", "half", "t", "team", "match")},
         "shot": shot_rows(m),
         "sync": m.meta.get("sync"),

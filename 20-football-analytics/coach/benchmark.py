@@ -7,6 +7,7 @@ KDD 2019), on the same held-out passes (coach insight, part C).
     python -m coach.benchmark --set aleague   # the 20 A-League matches (raw store, proxy xG) -> *_aleague_*
     python -m coach.benchmark --set pooled    # all 27 matches, each scored with models fitted on the 26 others
     python -m coach.benchmark --cutbacks      # cut-back check from the cached rows -> docs/coach_benchmark_cutbacks.json
+    python -m coach.benchmark --rescore aleague   # cached rows re-scored with the arrival value (coach.cutback), no tracking
 
 For every pass of the 7 IDSSE matches that the match report scores (datasets.pass_samples), with every model fitted
 WITHOUT the match (asserted): the coach (report.held_out_models, the site's recipe), xT (coach.xt on the other
@@ -396,6 +397,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--set", choices=SETS, default="idsse")
     ap.add_argument("--reuse", action="store_true", help="metrics from the cached pass rows")
+    ap.add_argument("--rescore", choices=("idsse", "aleague"), help="re-score the cached rows with the arrival value")
     ap.add_argument("--cutbacks", action="store_true", help="cut-back check from the cached rows of idsse + aleague")
     args = ap.parse_args()
     if args.cutbacks:
@@ -405,6 +407,19 @@ def main():
             out[name] = cutbacks(rows)
             print(name, out[name]["n"], out[name]["median_pct"], out[name]["net_xg"])
         (DOCS / "coach_benchmark_cutbacks.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+        return
+    if args.rescore:
+        from . import cutback as CB
+
+        cache, results_path, chart_path = paths(args.rescore)
+        rows = CB.rescored_rows({"idsse": "idsse", "aleague": "skillcorner"}[args.rescore])
+        saved = json.loads(cache.read_text(encoding="utf-8"))
+        cache.write_text(json.dumps({**saved, "rows": rows}), encoding="utf-8")
+        res = json.loads(results_path.read_text(encoding="utf-8"))
+        res.update(summarise(rows))  # agreement, calibration, paired Spearman, disagreements; xT / VAEP / cost are kept
+        res["coach_rescored"] = "coach fields re-scored with the arrival value (coach.cutback.rescore_rows)"
+        results_path.write_text(json.dumps(res, indent=2, ensure_ascii=False), encoding="utf-8")
+        chart(res, chart_path)
         return
     cache, results_path, chart_path = paths(args.set)
     matches, extra, info = load_set(args.set)

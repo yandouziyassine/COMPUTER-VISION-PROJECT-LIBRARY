@@ -5,6 +5,10 @@ features.PASS_FEATURES / VALUE_FEATURES / SHOT_FEATURES (see from_fitted for skl
 probability, the value V (expected goals for minus against within the horizon, for the team in possession with the ball
 at that point) and the shot's goal probability (xG).
 
+A pass that arrives is valued with the optional "arrival" model (same basis as "value", fitted on completed passes:
+the ball in the box after a pass is worth more than the average second of possession there, see datasets.arrival_table);
+without it the possession value V is used. Carries, the loss point, V(now) and the shot keep V.
+
 Score of an option = p * V(target) + (1 - p) * (-V_opp(loss point)) - V(now): the expected change of the net expected
 goals. V_opp is the value for the opponent in possession (the point mirrored), and the loss point is where a failed
 pass is lost (features.lane_loss_point) or, for a carry, the carry point itself. A shot scores xG - V(now).
@@ -29,9 +33,10 @@ def from_fitted(fitted: dict) -> dict:
     return {k: fn(m) for k, m in fitted.items()}
 
 
-def value_at(models, pts):
-    """V at points [N, 2] (normalised frame: the team in possession attacks +x)."""
-    return models["value"](np.array([[F.value_features(p)[k] for k in F.VALUE_FEATURES] for p in pts]))
+def value_at(models, pts, key="value"):
+    """V (key "value", the possession value) or the arrival value (key "arrival") at points [N, 2] (normalised
+    frame: the team in possession attacks +x)."""
+    return models[key](np.array([[F.value_features(p)[k] for k in F.VALUE_FEATURES] for p in pts]))
 
 
 def options(s, carrier: int, models: dict) -> list:
@@ -52,6 +57,9 @@ def options(s, carrier: int, models: dict) -> list:
         loss.append(pt)
     v_now = float(value_at(models, [here])[0])
     v_keep = value_at(models, [np.array(o["to"]) for o in out])
+    if "arrival" in models:  # passes only: the target value if the pass arrives
+        is_pass = [i for i, o in enumerate(out) if o["kind"] == "pass"]
+        v_keep[is_pass] = value_at(models, [np.array(out[i]["to"]) for i in is_pass], "arrival")
     v_opp = value_at(models, [-l for l in loss])  # the opponent attacks the other way: mirror the loss point
     for o, vk, vo in zip(out, v_keep, v_opp):
         o["value"], o["v_lost"] = float(vk), float(vo)

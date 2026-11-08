@@ -266,7 +266,8 @@ def build(m, models: dict, trained_on, horizon: float = HORIZON) -> dict:
 
 def match_tables(m) -> dict:
     """The training tables of one match (pass, value at the main horizon, shot with penalties flagged)."""
-    return {"pass": D.pass_table(m), "value": D.value_table(m), "shot": D.shot_table(m)}
+    pt = D.pass_table(m)
+    return {"pass": pt, "value": D.value_table(m), "shot": D.shot_table(m), "arrival": D.arrival_table(m, pt)}
 
 
 def held_out_models(target: str, tables: dict, extra_shots=None) -> tuple:
@@ -274,7 +275,8 @@ def held_out_models(target: str, tables: dict, extra_shots=None) -> tuple:
     pass and value models on the other matches of `tables` (match id -> match_tables), shot model on their
     non-penalty shots plus the `extra_shots` rows (X, y, match) of matches other than `target`."""
     others = [mid for mid in tables if mid != target]
-    stacked = {k: D.stack([tables[mid][k] for mid in others]) for k in ("pass", "value", "shot")}
+    keys = [k for k in ("pass", "value", "shot", "arrival") if k in tables[others[0]]]
+    stacked = {k: D.stack([tables[mid][k] for mid in others]) for k in keys}
     stacked["shot"] = D.drop_penalties(stacked["shot"])
     trained_on = list(others)
     if extra_shots is not None:

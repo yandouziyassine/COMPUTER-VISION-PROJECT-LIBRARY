@@ -76,7 +76,7 @@ def pass_scores(states: list, carrier: int, target: int, models: dict, v_now: fl
     p = np.asarray(models["pass"](X), float)
     to = [s["att"][target] for s in states]
     loss = [F.lane_loss_point(s, here, s["att"][target]) for s in states]
-    v = A.value_at(models, to)
+    v = A.value_at(models, to, "arrival" if "arrival" in models else "value")
     v_opp = A.value_at(models, [-pt for pt in loss])
     return p * v - (1 - p) * v_opp - v_now
 

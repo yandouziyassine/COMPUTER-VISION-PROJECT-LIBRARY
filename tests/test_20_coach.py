@@ -602,6 +602,7 @@ def test_export_models_leave_the_replay_match_out(tmp_path, monkeypatch):
     monkeypatch.setattr(X.D, "pass_table", fake("pass", len(X.D.F.PASS_FEATURES)))
     monkeypatch.setattr(X.D, "value_table", fake("value", len(X.D.F.VALUE_FEATURES)))
     monkeypatch.setattr(X.D, "shot_table", fake("shot", len(X.D.F.SHOT_FEATURES)))
+    monkeypatch.setattr(X.D, "arrival_table", lambda m, pt=None: fake("value", len(X.D.F.VALUE_FEATURES))(m))
     ms = [tiny_match(), tiny_match(), tiny_match()]
     for m, mid in zip(ms, "ABC"):
         m.match_id = mid
@@ -640,6 +641,7 @@ def test_export_models_pool_the_shot_model_with_extra_shots(tmp_path, monkeypatc
     monkeypatch.setattr(X.D, "pass_table", pass_or_value("pass"))
     monkeypatch.setattr(X.D, "value_table", pass_or_value("value"))
     monkeypatch.setattr(X.D, "shot_table", table)
+    monkeypatch.setattr(X.D, "arrival_table", lambda m, pt=None: pass_or_value("value")(m))
     ms = [tiny_match(), tiny_match()]
     for m, mid in zip(ms, "AB"):
         m.match_id = mid
@@ -653,7 +655,7 @@ def test_export_models_pool_the_shot_model_with_extra_shots(tmp_path, monkeypatc
     assert w["shot_trained_on"] == {"idsse": ["A"], "skillcorner_matches": 2, "shots": 140}
     assert w["shot"]["features"] == alone["shot"]["features"] and w["shot"]["link"] == "logit"
     assert w["shot"]["coef"] != alone["shot"]["coef"]  # the extra shots changed the fit
-    assert w["pass"] == alone["pass"] and w["value"] == alone["value"]  # pass and value are untouched
+    assert w["pass"] == alone["pass"] and w["value"] == alone["value"] and w["arrival"] == alone["arrival"]  # untouched
     assert set(w) == set(alone)
 
 

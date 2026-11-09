@@ -5,8 +5,8 @@
     "n_completed": 2934,
     "median_pct": {
       "coach_score": {
-        "cutbacks": 0.058747113163972284,
-        "other_completed": 0.5111143187066974
+        "cutbacks": 0.9802251732101617,
+        "other_completed": 0.4978348729792148
       },
       "xt": {
         "cutbacks": 0.9958140877598153,
@@ -38,8 +38,8 @@
     "n_completed": 12722,
     "median_pct": {
       "coach_score": {
-        "cutbacks": 0.036142549178119106,
-        "other_completed": 0.49514955537590943
+        "cutbacks": 0.9912085691188359,
+        "other_completed": 0.4975747776879548
       },
       "xt": {
         "cutbacks": 0.9964295338183777,

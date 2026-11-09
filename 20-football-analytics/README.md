@@ -576,7 +576,52 @@ Over all 54 completed A-League cut-backs, the coach's median percentile is 4 % (
 followed by 0.130 net xG vs 0.007 for other completed passes (difference +0.124 [+0.086, +0.153]), and 26 % lead to
 a goal within 15 s (1 % otherwise). The Bundesliga shows the same direction on 7 cut-backs (+0.104 [+0.033, +0.199]).
 The coach charges the pass's low completion probability and its own preference for a narrow-angle shot. It does not
-see that the ball arrives in front of goal.
+see that the ball arrives in front of goal. **Fixed**: see "Cut-back fix" below (the table above is the pre-fix coach).
+
+### Cut-back fix: an arrival value for passes
+
+[`coach/cutback.py`](coach/cutback.py), numbers in [`docs/coach_cutback_results.json`](docs/coach_cutback_results.json),
+tests `tests/test_20_cutback.py`. Leave-one-match-out within each league. The benchmark JSONs and charts in this folder now hold the post-fix coach (the pre-fix cut-back numbers are `cutbacks_before` in the cutback JSON).
+
+**Diagnosis.** The pass model is not the cause: on cut-back-shaped passes (completed or not) it predicts 0.58 and 0.63
+complete on the A-League (n = 84), 0.49 vs 0.39 on the Bundesliga (n = 15). Cut-backs really fail one time in three.
+The shot option is not the cause either: from goal angles under 0.25 rad the model gives 0.050 against 4 goals in 115
+shots, and the provider/proxy xG agrees. The value of the target is. The possession value V is calibrated by zone
+(central box: predicted 0.028, observed 0.030), but it is trained on every second of possession, and most box seconds
+are circulation. A ball that *arrives* in the central box is worth 4-5 times more: 0.136 net xG after completed passes
+into it (A-League, n = 64) against V = 0.027. For the median completed cut-back V(target) = 0.030 = V(now) 0.029, so
+p * V(target) - V(now) is negative for any p < 1: bottom 4 %.
+
+**Fix (one new model, same form).** A second ridge on the same 10-feature value basis, trained on *completed passes*:
+x = the target's position at the release, y = net xG within 15 s of the release. It replaces V(target) for **pass
+options only**; V(now), the loss point, carries and shots keep V.
+
+| Held-out | Before | After |
+|---|---|---|
+| Median coach percentile of completed cut-backs, A-League (54) | 3.6 % | **99.1 %** |
+| same, Bundesliga (7) | 5.9 % | **98.0 %** |
+| Error of V(target) on completed passes (MSE), A-League | 1.397e-3 | 1.336e-3, gain +6.2e-5 [+1.6e-5, +1.1e-4] |
+| same, Bundesliga | 1.613e-3 | 1.632e-3, gain -2.0e-5 [-1.0e-4, +4.0e-5] (not distinguishable) |
+| Mean V(target) vs observed (A-League, Bundesliga) | 0.0039, 0.0045 vs 0.0075, 0.0061 | 0.0075, 0.0063 |
+| Pass model, possession value V | | unchanged (same fits) |
+| Coach score vs net xG in 15 s (Spearman), A-League / Bundesliga | -0.021 / -0.069 | **+0.086 [0.065, 0.103] / +0.083 [0.051, 0.110]** |
+| Value after the pass (coach_after) vs net xG, A-League / Bundesliga | 0.254 / 0.237 | 0.250 / 0.239 |
+| Coach score vs xT, all passes, A-League / Bundesliga | 0.455 / 0.306 | 0.350 / 0.228 |
+| Coach score vs VAEP, all passes, A-League / Bundesliga | 0.294 / -0.016 | 0.269 / 0.010 |
+| Coach after minus xT after (vs net xG), completed, A-League | -0.016 | -0.021 [-0.027, -0.015] |
+
+Agreement with xT falls because the coach no longer ranks arrivals like xT does but now ranks the risk-adjusted score
+in line with what followed; the like-for-like "value after the pass" comparison is unchanged. Side effect on the
+held-out report (7 matches): the pro's pass is the coach's top choice 9.2 % vs 8.8 % of the time (top 3: 30.1 % vs 30.6 %),
+but the coach recommends a pass as its best option more often (92 % vs 84 %; carries 2 % vs 7 %), and the gap between
+the coach's best option and the pro's pass grows (mean 0.0074 vs 0.0059).
+
+**Tried, not shipped.** Pass features target goal angle + central-box + box indicators: log-loss gain -0.0005 [-0.0027,
++0.0012] (Bundesliga), +0.0005 [-0.0003, +0.0012] (A-League). Central-box terms in the possession value: no gain
+(|MSE gain| < 2e-6). A log-angle shot feature: log-loss gain -0.0003 [-0.0017, +0.0011]. **Limits:** 7 Bundesliga
+cut-backs; the A-League benchmark was re-scored from its cached rows (the raw store was offline), which is exact up to
+the rounding of the cached p (max difference 1.5e-4, checked against a full re-run on the Bundesliga); the pooled
+27-match benchmark was not refreshed (it is the pre-fix coach). The earlier tables in this document are the pre-fix coach.
 
 ### Run the coach
 
@@ -598,6 +643,8 @@ python -m coach.benchmark                                    # benchmark vs xT a
 python -m coach.skillcorner --store-raw D:/cv-data/skillcorner-raw   # A-League raw files kept (1.8 GB streamed, 133 MB kept)
 python -m coach.benchmark --set aleague                      # the same on the 20 A-League matches (~30 min)
 python -m coach.benchmark --set pooled                       # all 27 matches pooled (~40 min); --cutbacks: cut-back check
+python -m coach.cutback                                      # cut-back diagnosis and fix check (~2 min, cached rows)
+python -m coach.benchmark --rescore aleague                  # cached A-League rows re-scored with the arrival value
 ```
 
 All numbers: [`docs/coach_results.json`](docs/coach_results.json),

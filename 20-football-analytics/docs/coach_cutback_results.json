@@ -1,0 +1,440 @@
+{
+  "idsse": {
+    "diagnosis": {
+      "pass_model_on_cutback_shaped_passes": {
+        "n": 15,
+        "n_completed": 7,
+        "mean_predicted": 0.49432158645937946,
+        "observed_completion_weighted": 0.390264047424091,
+        "observed_completion_raw": 0.4666666666666667,
+        "all_passes_predicted": 0.7973123085568488,
+        "all_passes_observed": 0.7965839163069268
+      },
+      "possession_value_by_zone": {
+        "central box x >= 40, |y| < 6": {
+          "n": 179,
+          "predicted": 0.02364914653560302,
+          "observed": 0.0265195530726257
+        },
+        "wide byline x >= 46, 12 <= |y| <= 20": {
+          "n": 115,
+          "predicted": 0.0241629706373122,
+          "observed": 0.021170434782608702
+        }
+      },
+      "completed_cutbacks": {
+        "n": 7,
+        "median_p": 0.548,
+        "median_v_now": 0.022944477196241972,
+        "median_v_target": 0.027371977541868018,
+        "realised_net_xg_15s": 0.10975714285714284,
+        "goal_15s": 0.0
+      }
+    },
+    "by_target_region": {
+      "central box (x >= 40, |y| < 6), any origin": {
+        "n": 9,
+        "realised_net_xg": 0.16473333333333334,
+        "v_possession": 0.02612173043198995,
+        "v_arrival": 0.1066937629609291
+      },
+      "from wide (x0 >= 36, |y0| >= 12)": {
+        "n": 4,
+        "realised_net_xg": 0.12925,
+        "v_possession": 0.028267576547267276,
+        "v_arrival": 0.07752278654800124
+      },
+      "other box (x >= 36, |y| < 20.16)": {
+        "n": 59,
+        "realised_net_xg": 0.06340508474576272,
+        "v_possession": 0.023119755098565058,
+        "v_arrival": 0.039842849969380874
+      },
+      "outside the box, x >= 20": {
+        "n": 444,
+        "realised_net_xg": 0.014839414414414413,
+        "v_possession": 0.014228620412963371,
+        "v_arrival": 0.018611894388325174
+      },
+      "own half, x < 0": {
+        "n": 1658,
+        "realised_net_xg": 0.0006182147165259348,
+        "v_possession": 0.00017108096892440717,
+        "v_arrival": 0.0008243247423014549
+      }
+    },
+    "arrival_vs_possession_value": {
+      "n_completed": 2934,
+      "mse_possession_v": 0.0016126141104252346,
+      "mse_arrival": 0.001632337683681397,
+      "mse_gain": -1.972357325616251e-05,
+      "mse_gain_ci95": [
+        -0.00010492841339649967,
+        4.040976350626552e-05
+      ],
+      "r2_possession_v": 0.04823245970372492,
+      "r2_arrival": 0.03659157383864897,
+      "mean_observed": 0.0061327539195637345,
+      "mean_possession_v": 0.0044894205920261755,
+      "mean_arrival": 0.0062826371605603885
+    },
+    "cutbacks_before": {
+      "definition": "completed, x0 >= 36.0 and 12.0 <= |y0| <= 25.0, x1 >= 36.0 and |y1| < 8.0 (metres, passing team attacks +x)",
+      "n": 7,
+      "n_completed": 2934,
+      "median_pct": {
+        "coach_score": {
+          "cutbacks": 0.058747113163972284,
+          "other_completed": 0.5111143187066974
+        },
+        "xt": {
+          "cutbacks": 0.9958140877598153,
+          "other_completed": 0.5754907621247113
+        },
+        "vaep": {
+          "cutbacks": 0.8506062355658198,
+          "other_completed": 0.3882794457274827
+        }
+      },
+      "coach_p_median": 0.548,
+      "net_xg": {
+        "cutbacks": 0.10975714285714284,
+        "other_completed": 0.005884933378886232,
+        "difference": 0.10387220947825661,
+        "difference_ci95": [
+          0.032639183025806894,
+          0.19937411731581145
+        ]
+      },
+      "goal_15s_rate": {
+        "cutbacks": 0.0,
+        "other_completed": 0.008882815169115136
+      }
+    },
+    "cutbacks_after": {
+      "definition": "completed, x0 >= 36.0 and 12.0 <= |y0| <= 25.0, x1 >= 36.0 and |y1| < 8.0 (metres, passing team attacks +x)",
+      "n": 7,
+      "n_completed": 2934,
+      "median_pct": {
+        "coach_score": {
+          "cutbacks": 0.9802251732101617,
+          "other_completed": 0.4978348729792148
+        },
+        "xt": {
+          "cutbacks": 0.9958140877598153,
+          "other_completed": 0.5754907621247113
+        },
+        "vaep": {
+          "cutbacks": 0.8506062355658198,
+          "other_completed": 0.3882794457274827
+        }
+      },
+      "coach_p_median": 0.548,
+      "net_xg": {
+        "cutbacks": 0.10975714285714284,
+        "other_completed": 0.005884933378886232,
+        "difference": 0.10387220947825661,
+        "difference_ci95": [
+          0.032639183025806894,
+          0.19937411731581145
+        ]
+      },
+      "goal_15s_rate": {
+        "cutbacks": 0.0,
+        "other_completed": 0.008882815169115136
+      }
+    },
+    "variants_not_shipped": {
+      "pass_features_plus_target_angle_central_box": {
+        "log_loss_gain": -0.0005186208849526919,
+        "log_loss_gain_ci95": [
+          -0.002654113398597123,
+          0.0011835030160176022
+        ],
+        "brier_gain": 0.00011883369064180638,
+        "brier_gain_ci95": [
+          -0.0006569150922526613,
+          0.0007631390010827642
+        ],
+        "cutback_shaped_mean_p": [
+          0.49432158645937946,
+          0.3853971635569453
+        ],
+        "cutback_shaped_observed": 0.390264047424091
+      },
+      "possession_value_plus_central_box_terms": {
+        "mse_gain": -1.2220346482954593e-06,
+        "mse_gain_ci95": [
+          -2.827906293224891e-06,
+          -2.762653032819557e-08
+        ]
+      }
+    }
+  },
+  "skillcorner": {
+    "diagnosis": {
+      "pass_model_on_cutback_shaped_passes": {
+        "n": 84,
+        "n_completed": 54,
+        "mean_predicted": 0.575411983440258,
+        "observed_completion_weighted": 0.6285932286668217,
+        "observed_completion_raw": 0.6428571428571429,
+        "all_passes_predicted": 0.8486558134240516,
+        "all_passes_observed": 0.8487791772860209
+      },
+      "possession_value_by_zone": {
+        "central box x >= 40, |y| < 6": {
+          "n": 690,
+          "predicted": 0.027750701526747842,
+          "observed": 0.03032246523957322
+        },
+        "wide byline x >= 46, 12 <= |y| <= 20": {
+          "n": 278,
+          "predicted": 0.03190653550029572,
+          "observed": 0.031758346361254255
+        }
+      },
+      "completed_cutbacks": {
+        "n": 54,
+        "median_p": 0.668,
+        "median_v_now": 0.029447877388841203,
+        "median_v_target": 0.02961267958413969,
+        "realised_net_xg_15s": 0.13046463261822766,
+        "goal_15s": 0.25925925925925924
+      }
+    },
+    "by_target_region": {
+      "central box (x >= 40, |y| < 6), any origin": {
+        "n": 64,
+        "realised_net_xg": 0.1362649509961747,
+        "v_possession": 0.027077860766048015,
+        "v_arrival": 0.0916707283952754
+      },
+      "from wide (x0 >= 36, |y0| >= 12)": {
+        "n": 38,
+        "realised_net_xg": 0.15415291793333538,
+        "v_possession": 0.02915002479372551,
+        "v_arrival": 0.10655505248135895
+      },
+      "other box (x >= 36, |y| < 20.16)": {
+        "n": 250,
+        "realised_net_xg": 0.05392151128632917,
+        "v_possession": 0.023450696456105227,
+        "v_arrival": 0.048409233413250714
+      },
+      "outside the box, x >= 20": {
+        "n": 2298,
+        "realised_net_xg": 0.018824779773465212,
+        "v_possession": 0.013550948735363237,
+        "v_arrival": 0.018976066792508843
+      },
+      "own half, x < 0": {
+        "n": 6869,
+        "realised_net_xg": 0.0013065961154156197,
+        "v_possession": -0.0010732912324284024,
+        "v_arrival": 0.0016115104498025433
+      }
+    },
+    "arrival_vs_possession_value": {
+      "n_completed": 12722,
+      "mse_possession_v": 0.0013974406990870654,
+      "mse_arrival": 0.0013356285381627819,
+      "mse_gain": 6.181216092428351e-05,
+      "mse_gain_ci95": [
+        1.595257797303301e-05,
+        0.00011112872517437465
+      ],
+      "r2_possession_v": 0.05953461513857894,
+      "r2_arrival": 0.10113365955652776,
+      "mean_observed": 0.0074731272523939,
+      "mean_possession_v": 0.003940972716741537,
+      "mean_arrival": 0.007475451176340463
+    },
+    "cutbacks_before": {
+      "definition": "completed, x0 >= 36.0 and 12.0 <= |y0| <= 25.0, x1 >= 36.0 and |y1| < 8.0 (metres, passing team attacks +x)",
+      "n": 54,
+      "n_completed": 12722,
+      "median_pct": {
+        "coach_score": {
+          "cutbacks": 0.036142549178119106,
+          "other_completed": 0.49514955537590943
+        },
+        "xt": {
+          "cutbacks": 0.9964295338183777,
+          "other_completed": 0.5697251414713016
+        },
+        "vaep": {
+          "cutbacks": 0.9949137698733495,
+          "other_completed": 0.48315817838857456
+        }
+      },
+      "coach_p_median": 0.668,
+      "net_xg": {
+        "cutbacks": 0.13046463261822766,
+        "other_completed": 0.006948850232362717,
+        "difference": 0.12351578238586494,
+        "difference_ci95": [
+          0.08605310207222668,
+          0.15262746011531755
+        ]
+      },
+      "goal_15s_rate": {
+        "cutbacks": 0.25925925925925924,
+        "other_completed": 0.009946321439848436
+      }
+    },
+    "cutbacks_after": {
+      "definition": "completed, x0 >= 36.0 and 12.0 <= |y0| <= 25.0, x1 >= 36.0 and |y1| < 8.0 (metres, passing team attacks +x)",
+      "n": 54,
+      "n_completed": 12722,
+      "median_pct": {
+        "coach_score": {
+          "cutbacks": 0.9912085691188359,
+          "other_completed": 0.4975747776879548
+        },
+        "xt": {
+          "cutbacks": 0.9964295338183777,
+          "other_completed": 0.5697251414713016
+        },
+        "vaep": {
+          "cutbacks": 0.9949137698733495,
+          "other_completed": 0.48315817838857456
+        }
+      },
+      "coach_p_median": 0.668,
+      "net_xg": {
+        "cutbacks": 0.13046463261822766,
+        "other_completed": 0.006948850232362717,
+        "difference": 0.12351578238586494,
+        "difference_ci95": [
+          0.08605310207222668,
+          0.15262746011531755
+        ]
+      },
+      "goal_15s_rate": {
+        "cutbacks": 0.25925925925925924,
+        "other_completed": 0.009946321439848436
+      }
+    },
+    "variants_not_shipped": {
+      "pass_features_plus_target_angle_central_box": {
+        "log_loss_gain": 0.00045681218891319153,
+        "log_loss_gain_ci95": [
+          -0.00033065206293400736,
+          0.0012199528793220254
+        ],
+        "brier_gain": 0.00021587646068832456,
+        "brier_gain_ci95": [
+          -7.767706731619389e-05,
+          0.0005106290218509343
+        ],
+        "cutback_shaped_mean_p": [
+          0.575411983440258,
+          0.49358235786671806
+        ],
+        "cutback_shaped_observed": 0.6285932286668217
+      },
+      "possession_value_plus_central_box_terms": {
+        "mse_gain": 1.7379039217793602e-07,
+        "mse_gain_ci95": [
+          -4.904049854285812e-07,
+          8.328227988346564e-07
+        ]
+      }
+    }
+  },
+  "shot_option_at_narrow_angles": {
+    "idsse": [
+      {
+        "goal_angle_rad": [
+          0.0,
+          0.25
+        ],
+        "n": 24,
+        "model_p": 0.041485331959489835,
+        "provider_or_proxy_xg": 0.03194583333333333,
+        "goal_rate": 0.041666666666666664,
+        "goals": 1
+      },
+      {
+        "goal_angle_rad": [
+          0.25,
+          0.4
+        ],
+        "n": 68,
+        "model_p": 0.06558202847249518,
+        "provider_or_proxy_xg": 0.06751029411764707,
+        "goal_rate": 0.08823529411764706,
+        "goals": 6
+      },
+      {
+        "goal_angle_rad": [
+          0.4,
+          0.7
+        ],
+        "n": 59,
+        "model_p": 0.13956239683426497,
+        "provider_or_proxy_xg": 0.1120915254237288,
+        "goal_rate": 0.06779661016949153,
+        "goals": 4
+      },
+      {
+        "goal_angle_rad": [
+          0.7,
+          3.5
+        ],
+        "n": 17,
+        "model_p": 0.2957070652254773,
+        "provider_or_proxy_xg": 0.24375882352941178,
+        "goal_rate": 0.29411764705882354,
+        "goals": 5
+      }
+    ],
+    "skillcorner": [
+      {
+        "goal_angle_rad": [
+          0.0,
+          0.25
+        ],
+        "n": 91,
+        "model_p": 0.05273300931392821,
+        "provider_or_proxy_xg": 0.0486792419128906,
+        "goal_rate": 0.03296703296703297,
+        "goals": 3
+      },
+      {
+        "goal_angle_rad": [
+          0.25,
+          0.4
+        ],
+        "n": 235,
+        "model_p": 0.062050739305726195,
+        "provider_or_proxy_xg": 0.05952890576032133,
+        "goal_rate": 0.06808510638297872,
+        "goals": 16
+      },
+      {
+        "goal_angle_rad": [
+          0.4,
+          0.7
+        ],
+        "n": 133,
+        "model_p": 0.14418606899328795,
+        "provider_or_proxy_xg": 0.11882427055940195,
+        "goal_rate": 0.16541353383458646,
+        "goals": 22
+      },
+      {
+        "goal_angle_rad": [
+          0.7,
+          3.5
+        ],
+        "n": 67,
+        "model_p": 0.29442738985378586,
+        "provider_or_proxy_xg": 0.25797522930118505,
+        "goal_rate": 0.29850746268656714,
+        "goals": 20
+      }
+    ]
+  }
+}

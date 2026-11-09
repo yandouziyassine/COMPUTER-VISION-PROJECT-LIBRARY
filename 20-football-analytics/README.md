@@ -274,10 +274,12 @@ data [10.6084/m9.figshare.28196177](https://doi.org/10.6084/m9.figshare.28196177
   the provider's xG where it has it and our model only as a fallback.
 - **The coach is calibrated in expected goals but not a better ranker than V alone.** For the pass the player
   actually made, the coach's expected outcome tracks the realised net xG (Spearman 0.24, 95 % CI 0.22–0.26, slope
-  1.15): when it says a choice is worth more, it usually is. But ranking by V(target) alone does as well (0.24).
+  0.95 [0.59, 1.34]; 1.15 before the cut-back fix): when it says a choice is worth more, it usually is. But ranking
+  by the target's value alone does as well (0.24).
 - **It plays bolder than the pros.** Completion of the pass the player chose, by the coach's rank of that option:
-  rank 1: 69 %, ranks 2–3: 78 %, 4–6: 81 %, 7+: 85 %. Its top suggestions are the riskier, more valuable passes.
-  It agrees with the receiver the pro chose in 37 % of cases (top-3), about the same as random (30 %); the
+  rank 1: 66 %, ranks 2–3: 78 %, 4–6: 81 %, 7+: 84 % (before the cut-back fix: 69 / 78 / 81 / 85 %). Its top
+  suggestions are the riskier, more valuable passes. It agrees with the receiver the pro chose in 33 % of cases
+  (top-3; 37 % before the fix), about the same as random (30 %); the
   nearest-teammate rule agrees 67 %. That is expected (a coach that copied pros would be pointless), but it also
   means the advice is a *value* opinion, not a prediction of what a player will do.
 
@@ -621,7 +623,10 @@ the coach's best option and the pro's pass grows (mean 0.0074 vs 0.0059).
 (|MSE gain| < 2e-6). A log-angle shot feature: log-loss gain -0.0003 [-0.0017, +0.0011]. **Limits:** 7 Bundesliga
 cut-backs; the A-League benchmark was re-scored from its cached rows (the raw store was offline), which is exact up to
 the rounding of the cached p (max difference 1.5e-4, checked against a full re-run on the Bundesliga); the pooled
-27-match benchmark was not refreshed (it is the pre-fix coach). The earlier tables in this document are the pre-fix coach.
+27-match benchmark was re-run in full with the post-fix coach on 2026-11-08: after-values unchanged (Bundesliga 0.24,
+A-League 0.25; xT 0.25 / 0.27, VAEP 0.25 / 0.24), and the coach's risk-aware score now agrees with what follows in
+both leagues (+0.053 [0.026, 0.077] and +0.097 [0.074, 0.115], from −0.044 and −0.025). The completion-by-rank figures
+in "Results (held-out matches)" were refreshed the same day; the other earlier tables in this document are the pre-fix coach.
 
 ### Run the coach
 

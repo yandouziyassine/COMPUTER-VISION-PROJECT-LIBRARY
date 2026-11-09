@@ -239,7 +239,8 @@ def bucket_chart(buckets, path):
 
 def main():
     matches = [load(OUT / mid) for mid in MATCHES]
-    pt = D.stack([D.pass_table(m) for m in matches])
+    pts = [D.pass_table(m) for m in matches]
+    pt = D.stack(pts)
     vt = D.stack([D.value_table(m, horizons=D.HORIZONS) for m in matches])
     st = D.drop_penalties(D.stack([D.shot_table(m) for m in matches]))
     i = F.PASS_FEATURES.index
@@ -326,18 +327,22 @@ def main():
     )
 
     # ------------------------------------------------------------------ advice on held-out matches, per horizon
+    # the coach values pass targets with the arrival model (cut-back fix), fitted on the same horizon as V
     advice = {}
     for hz in D.HORIZONS:
+        at = D.stack([D.arrival_table(m, p, horizon=hz) for m, p in zip(matches, pts)])
         recs = []
         for m in matches:
             tr = pt["match"] != m.match_id
             vtr = vt["match"] != m.match_id
             ttr = st["match"] != m.match_id
+            atr = at["match"] != m.match_id
             models = A.from_fitted(
                 {
                     "pass": ML.fit_logistic(pt["X"][tr], pt["y"][tr], pt["weight"][tr]),
                     "value": ML.fit_ridge(vt["X"][vtr], vt["y_h"][hz][vtr]),
                     "shot": ML.fit_logistic(st["X"][ttr], st["y"][ttr]),
+                    "arrival": ML.fit_ridge(at["X"][atr], at["y"][atr]),
                 }
             )
             xt = ML.fit_xt_grid(vt["X"][vtr], vt["y_h"][hz][vtr])

@@ -197,16 +197,16 @@ def arrival_rows(pass_X) -> np.ndarray:
     ).reshape(len(tx), len(F.VALUE_FEATURES))
 
 
-def arrival_table(m, pt=None) -> dict:
+def arrival_table(m, pt=None, horizon=None) -> dict:
     """Value of a pass that arrives (the cut-back fix): one row per completed pass of the pass table `pt` (built when
     not given), X = the value basis at the target's position at the release (what the coach sees), y = the passing team's
-    net xG within HORIZON s of the release (completion is the condition, not a feature). A ball that arrives in the box
+    net xG within `horizon` (default HORIZON) s of the release (completion is the condition, not a feature). A ball that arrives in the box
     is worth 2-5 times the average second of possession at the same spot, which the possession table V underrates."""
     pt = pass_table(m) if pt is None else pt
     done = pt["y"] == 1
     shots = shots_by_half(m)
     ev = [m.events[int(i)] for i in pt["event_idx"][done]]
-    y = [net_xg(shots[e["half"]], when(m, e), e["team"], HORIZON) for e in ev]
+    y = [net_xg(shots[e["half"]], when(m, e), e["team"], horizon or HORIZON) for e in ev]
     return {"X": arrival_rows(pt["X"][done]), "y": np.array(y, float), "match": pt["match"][done]}
 
 

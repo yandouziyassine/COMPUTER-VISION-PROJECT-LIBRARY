@@ -207,10 +207,13 @@ Bundesliga (coach_score vs VAEP 0.32 instead of −0.02).
 **Pooled 27 matches** ([`coach_benchmark_pooled_results.json`](coach_benchmark_pooled_results.json)). Each match
 is scored with all three methods fitted on the 26 others, Bundesliga and A-League together. Results stay per league.
 On the **Bundesliga**, pooling mainly helps VAEP. Its after-value rises from 0.18 to 0.25 [0.22, 0.28], level with
-the coach (0.24 [0.22, 0.26]; coach − VAEP −0.006 [−0.031, +0.015]) and xT (0.25 [0.22, 0.29]). Its goal AUC rises
-from 0.66 to 0.78 [0.71, 0.88]. On the **A-League**, pooling changes nothing that matters (coach 0.26, xT 0.27,
-VAEP 0.24). So VAEP's last place in the Bundesliga was a data-size effect, while xT's small lead over the coach is
-seen in every setting.
+the coach (0.24 [0.22, 0.26]; coach − VAEP −0.007 [−0.034, +0.013]) and xT (0.25 [0.22, 0.29]). Its goal AUC rises
+from 0.66 to 0.78 [0.71, 0.88]. On the **A-League**, pooling changes nothing that matters (coach 0.25, xT 0.27,
+VAEP 0.24; coach − xT −0.019 [−0.035, −0.005]). So VAEP's last place in the Bundesliga was a data-size effect, while
+xT's small lead over the coach is seen in every setting. These pooled figures are the **post-fix coach** (full re-run
+with the arrival value, 2026-11-08). The fix leaves the after-values where they were (Bundesliga 0.240 → 0.238,
+A-League 0.255 → 0.251) and turns the coach's risk-aware score from slightly negative to positive against what
+follows: −0.044 → **+0.053 [0.026, 0.077]** (Bundesliga), −0.025 → **+0.097 [0.074, 0.115]** (A-League).
 
 ### The cut-back finding
 
@@ -293,7 +296,8 @@ the coach's best option and the pro's pass grows (mean 0.0074 vs 0.0059).
 (|MSE gain| < 2e-6). A log-angle shot feature: log-loss gain -0.0003 [-0.0017, +0.0011]. **Limits:** 7 Bundesliga
 cut-backs; the A-League benchmark was re-scored from its cached rows (the raw store was offline), which is exact up to
 the rounding of the cached p (max difference 1.5e-4, checked against a full re-run on the Bundesliga); the pooled
-27-match benchmark was not refreshed (it is the pre-fix coach). The earlier tables in this document are the pre-fix coach.
+27-match benchmark was re-run in full with the post-fix coach on 2026-11-08 (raw store back online; see "Pooled 27
+matches"). The other earlier tables in this document are the pre-fix coach.
 
 ## Cost
 

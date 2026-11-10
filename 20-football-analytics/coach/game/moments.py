@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from .. import datasets as D
 from .. import evaluate as EV
 from .. import explain as E
 from .. import features as F
@@ -52,6 +53,19 @@ def fill_gaps(track: np.ndarray, max_gap: int = 6) -> np.ndarray:
 
 def cm_or_none(a):
     return None if np.isnan(a[0]) else cm(a)
+
+
+def score_at(m, half: int, frame: int) -> list:
+    """[home, away] goals before a frame (goal events of both teams; own goals count for the team the provider
+    credits)."""
+    t = float(m.halves[half].t[frame])
+    out = [0, 0]
+    for e in m.events:
+        if e["type"] != "shot" or not e.get("goal") or e.get("team") not in (0, 1) or e.get("half") is None:
+            continue
+        if e["half"] < half or (e["half"] == half and D.when(m, e) < t):
+            out[int(e["team"])] += 1
+    return out
 
 
 def is_cutback(here, to) -> bool:
@@ -135,6 +149,7 @@ def match_moments(m, held_out, refits, league: str, require_full: bool = True) -
             "away": away,
             "attacking": "home" if int(e["team"]) == 0 else "away",
             "minute": int((float(h.t[frame]) - t_start) // 60) + 45 * half,
+            "scoreline": score_at(m, half, frame),
             "fps": fps / step,
             "carrier": player_of[int(s["att_idx"][carrier])],
             "players": [

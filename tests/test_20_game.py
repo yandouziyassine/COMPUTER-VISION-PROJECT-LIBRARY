@@ -205,7 +205,7 @@ def test_moment_files_match_schemas_and_hide_answers(built):
         jsonschema.validate(c["answer"], schema("answer"))
         text = json.dumps(c["public"])
         for banned in ("score", "points", "share_top", "pro_pick", "ai_pick", "outcome", "reasons", "net_xg"):
-            assert banned not in text
+            assert f'"{banned}"' not in text
 
 
 def test_answers_are_held_out_and_consistent(built):
@@ -312,3 +312,10 @@ def test_fill_gaps_interpolates_short_gaps_only():
     out = GM.fill_gaps(t, max_gap=6)
     assert np.allclose(out[:4], [[0, 0], [1, 1], [2, 2], [3, 3]])
     assert np.isnan(out[4:12]).all() and out[12, 0] == 9.0
+
+
+def test_score_at_counts_goals_before_the_frame():
+    m = eleven_match("SYS")
+    assert GM.score_at(m, 0, 150) == [0, 0]
+    assert GM.score_at(m, 0, 200) == [1, 0]
+    assert GM.score_at(m, 1, 10) == [1, 0]

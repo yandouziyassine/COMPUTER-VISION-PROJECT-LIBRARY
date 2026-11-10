@@ -109,7 +109,11 @@ def candidates(cache: Path, n_refits: int, match_set: str = "pooled") -> dict:
             _write(f, cands)
             print(mid, len(cands), "moments", flush=True)
         for c in json.loads(f.read_text(encoding="utf-8")):
-            out[c["public"]["id"]] = c
+            pub = c["public"]
+            if "scoreline" not in pub:  # caches written before the scoreline field
+                _, half, frame = pub["id"].rsplit("-", 2)
+                pub["scoreline"] = GM.score_at(m, int(half), int(frame))
+            out[pub["id"]] = c
     return out
 
 

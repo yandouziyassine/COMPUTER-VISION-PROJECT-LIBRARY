@@ -305,3 +305,10 @@ def test_after_footage_starts_at_the_release_and_follows_the_moment_player_order
         assert after["frames"][0] == pub["lead_up"][-1]
         assert all(len(f) == len(pub["players"]) for f in after["frames"])
         assert len(after["frames"]) == len(after["ball"])
+
+
+def test_fill_gaps_interpolates_short_gaps_only():
+    t = np.array([[0.0, 0.0], [np.nan, np.nan], [np.nan, np.nan], [3.0, 3.0]] + [[np.nan, np.nan]] * 8 + [[9.0, 9.0]])
+    out = GM.fill_gaps(t, max_gap=6)
+    assert np.allclose(out[:4], [[0, 0], [1, 1], [2, 2], [3, 3]])
+    assert np.isnan(out[4:12]).all() and out[12, 0] == 9.0

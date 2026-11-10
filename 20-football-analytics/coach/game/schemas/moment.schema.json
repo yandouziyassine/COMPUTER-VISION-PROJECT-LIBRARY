@@ -27,7 +27,7 @@
       "items": {"type": "array", "minItems": 18, "maxItems": 22,
         "items": {"oneOf": [{"type": "null"}, {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "integer"}}]}}
     },
-    "ball": {"type": "array", "minItems": 2, "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "integer"}}},
+    "ball": {"type": "array", "minItems": 2, "items": {"oneOf": [{"type": "null"}, {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "integer"}}]}},
     "options": {
       "type": "array", "minItems": 3,
       "items": {

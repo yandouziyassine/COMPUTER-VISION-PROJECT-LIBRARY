@@ -38,6 +38,22 @@ def cm(a) -> list:
     return [int(round(float(v) * 100)) for v in a]
 
 
+def fill_gaps(track: np.ndarray, max_gap: int = 6) -> np.ndarray:
+    """[T, 2] positions: linear interpolation over NaN gaps of at most `max_gap` frames between two known points (the
+    broadcast tracking loses the ball for a few frames); longer gaps and the ends stay NaN."""
+    out = np.array(track, float)
+    known = np.flatnonzero(~np.isnan(out[:, 0]))
+    for a, b in zip(known[:-1], known[1:]):
+        if 1 < b - a <= max_gap + 1:
+            t = (np.arange(a + 1, b) - a) / (b - a)
+            out[a + 1 : b] = out[a] + t[:, None] * (out[b] - out[a])
+    return out
+
+
+def cm_or_none(a):
+    return None if np.isnan(a[0]) else cm(a)
+
+
 def is_cutback(here, to) -> bool:
     return bool(
         here[0] >= CUTBACK_X
@@ -82,10 +98,10 @@ def match_moments(m, held_out, refits, league: str, require_full: bool = True) -
         if frames_src[-1] != frame:
             frames_src.append(frame)
         lead = G.normalise(h.xy[frames_src][:, idx], s["direction"])
-        ball = G.normalise(h.ball[frames_src, :2], s["direction"])
+        ball = fill_gaps(G.normalise(h.ball[frames_src, :2], s["direction"]))
         after_src = list(range(frame, min(len(h.t), frame + int(round(AFTER_S * fps)) + 1), step))
         after = G.normalise(h.xy[after_src][:, idx], s["direction"])
-        after_ball = G.normalise(h.ball[after_src, :2], s["direction"])
+        after_ball = fill_gaps(G.normalise(h.ball[after_src, :2], s["direction"]))
         n_att, n_def = len(s["att_idx"]), len(s["def_idx"])
         bad = GQ.problems(n_att, n_def, float(np.linalg.norm(s["ball"] - s["att"][carrier])), lead, len(opts))
         if require_full:
@@ -126,7 +142,7 @@ def match_moments(m, held_out, refits, league: str, require_full: bool = True) -
                 for i, pid in enumerate(idx)
             ],
             "lead_up": [[None if np.isnan(xy[0]) else cm(xy) for xy in f] for f in lead],
-            "ball": [cm(b) for b in ball],
+            "ball": [cm_or_none(b) for b in ball],
             "options": public_opts,
             "credit": CREDITS[league],
         }
@@ -153,7 +169,7 @@ def match_moments(m, held_out, refits, league: str, require_full: bool = True) -
             "after": {
                 "fps": fps / step,
                 "frames": [[None if np.isnan(xy[0]) else cm(xy) for xy in f] for f in after],
-                "ball": [None if np.isnan(b[0]) else cm(b) for b in after_ball],
+                "ball": [cm_or_none(b) for b in after_ball],
             },
             "models": {"content_version": CONTENT_VERSION, "trained_without": str(m.match_id), "refits": len(refits)},
         }

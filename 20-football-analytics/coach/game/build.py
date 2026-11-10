@@ -48,6 +48,8 @@ def write_release(root: Path, cands: dict, days: list, start: str) -> Path:
                 "moments": [f["id"] for f in d],
             },
         )
+    index = [{"date": (first + dt.timedelta(days=i)).isoformat(), "day_number": i + 1} for i in range(len(days))]
+    _write(out / "public" / "days" / "index.json", {"days": index})
     shutil.copytree(SCHEMAS, out / "schemas", dirs_exist_ok=True)
     _write(
         out / "release.json",
@@ -69,12 +71,12 @@ def validate_release(out: Path) -> list:
     }
     errors = []
     for kind, folder in (("day", "public/days"), ("moment", "public/moments"), ("answer", "answers")):
-        for f in sorted((out / folder).glob("*.json")):
+        for f in sorted(g for g in (out / folder).glob("*.json") if g.name != "index.json"):
             try:
                 jsonschema.validate(json.loads(f.read_text(encoding="utf-8")), sch[kind])
             except jsonschema.ValidationError as e:
                 errors.append(f"{f.name}: {e.message}")
-    for f in (out / "public" / "days").glob("*.json"):
+    for f in (out / "public" / "days").glob("????-??-??.json"):
         for mid in json.loads(f.read_text(encoding="utf-8"))["moments"]:
             if (
                 not (out / "public" / "moments" / f"{mid}.json").exists()

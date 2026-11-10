@@ -628,6 +628,32 @@ A-League 0.25; xT 0.25 / 0.27, VAEP 0.25 / 0.24), and the coach's risk-aware sco
 both leagues (+0.053 [0.026, 0.077] and +0.097 [0.074, 0.115], from −0.044 and −0.025). The completion-by-rank figures
 in "Results (held-out matches)" were refreshed the same day; the other earlier tables in this document are the pre-fix coach.
 
+### Playmaker content (daily decision game, 2026-11-09)
+
+[`coach/game/`](coach/game/) turns the coach into the content of **Playmaker**, a daily football decision game
+([spec](../docs/superpowers/specs/2026-11-09-playmaker-fan-game-design.md), product repo
+[yandouziyassine/playmaker](https://github.com/yandouziyassine/playmaker)). For every synced pass decision of a match,
+with models trained **without that match**: the options (passes to each teammate, carries, shot) scored by the coach,
+the same scores under **20 refits** of the four models on whole-match resamples of the training matches, and the
+points: 100 when the option is the main model's best or the best in at least 20 % of the refits ("close call"),
+otherwise 0-90 by rank. Public moment files hold positions, players and options only; answers (scores, points, the
+pro's pick, what happened in 15 s, the coach's reasons) are separate files that stay server-side.
+Quality filters: 9-11 tracked players per side (red cards leave 10), ball within 2 m of the carrier, no position jump
+over 1.5 m per frame in the 3 s lead-up. Daily sets: 5 moments (own third, 2 midfield, 2 final third), distinct
+matches, at least one followed by a shot or goal, ordered by difficulty.
+
+First dev release (Bundesliga matches only, the USB key with the A-League store was offline): 3,419 moments from
+7 matches (J03WN1 has a red card: 465 moments once 10 v 11 is allowed, 26 before), 20 days; the "obvious" filter
+(one option best in all 20 refits) removes 31 % of the candidates. The fast scorer equals `advice.options` to 1e-12
+(tests/test_20_game.py).
+
+```bash
+python -m coach.game.build --out D:/cv-data/playmaker --start 2026-12-01 --days 60       # 27 matches (USB key)
+python -m coach.game.build --set idsse --out ../../cv-data/playmaker-dev --days 20       # Bundesliga only
+python -m coach.game.build --validate <out>/content-v1                                   # schemas + no answers in public files
+python -m coach.rebuild_results                                                          # every results JSON, stamped
+```
+
 ### Run the coach
 
 ```bash

@@ -166,8 +166,12 @@ def test_quality_accepts_a_clean_moment():
 def test_quality_rejects_missing_players_far_ball_jumps_and_few_options():
     xy = frames()
     xy[5, 3, 0] += 4.0
-    got = GQ.problems(n_att=10, n_def=11, ball_gap=3.0, lead_up=xy, n_options=2)
+    got = GQ.problems(n_att=8, n_def=11, ball_gap=3.0, lead_up=xy, n_options=2)
     assert got == ["players", "ball", "jump", "options"]
+
+
+def test_quality_accepts_a_side_down_to_ten_after_a_red_card():
+    assert GQ.problems(n_att=10, n_def=11, ball_gap=1.0, lead_up=frames(players=21), n_options=8) == []
 
 
 def test_quality_ignores_nan_players_in_jump_check():

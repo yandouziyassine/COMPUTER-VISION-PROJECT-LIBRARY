@@ -15,16 +15,16 @@
     "fps": {"type": "number", "exclusiveMinimum": 0},
     "carrier": {"type": "integer", "minimum": 0},
     "players": {
-      "type": "array", "minItems": 22, "maxItems": 22,
+      "type": "array", "minItems": 18, "maxItems": 22,
       "items": {
         "type": "object", "additionalProperties": false, "required": ["side", "shirt", "name"],
         "properties": {"side": {"enum": [0, 1]}, "shirt": {"type": "integer"}, "name": {"type": "string"}}
       }
     },
     "lead_up": {
-      "description": "frames x players x [x_cm, y_cm], attack-normalised (attacking side plays towards +x); null = not tracked",
+      "description": "frames x players (same order as players) x [x_cm, y_cm], attack-normalised (attacking side plays towards +x); null = not tracked",
       "type": "array", "minItems": 2,
-      "items": {"type": "array", "minItems": 22, "maxItems": 22,
+      "items": {"type": "array", "minItems": 18, "maxItems": 22,
         "items": {"oneOf": [{"type": "null"}, {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "integer"}}]}}
     },
     "ball": {"type": "array", "minItems": 2, "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "integer"}}},

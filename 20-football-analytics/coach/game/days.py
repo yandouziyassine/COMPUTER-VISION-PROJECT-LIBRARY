@@ -28,38 +28,32 @@ def rank_pool(feats: list, size: int = 1500) -> list:
 
 def daily_sets(ranked: list, n_days: int) -> list:
     """Greedy: for each day take the most interesting unused moment per zone slot, distinct matches, no match of the
-    previous day, at least one followed by a shot or goal; order the 5 by difficulty."""
+    previous day (relaxed only when the pool has too few matches), at least one followed by a shot or goal; order the
+    5 by difficulty."""
     used, prev, days = set(), set(), []
     for _ in range(n_days):
         day, matches = [], set()
         for slot in ZONES:
-            pick = next(
-                (
-                    f
-                    for f in ranked
-                    if f["id"] not in used and zone(f["x"]) == slot and f["match"] not in matches | prev
-                ),
-                None,
-            )
+            free = [f for f in ranked if f["id"] not in used and zone(f["x"]) == slot and f["match"] not in matches]
+            # yesterday's matches only when the pool has too few matches to avoid them (small dev releases)
+            pick = next((f for f in free if f["match"] not in prev), free[0] if free else None)
             if pick is None:
                 return days
             day.append(pick)
             matches.add(pick["match"])
             used.add(pick["id"])
         if not any(f["shot_after"] for f in day):
-            swap = next(
-                (
-                    (i, f)
-                    for i, slot in enumerate(ZONES)
-                    if slot == "final"
-                    for f in ranked
-                    if f["id"] not in used
-                    and f["shot_after"]
-                    and zone(f["x"]) == "final"
-                    and f["match"] not in (matches - {day[i]["match"]}) | prev
-                ),
-                None,
-            )
+            swaps = [
+                (i, f)
+                for i, slot in enumerate(ZONES)
+                if slot == "final"
+                for f in ranked
+                if f["id"] not in used
+                and f["shot_after"]
+                and zone(f["x"]) == "final"
+                and f["match"] not in matches - {day[i]["match"]}
+            ]
+            swap = next((t for t in swaps if t[1]["match"] not in prev), swaps[0] if swaps else None)
             if swap is None:
                 return days
             i, f = swap

@@ -2,6 +2,7 @@
 
     python -m coach.game.build --out D:/cv-data/playmaker --start 2026-12-01 --days 60
     python -m coach.game.build --validate D:/cv-data/playmaker/content-v1
+    python -m coach.game.build --set idsse --out ../../cv-data/playmaker-dev --days 20   # dev release, no USB key
 
 Checkpoints: one candidates file per match in <out>/cache (restartable when the USB key disconnects)."""
 
@@ -87,7 +88,7 @@ def validate_release(out: Path) -> list:
     return errors
 
 
-def candidates(cache: Path, n_refits: int) -> dict:
+def candidates(cache: Path, n_refits: int, match_set: str = "pooled") -> dict:
     """All matches -> {moment id: candidate}; per-match results cached as JSON in `cache`."""
     from .. import benchmark as B
     from .. import cross_league as CL
@@ -95,7 +96,7 @@ def candidates(cache: Path, n_refits: int) -> dict:
     from . import moments as GM
     from . import refits as GR
 
-    matches, _, _ = B.load_set("pooled")
+    matches, _, _ = B.load_set(match_set)
     tables = {mid: R.match_tables(m) for mid, m in matches.items()}
     out = {}
     for mid, m in matches.items():
@@ -117,13 +118,14 @@ def main():
     ap.add_argument("--days", type=int, default=60)
     ap.add_argument("--pool", type=int, default=1500)
     ap.add_argument("--refits", type=int, default=20)
+    ap.add_argument("--set", default="pooled", choices=("pooled", "idsse"), help="idsse: Bundesliga only (no USB key)")
     ap.add_argument("--validate", type=Path)
     args = ap.parse_args()
     if args.validate:
         errs = validate_release(args.validate)
         print("\n".join(errs) or "release OK")
         raise SystemExit(1 if errs else 0)
-    cands = candidates(args.out / "cache", args.refits)
+    cands = candidates(args.out / "cache", args.refits, args.set)
     feats = [{**c["features"], "id": mid} for mid, c in cands.items()]
     days = GD.daily_sets(GD.rank_pool(feats, args.pool), args.days)
     print(len(cands), "candidates,", len(days), "days")

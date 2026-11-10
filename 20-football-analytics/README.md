@@ -642,10 +642,16 @@ Quality filters: 9-11 tracked players per side (red cards leave 10), ball within
 over 1.5 m per frame in the 3 s lead-up. Daily sets: 5 moments (own third, 2 midfield, 2 final third), distinct
 matches, at least one followed by a shot or goal, ordered by difficulty.
 
-First dev release (Bundesliga matches only, the USB key with the A-League store was offline): 3,419 moments from
-7 matches (J03WN1 has a red card: 465 moments once 10 v 11 is allowed, 26 before), 20 days; the "obvious" filter
-(one option best in all 20 refits) removes 31 % of the candidates. The fast scorer equals `advice.options` to 1e-12
-(tests/test_20_game.py).
+Release content-v1 (2026-11-10, all 27 matches): 16,678 candidate moments (7 Bundesliga / 2. Bundesliga
+matches and 20 A-League matches; J03WN1 has a red card: 465 moments once 10 v 11 is allowed, 26 before), the
+"obvious" filter (one option best in all 20 refits) removes a third. The pool is ranked by interest **within each
+zone** (percentiles of the options' score spread and of the stakes, bonuses for cut-backs, AI-vs-pro disagreements
+and shots that followed) and filled 1 : 2 : 2 like the daily slots: ranked on raw spread, 92 % of the pool was in the
+final third and only 8 days could be built. 60 days, 300 moments (A-League 257, 2. Bundesliga 32, Bundesliga 11 ≈
+the match shares under the distinct-match rule), each with 6 s of real tracking after the release for the reveal
+replay (A-League ball gaps of ≤ 6 frames interpolated), the scoreline at the moment, and the coach's top reasons with
+their effect (+ raises the success chance, − lowers it, ≈ a value term), refreshed with the held-out main models. The
+fast scorer equals `advice.options` to 1e-12 (tests/test_20_game.py).
 
 ```bash
 python -m coach.game.build --out D:/cv-data/playmaker --start 2026-12-01 --days 60       # 27 matches (USB key)

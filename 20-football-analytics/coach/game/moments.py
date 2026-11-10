@@ -14,6 +14,7 @@ from . import quality as GQ
 from . import scoring as GS
 
 LEAD_UP_S = 3.0
+AFTER_S = 6.0  # "what really happened": tracking after the release, shown only in the reveal
 IDSSE_CREDIT = "Bundesliga tracking and event data: Bassek et al. (2025), DFL / Sportec Solutions, CC BY 4.0"
 CREDITS = {
     "Bundesliga": IDSSE_CREDIT,
@@ -82,6 +83,9 @@ def match_moments(m, held_out, refits, league: str, require_full: bool = True) -
             frames_src.append(frame)
         lead = G.normalise(h.xy[frames_src][:, idx], s["direction"])
         ball = G.normalise(h.ball[frames_src, :2], s["direction"])
+        after_src = list(range(frame, min(len(h.t), frame + int(round(AFTER_S * fps)) + 1), step))
+        after = G.normalise(h.xy[after_src][:, idx], s["direction"])
+        after_ball = G.normalise(h.ball[after_src, :2], s["direction"])
         n_att, n_def = len(s["att_idx"]), len(s["def_idx"])
         bad = GQ.problems(n_att, n_def, float(np.linalg.norm(s["ball"] - s["att"][carrier])), lead, len(opts))
         if require_full:
@@ -145,6 +149,11 @@ def match_moments(m, held_out, refits, league: str, require_full: bool = True) -
             "outcome": {
                 "kind": R.outcome(shots[half], d["t"], int(e["team"]), bool(e["success"])),
                 "net_xg_15s": round(float(d["outcome"]), 4),
+            },
+            "after": {
+                "fps": fps / step,
+                "frames": [[None if np.isnan(xy[0]) else cm(xy) for xy in f] for f in after],
+                "ball": [None if np.isnan(b[0]) else cm(b) for b in after_ball],
             },
             "models": {"content_version": CONTENT_VERSION, "trained_without": str(m.match_id), "refits": len(refits)},
         }

@@ -297,3 +297,11 @@ def test_write_release_layout_and_validation(tmp_path, built):
         assert (out / "public" / "moments" / f"{mid}.json").exists()
         assert (out / "answers" / f"{mid}.json").exists()
     assert GB.validate_release(out) == []
+
+
+def test_after_footage_starts_at_the_release_and_follows_the_moment_player_order(built):
+    for c in built:
+        after, pub = c["answer"]["after"], c["public"]
+        assert after["frames"][0] == pub["lead_up"][-1]
+        assert all(len(f) == len(pub["players"]) for f in after["frames"])
+        assert len(after["frames"]) == len(after["ball"])

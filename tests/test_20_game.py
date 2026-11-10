@@ -123,7 +123,7 @@ def test_share_top_counts_ties_for_every_tied_option():
 def test_points_full_for_main_top_and_close_calls_linear_for_the_rest():
     main = np.array([0.30, 0.25, 0.10, 0.05, -0.20])
     share = np.array([0.6, 0.25, 0.1, 0.05, 0.0])
-    assert GS.points(main, share).tolist() == [100, 100, 90, 45, 0]
+    assert GS.points(main, share).tolist() == [100, 100, 90, 22, 0]  # quadratic partial credit
 
 
 def test_points_single_remaining_option_gets_45():

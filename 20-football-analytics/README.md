@@ -660,6 +660,58 @@ python -m coach.game.build --validate <out>/content-v1                          
 python -m coach.rebuild_results                                                          # every results JSON, stamped
 ```
 
+### Playmaker content audit
+
+[`coach/game/evaluate_content.py`](coach/game/evaluate_content.py) reads the candidate cache and the release (no model
+fitting) and asks two questions. **Do the points mean anything?** For the option the professional actually chose, in
+all 16,680 candidates of 27 matches (models held out per match; 95 % CIs from 1000 resamples of whole matches):
+
+| points of the pro's pick | n | net xG in 15 s | P(shot or goal) | possession kept |
+|---|---:|---:|---:|---:|
+| 100 | 2,804 | +0.0087 [0.0068, 0.0107] | 9.1 % | 81 % |
+| 50-99 | 10,365 | +0.0071 [0.0056, 0.0089] | 8.2 % | 88 % |
+| 0-49 | 3,511 | +0.0024 [0.0013, 0.0036] | 4.0 % | 89 % |
+
+Spearman(points, net xG) = +0.08 [0.07, 0.09], Spearman(coach score, net xG) = +0.09 [0.07, 0.11]: the ordering is
+right (0-49 is clearly worse; 100 vs 50-99 overlaps) but the signal per moment is weak, as expected from a 15 s
+outcome. High-point passes are the riskier ones (81 % kept vs 89 %): the points reward value, not safety. Same
+picture in both leagues (A-League +0.079, Bundesliga 1+2 +0.086).
+
+**How hard is the game?** Expected points per moment on the 300 released moments ([chart](docs/playmaker_content_eval.png)):
+
+| strategy | mean points | share of 100s |
+|---|---:|---:|
+| always the AI pick | 100 | 100 % |
+| **shoot when a shot option exists, else most advanced pass** | **85.8** | **55.7 %** |
+| **pass to the most advanced teammate** | **81.7** | **35.0 %** |
+| **pass to the nearest teammate** | **75.1** | 13.3 % |
+| play like the pro | 74.8 | 9.3 % |
+| random option | 50.9 | 10.7 % |
+| carry straight ahead / longest pass | 32.3 / 24.1 | 0.7 / 4.0 % |
+
+**EXPLOIT**: three strategies that read only the public geometry beat the professionals, in both leagues. The shot is
+the hole: every final-third moment (120 of 300) offers one, and it scores 100 in 82 % of them (the AI's pick in 64 %),
+while the pro never shot by construction (moments are pass decisions). In midfield the most advanced pass is a 100 in
+47 %. Close calls are rare (1-3 options at 100: 128 / 152 / 20 moments) and the pro's pick is a 100 in only 9 % of the
+release (17 % of all candidates: the interest ranking favours AI-vs-pro disagreements). Fix, replayed through the real
+daily selection (`what_if` in the JSON): dropping candidates where the shot, the most advanced or the nearest pass
+scores 100 (pool 16,680 → 8,869, still 60 days) plus a steeper partial credit (90 · ((r − rank)/(r − 1))², rank among
+the non-100 options) brings the best trivial strategy to 59 points with ≤ 4 % of 100s, the pro to 57 and random to 37.
+
+```bash
+python -m coach.game.evaluate_content --cache D:/cv-data/playmaker/cache --release D:/cv-data/playmaker/content-v1
+```
+
+**Fix applied (2026-11-10, content-v1 rebuilt).** Before: on the 300 released moments, "shoot if possible, else the
+most advanced pass" averaged 85.8 points (56 % of 100s), the most advanced pass 81.7 and the nearest teammate 75.1, all
+above playing like the pro (74.8): a player who never looked at the defence beat the professionals. Two changes, both
+from the what-if replays above: (1) moments where the shot, the most advanced pass or the nearest pass already scores
+100 are not selected (pool 16,680 -> 8,869 candidates, still 60 days); (2) partial credit falls quadratically with rank,
+90 * ((r - rank) / (r - 1))^2. After the rebuild: pro 56.6, random 37.4, most advanced pass 59.2, shoot-if-possible
+58.0, nearest teammate 54.5, and **no trivial strategy reaches 100 on any released moment** (0 %). Scoring 100 now
+needs reading the defenders; the "EXPLOIT" flags that remain in `playmaker_content_eval.json` concern the unfiltered
+candidate pool, which players never see.
+
 ### Run the coach
 
 ```bash

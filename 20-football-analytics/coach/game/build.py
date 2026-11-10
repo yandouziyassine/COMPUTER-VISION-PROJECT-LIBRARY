@@ -17,6 +17,7 @@ import jsonschema
 from ..stamp import generated_by
 from . import CONTENT_VERSION
 from . import days as GD
+from . import evaluate_content as EC
 
 SCHEMAS = Path(__file__).resolve().parent / "schemas"
 
@@ -117,6 +118,20 @@ def candidates(cache: Path, n_refits: int, match_set: str = "pooled") -> tuple:
     return out, matches, tables
 
 
+def rescore(c: dict) -> None:
+    """Recompute the option points (and the features that depend on them) of one candidate from its stored scores."""
+    import numpy as np
+
+    from . import scoring as GS
+
+    opts = c["answer"]["options"]
+    pts = GS.points(np.array([o["score"] for o in opts]), np.array([o["share_top"] for o in opts]))
+    for o, p in zip(opts, pts):
+        o["points"] = int(p)
+    c["features"]["all_best"] = bool((pts == 100).all())
+    c["features"]["difficulty"] = float(1 - pts.mean() / 100)
+
+
 def refresh_released_reasons(cands: dict, days: list, matches: dict, tables: dict) -> int:
     """Recompute the reasons (with their effect sign) of the released moments with the held-out main models."""
     from .. import report as R
@@ -151,7 +166,12 @@ def main():
         print("\n".join(errs) or "release OK")
         raise SystemExit(1 if errs else 0)
     cands, matches, tables = candidates(args.out / "cache", args.refits, args.set)
-    feats = [{**c["features"], "id": mid} for mid, c in cands.items()]
+    for c in cands.values():  # points under the current rule (caches may hold an older one)
+        rescore(c)
+    # moments where a trivial strategy (shoot / most advanced pass / nearest pass) already scores 100 are not shown:
+    # with them a player who never looks at the defence beats the pros (coach.game.evaluate_content)
+    feats = [{**c["features"], "id": mid} for mid, c in cands.items() if not EC.trivial_hit(c["public"], c["answer"])]
+    print(len(feats), "candidates after the trivial-strategy filter", flush=True)
     days = GD.daily_sets(GD.rank_pool(feats, args.pool), args.days)
     print(len(cands), "candidates,", len(days), "days")
     print("reasons refreshed for", refresh_released_reasons(cands, days, matches, tables), "moments", flush=True)

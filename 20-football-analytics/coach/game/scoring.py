@@ -3,6 +3,9 @@
 import numpy as np
 
 AMONG_BEST = 0.2
+# Partial credit falls quadratically with rank: with a linear rule the second-best-looking pass already earned ~80 and
+# trivial strategies (most advanced pass, shoot) beat the pros (docs/playmaker_content_eval.json).
+POWER = 2.0
 
 
 def share_top(refit_scores: np.ndarray) -> np.ndarray:
@@ -12,7 +15,7 @@ def share_top(refit_scores: np.ndarray) -> np.ndarray:
     return top.mean(axis=0)
 
 
-def points(main: np.ndarray, share: np.ndarray, among_best: float = AMONG_BEST) -> np.ndarray:
+def points(main: np.ndarray, share: np.ndarray, among_best: float = AMONG_BEST, power: float = POWER) -> np.ndarray:
     main, share = np.asarray(main, float), np.asarray(share, float)
     full = share >= among_best
     full[int(np.argmax(main))] = True
@@ -24,5 +27,5 @@ def points(main: np.ndarray, share: np.ndarray, among_best: float = AMONG_BEST) 
     elif rest:
         r = len(rest)
         for rank, i in enumerate(rest, start=1):
-            out[i] = int(round(90 * (r - rank) / (r - 1)))
+            out[i] = int(round(90 * ((r - rank) / (r - 1)) ** power))
     return out

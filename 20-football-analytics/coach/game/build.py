@@ -90,8 +90,8 @@ def validate_release(out: Path) -> list:
     return errors
 
 
-def candidates(cache: Path, n_refits: int, match_set: str = "pooled") -> dict:
-    """All matches -> {moment id: candidate}; per-match results cached as JSON in `cache`."""
+def candidates(cache: Path, n_refits: int, match_set: str = "pooled") -> tuple:
+    """All matches -> ({moment id: candidate}, matches, tables); per-match results cached as JSON in `cache`."""
     from .. import benchmark as B
     from .. import cross_league as CL
     from .. import report as R
@@ -114,7 +114,26 @@ def candidates(cache: Path, n_refits: int, match_set: str = "pooled") -> dict:
                 _, half, frame = pub["id"].rsplit("-", 2)
                 pub["scoreline"] = GM.score_at(m, int(half), int(frame))
             out[pub["id"]] = c
-    return out
+    return out, matches, tables
+
+
+def refresh_released_reasons(cands: dict, days: list, matches: dict, tables: dict) -> int:
+    """Recompute the reasons (with their effect sign) of the released moments with the held-out main models."""
+    from .. import report as R
+    from . import moments as GM
+
+    by_match = {}
+    for d in days:
+        for f in d:
+            by_match.setdefault(str(f["match"]), []).append(f["id"])
+    n = 0
+    for mid, ids in by_match.items():
+        fresh = GM.refresh_reasons(matches[mid], R.held_out_models(mid, tables), ids)
+        for i in ids:
+            for o, r in zip(cands[i]["answer"]["options"], fresh[i]):
+                o["reasons"] = r
+            n += 1
+    return n
 
 
 def main():
@@ -131,10 +150,11 @@ def main():
         errs = validate_release(args.validate)
         print("\n".join(errs) or "release OK")
         raise SystemExit(1 if errs else 0)
-    cands = candidates(args.out / "cache", args.refits, args.set)
+    cands, matches, tables = candidates(args.out / "cache", args.refits, args.set)
     feats = [{**c["features"], "id": mid} for mid, c in cands.items()]
     days = GD.daily_sets(GD.rank_pool(feats, args.pool), args.days)
     print(len(cands), "candidates,", len(days), "days")
+    print("reasons refreshed for", refresh_released_reasons(cands, days, matches, tables), "moments", flush=True)
     out = write_release(args.out, cands, days, args.start)
     errs = validate_release(out)
     print("\n".join(errs) or f"release OK: {out}")

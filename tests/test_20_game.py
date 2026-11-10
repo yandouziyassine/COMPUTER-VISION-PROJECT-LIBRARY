@@ -319,3 +319,24 @@ def test_score_at_counts_goals_before_the_frame():
     assert GM.score_at(m, 0, 150) == [0, 0]
     assert GM.score_at(m, 0, 200) == [1, 0]
     assert GM.score_at(m, 1, 10) == [1, 0]
+
+
+def test_pool_keeps_the_daily_zone_proportions():
+    feats = pool(500)
+    for f in feats:  # make the final third look far more "interesting" by raw spread
+        if GD.zone(f["x"]) == "final":
+            f["iqr"] *= 10
+    r = GD.rank_pool(feats, size=100)
+    zones = [GD.zone(f["x"]) for f in r]
+    assert zones.count("build") == 20 and zones.count("middle") == 40 and zones.count("final") == 40
+
+
+def test_reasons_carry_their_effect_and_refresh_gives_the_same(two_matches, built):
+    a, _, tables = two_matches
+    for c in built:
+        for o in c["answer"]["options"]:
+            assert all(set(r) == {"text", "effect"} and r["effect"] in (-1, 0, 1) for r in o["reasons"])
+    ids = [c["public"]["id"] for c in built]
+    fresh = GM.refresh_reasons(a, R.held_out_models("SYA", tables), ids)
+    for c in built:
+        assert fresh[c["public"]["id"]] == [o["reasons"] for o in c["answer"]["options"]]

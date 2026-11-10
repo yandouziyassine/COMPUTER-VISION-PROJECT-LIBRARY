@@ -10,20 +10,31 @@ def zone(x: float) -> str:
     return "build" if x < -THIRD_X else ("final" if x > THIRD_X else "middle")
 
 
-def interest(f: dict, v_rank: float) -> float:
+def _pct(values) -> np.ndarray:
+    v = np.asarray(values, float)
+    return v.argsort().argsort() / max(1, len(v) - 1)
+
+
+def interest(f: dict, iqr_rank: float, v_rank: float) -> float:
+    """Percentile ranks within the moment's zone (a spread of 0.01 xG means more in the own third than near goal)."""
     bonus = 1.0 + 0.5 * f["cutback"] + 0.3 * (not f["ai_is_pro"]) + 0.3 * f["shot_after"]
-    return f["iqr"] * (0.5 + v_rank) * bonus
+    return (0.25 + iqr_rank) * (0.5 + v_rank) * bonus
 
 
 def rank_pool(feats: list, size: int = 1500) -> list:
-    """Drop all-best and obvious moments, sort by interest, keep the top `size`."""
+    """Drop all-best and obvious moments; rank each zone by interest (percentiles within the zone); keep the top of
+    each zone in the daily-slot proportions (1 build-up : 2 middle : 2 final); most interesting first overall."""
     keep = [f for f in feats if not f["all_best"] and not f["obvious"]]
-    if not keep:
-        return []
-    v = np.array([f["v_now"] for f in keep])
-    ranks = v.argsort().argsort() / max(1, len(v) - 1)
-    scored = sorted(zip(keep, ranks), key=lambda t: -interest(t[0], float(t[1])))
-    return [f for f, _ in scored[:size]]
+    share = {z: ZONES.count(z) / len(ZONES) for z in set(ZONES)}
+    out = []
+    for z, frac in share.items():
+        zf = [f for f in keep if zone(f["x"]) == z]
+        if not zf:
+            continue
+        iq, vr = _pct([f["iqr"] for f in zf]), _pct([f["v_now"] for f in zf])
+        scored = sorted(((f, interest(f, float(a), float(b))) for f, a, b in zip(zf, iq, vr)), key=lambda t: -t[1])
+        out += scored[: int(round(size * frac))]
+    return [f for f, _ in sorted(out, key=lambda t: -t[1])]
 
 
 def daily_sets(ranked: list, n_days: int) -> list:

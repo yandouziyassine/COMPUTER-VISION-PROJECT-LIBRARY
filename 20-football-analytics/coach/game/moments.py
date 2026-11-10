@@ -171,7 +171,7 @@ def match_moments(m, held_out, refits, league: str, require_full: bool = True) -
                     "p": round(float(main["p"][i]), 4),
                     "share_top": round(float(share[i]), 3),
                     "points": int(pts[i]),
-                    "reasons": expl[i]["phrases"][:3],
+                    "reasons": reason_items(expl[i]),
                 }
                 for i, o in enumerate(opts)
             ],
@@ -207,6 +207,36 @@ def match_moments(m, held_out, refits, league: str, require_full: bool = True) -
                 },
             }
         )
+    return out
+
+
+def reason_items(e: dict, n: int = 3) -> list:
+    """Top reasons of one explain() result: {"text", "effect"}: +1 the feature raises the success chance, -1 it lowers
+    it, 0 a value term (what the option is worth)."""
+    return [{"text": t, "effect": int(sg)} for t, sg in zip(e["phrases"][:n], e["signs"][:n])]
+
+
+def refresh_reasons(m, held_out, ids) -> dict:
+    """{moment id: [reasons per option, k order]} recomputed with the held-out main models (no refits), for moments
+    of match m (ids "<match>-<half>-<frame>")."""
+    models, fitted, trained_on = held_out
+    assert str(m.match_id) not in [str(t) for t in trained_on]
+    weights = weights_of(fitted)
+    want = {(int(h), int(f)): i for i in ids for h, f in [i.rsplit("-", 2)[1:]]}
+    out = {}
+    for p in D.pass_samples(m):
+        e = p["event"]
+        mid = want.get((int(e["half"]), int(e["frame"])))
+        if mid is None or mid in out:
+            continue
+        s, carrier = p["state"], p["carrier"]
+        inp = GI.inputs(s, carrier)
+        opts = GI.options(inp)
+        main = GI.parts(inp, models)
+        expl = E.explain_options(
+            s, carrier, [_as_advice(o, main, i) for i, o in enumerate(opts)], weights, main["v_now"]
+        )
+        out[mid] = [reason_items(x) for x in expl]
     return out
 
 

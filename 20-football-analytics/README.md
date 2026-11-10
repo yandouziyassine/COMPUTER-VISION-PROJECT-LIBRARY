@@ -716,6 +716,20 @@ candidate pool, which players never see.
 slots run out (`--days 150 --pool 3500`). The audit on that release: pro 54.8, random 37.5, most advanced pass 59.2,
 shoot-if-possible 57.6, nearest teammate 52.0, still **no trivial strategy at 100 on any released moment**.
 
+### Model lab: can the coach be more accurate? (2026-11-10)
+
+[`coach/model_lab.py`](coach/model_lab.py), report [`docs/coach_model_lab.md`](docs/coach_model_lab.md). Leave-one-match-out
+over all 27 matches (18,308 passes), 95 % intervals from resampling whole matches.
+- **Pass model: keep the current logistic.** Six new features (receiver motion, time-to-intercept, interactions) lower
+  the log-loss (+0.009 [+0.007, +0.011]), but the coach score of the pro's pass then tracks what followed *worse*
+  (Spearman -0.014 [-0.018, -0.009]): better completion odds, worse advice. Gradient boosting gains 2.5 times more when
+  the interceptor is removed from failed passes, a sign it learns the labelling, and it cannot run in the browser.
+- **Value and arrival: ridge with zone x context terms is better on its own** (value MSE skill 4.1 -> 5.5 %, arrival
+  8.9 -> 10.0 %, both intervals above zero), but end to end the coach's Spearman with net xG moves only 0.088 -> 0.097
+  (+0.008 [-0.003, +0.021], not distinguishable). **Not shipped yet:** it needs the context features at every valued point
+  in Python and TypeScript, new parity fixtures and a rebuild of the game content, for a gain the data cannot confirm.
+  It is the first change to ship when more matches are added.
+
 ### Run the coach
 
 ```bash

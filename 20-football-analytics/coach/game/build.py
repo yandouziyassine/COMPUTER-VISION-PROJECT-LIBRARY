@@ -49,6 +49,10 @@ def write_release(root: Path, cands: dict, days: list, start: str) -> Path:
                 "moments": [f["id"] for f in d],
             },
         )
+    # a sample moment for the intro preview on launch day (never used in a daily set; public file only, no answer)
+    spare = [c for mid, c in cands.items() if mid not in used and c["features"]["x"] > 52.5 / 3]
+    if spare:
+        _write(out / "public" / "sample.json", max(spare, key=lambda c: c["features"]["iqr"])["public"])
     index = [{"date": (first + dt.timedelta(days=i)).isoformat(), "day_number": i + 1} for i in range(len(days))]
     _write(out / "public" / "days" / "index.json", {"days": index})
     shutil.copytree(SCHEMAS, out / "schemas", dirs_exist_ok=True)
@@ -71,6 +75,11 @@ def validate_release(out: Path) -> list:
         n: json.loads((SCHEMAS / f"{n}.schema.json").read_text(encoding="utf-8")) for n in ("day", "moment", "answer")
     }
     errors = []
+    if (out / "public" / "sample.json").exists():
+        try:
+            jsonschema.validate(json.loads((out / "public" / "sample.json").read_text(encoding="utf-8")), sch["moment"])
+        except jsonschema.ValidationError as e:
+            errors.append(f"sample.json: {e.message}")
     for kind, folder in (("day", "public/days"), ("moment", "public/moments"), ("answer", "answers")):
         for f in sorted(g for g in (out / folder).glob("*.json") if g.name != "index.json"):
             try:

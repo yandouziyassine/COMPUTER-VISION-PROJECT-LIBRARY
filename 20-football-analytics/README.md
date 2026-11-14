@@ -630,6 +630,11 @@ in "Results (held-out matches)" were refreshed the same day; the other earlier t
 
 ### Playmaker content (daily decision game, 2026-11-09)
 
+**Play it: https://yandouziyassine.github.io/playmaker/** (public static demo; code and docs:
+[yandouziyassine/playmaker](https://github.com/yandouziyassine/playmaker)). The game adds 2D/3D views, a second
+objective question (guess what the pro did), stats, offline play, FR/EN, free play on a full match and an in-browser
+computer-vision Lab (player and ball detection, automatic pitch calibration, tracking, video-clip analysis).
+
 [`coach/game/`](coach/game/) turns the coach into the content of **Playmaker**, a daily football decision game
 ([spec](../docs/superpowers/specs/2026-11-09-playmaker-fan-game-design.md), product repo
 [yandouziyassine/playmaker](https://github.com/yandouziyassine/playmaker)). For every synced pass decision of a match,

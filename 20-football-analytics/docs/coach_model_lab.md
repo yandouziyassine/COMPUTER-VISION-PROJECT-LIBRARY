@@ -81,3 +81,12 @@ point, and the parity fixtures and Playmaker content are rebuilt.
 python -m coach.model_lab              # full lab (~50 min on 8 CPU threads; cache in cv-data/skillcorner)
 python -m coach.model_lab --followup   # linear ablation + end-to-end only (~2 min), merged into the JSON
 ```
+
+## Re-test with the coach v2 data (2026-11-14)
+
+After the release-based event sync (35 % more Bundesliga pass rows, [`coach_v2_results.json`](coach_v2_results.json)),
+ridge zone x context for value and arrival, all 27 matches pooled, held-out on the same v2 rows: value MSE skill
+4.0 -> 5.5 %, arrival 8.5 -> 9.5 % (both intervals above zero), end-to-end Spearman 0.099 -> 0.104, gain +0.006
+[-0.007, +0.018]; Bundesliga only 0.137 -> 0.152, +0.015 [-0.009, +0.038]. Still not distinguishable end to end, and
+slightly lower on the A-League (0.106 -> 0.099): **not shipped** (coach_v2.py ship rule).
+

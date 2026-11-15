@@ -1,0 +1,768 @@
+{
+ "generated_by": {
+  "commit": "dbc34b4",
+  "date": "2026-11-15"
+ },
+ "data_configs": {
+  "v1": [
+   "legacy",
+   "ray"
+  ],
+  "v2": [
+   "release",
+   "ray"
+  ],
+  "v2_direction": [
+   "release",
+   "direction"
+  ]
+ },
+ "models": {
+  "current": [
+   "current_logistic",
+   "current_ridge",
+   "current_ridge"
+  ],
+  "zxc": [
+   "current_logistic",
+   "ridge_zone_x_context",
+   "ridge_zone_x_context"
+  ]
+ },
+ "rows": {
+  "v1": {
+   "pass": 3464,
+   "arrival": 2934,
+   "value": 22123
+  },
+  "v2": {
+   "pass": 4674,
+   "arrival": 3927,
+   "value": 22123
+  },
+  "v2_direction": {
+   "pass": 4703,
+   "arrival": 3927,
+   "value": 22123
+  }
+ },
+ "bundesliga": {
+  "n_matches": 7,
+  "metrics": {
+   "v1/current": {
+    "pass_log_loss": 0.36394,
+    "pass_auc": 0.850578,
+    "pass_log_loss_noint": 0.420061,
+    "pass_auc_noint": 0.779318,
+    "value_mse_skill": 0.021961,
+    "arrival_mse_skill": 0.045732,
+    "end_to_end": 0.099035,
+    "end_to_end_per_league": {
+     "idsse": 0.099035
+    },
+    "n_decisions": 4674
+   },
+   "v2/current": {
+    "pass_log_loss": 0.362574,
+    "pass_auc": 0.853099,
+    "pass_log_loss_noint": 0.419702,
+    "pass_auc_noint": 0.780523,
+    "value_mse_skill": 0.021984,
+    "arrival_mse_skill": 0.0511,
+    "end_to_end": 0.137346,
+    "end_to_end_per_league": {
+     "idsse": 0.137346
+    },
+    "n_decisions": 4674
+   },
+   "v2/zxc": {
+    "pass_log_loss": 0.362574,
+    "pass_auc": 0.853099,
+    "pass_log_loss_noint": 0.419702,
+    "pass_auc_noint": 0.780523,
+    "value_mse_skill": 0.031219,
+    "arrival_mse_skill": 0.049158,
+    "end_to_end": 0.15239,
+    "end_to_end_per_league": {
+     "idsse": 0.15239
+    },
+    "n_decisions": 4674
+   },
+   "v2_direction/current": {
+    "pass_log_loss": 0.363903,
+    "pass_auc": 0.854641,
+    "pass_log_loss_noint": 0.421428,
+    "pass_auc_noint": 0.780559,
+    "value_mse_skill": 0.021984,
+    "arrival_mse_skill": 0.0511,
+    "end_to_end": 0.132771,
+    "end_to_end_per_league": {
+     "idsse": 0.132771
+    },
+    "n_decisions": 4674
+   }
+  },
+  "metrics_common": {
+   "v1/current": {
+    "pass_log_loss": 0.36394,
+    "pass_auc": 0.850578,
+    "pass_log_loss_noint": 0.420061,
+    "pass_auc_noint": 0.779318,
+    "value_mse_skill": 0.021961,
+    "arrival_mse_skill": 0.045732,
+    "end_to_end": 0.094731,
+    "end_to_end_per_league": {
+     "idsse": 0.094731
+    },
+    "n_decisions": 3420
+   },
+   "v2/current": {
+    "pass_log_loss": 0.362574,
+    "pass_auc": 0.853099,
+    "pass_log_loss_noint": 0.419702,
+    "pass_auc_noint": 0.780523,
+    "value_mse_skill": 0.021984,
+    "arrival_mse_skill": 0.0511,
+    "end_to_end": 0.129313,
+    "end_to_end_per_league": {
+     "idsse": 0.129313
+    },
+    "n_decisions": 3420
+   },
+   "v2/zxc": {
+    "pass_log_loss": 0.362574,
+    "pass_auc": 0.853099,
+    "pass_log_loss_noint": 0.419702,
+    "pass_auc_noint": 0.780523,
+    "value_mse_skill": 0.031219,
+    "arrival_mse_skill": 0.049158,
+    "end_to_end": 0.144523,
+    "end_to_end_per_league": {
+     "idsse": 0.144523
+    },
+    "n_decisions": 3420
+   },
+   "v2_direction/current": {
+    "pass_log_loss": 0.363903,
+    "pass_auc": 0.854641,
+    "pass_log_loss_noint": 0.421428,
+    "pass_auc_noint": 0.780559,
+    "value_mse_skill": 0.021984,
+    "arrival_mse_skill": 0.0511,
+    "end_to_end": 0.123923,
+    "end_to_end_per_league": {
+     "idsse": 0.123923
+    },
+    "n_decisions": 3420
+   }
+  },
+  "gains": {
+   "v2/current vs v1/current": {
+    "all": {
+     "end_to_end": {
+      "delta": 0.038311,
+      "ci": [
+       0.022701,
+       0.056152
+      ]
+     },
+     "pass_log_loss": {
+      "delta": 0.001366,
+      "ci": [
+       -9.5e-05,
+       0.002963
+      ]
+     },
+     "value_mse": {
+      "delta": -0.0,
+      "ci": [
+       -0.0,
+       0.0
+      ]
+     },
+     "arrival_mse": {
+      "delta": 1.1e-05,
+      "ci": [
+       -7e-06,
+       3.5e-05
+      ]
+     }
+    },
+    "common": {
+     "delta": 0.034582,
+     "ci": [
+      0.020066,
+      0.050507
+     ]
+    }
+   },
+   "v2_direction/current vs v2/current": {
+    "all": {
+     "end_to_end": {
+      "delta": -0.004575,
+      "ci": [
+       -0.008454,
+       0.001119
+      ]
+     },
+     "pass_log_loss": {
+      "delta": -0.001329,
+      "ci": [
+       -0.003901,
+       0.001144
+      ]
+     },
+     "value_mse": {
+      "delta": 0.0,
+      "ci": [
+       0.0,
+       0.0
+      ]
+     },
+     "arrival_mse": {
+      "delta": 0.0,
+      "ci": [
+       0.0,
+       0.0
+      ]
+     }
+    },
+    "common": {
+     "delta": -0.00539,
+     "ci": [
+      -0.010615,
+      0.001625
+     ]
+    }
+   },
+   "v2_direction/current vs v1/current": {
+    "all": {
+     "end_to_end": {
+      "delta": 0.033736,
+      "ci": [
+       0.017353,
+       0.050756
+      ]
+     },
+     "pass_log_loss": {
+      "delta": 3.7e-05,
+      "ci": [
+       -0.003766,
+       0.004025
+      ]
+     },
+     "value_mse": {
+      "delta": -0.0,
+      "ci": [
+       -0.0,
+       0.0
+      ]
+     },
+     "arrival_mse": {
+      "delta": 1.1e-05,
+      "ci": [
+       -7e-06,
+       3.5e-05
+      ]
+     }
+    },
+    "common": {
+     "delta": 0.029193,
+     "ci": [
+      0.012577,
+      0.048315
+     ]
+    }
+   },
+   "v2/zxc vs v2/current": {
+    "all": {
+     "end_to_end": {
+      "delta": 0.015044,
+      "ci": [
+       -0.009174,
+       0.03837
+      ]
+     },
+     "pass_log_loss": {
+      "delta": 0.0,
+      "ci": [
+       0.0,
+       0.0
+      ]
+     },
+     "value_mse": {
+      "delta": 2.3e-05,
+      "ci": [
+       1e-06,
+       5e-05
+      ]
+     },
+     "arrival_mse": {
+      "delta": -4e-06,
+      "ci": [
+       -2.8e-05,
+       1.9e-05
+      ]
+     }
+    },
+    "common": {
+     "delta": 0.015209,
+     "ci": [
+      -0.015542,
+      0.041789
+     ]
+    }
+   },
+   "v2/zxc vs v1/current": {
+    "all": {
+     "end_to_end": {
+      "delta": 0.053355,
+      "ci": [
+       0.030987,
+       0.076792
+      ]
+     },
+     "pass_log_loss": {
+      "delta": 0.001366,
+      "ci": [
+       -9.5e-05,
+       0.002963
+      ]
+     },
+     "value_mse": {
+      "delta": 2.2e-05,
+      "ci": [
+       0.0,
+       5e-05
+      ]
+     },
+     "arrival_mse": {
+      "delta": 7e-06,
+      "ci": [
+       -1.4e-05,
+       3e-05
+      ]
+     }
+    },
+    "common": {
+     "delta": 0.049792,
+     "ci": [
+      0.021656,
+      0.075656
+     ]
+    }
+   }
+  }
+ },
+ "pooled": {
+  "n_matches": 27,
+  "metrics": {
+   "v1/current": {
+    "pass_log_loss": 0.325559,
+    "pass_auc": 0.857941,
+    "pass_log_loss_noint": 0.370107,
+    "pass_auc_noint": 0.791896,
+    "value_mse_skill": 0.040445,
+    "arrival_mse_skill": 0.085219,
+    "end_to_end": 0.089468,
+    "end_to_end_per_league": {
+     "idsse": 0.066073,
+     "aleague": 0.096677
+    },
+    "n_decisions": 19518
+   },
+   "v2/current": {
+    "pass_log_loss": 0.325457,
+    "pass_auc": 0.85763,
+    "pass_log_loss_noint": 0.370064,
+    "pass_auc_noint": 0.791581,
+    "value_mse_skill": 0.040446,
+    "arrival_mse_skill": 0.085391,
+    "end_to_end": 0.098699,
+    "end_to_end_per_league": {
+     "idsse": 0.073652,
+     "aleague": 0.106344
+    },
+    "n_decisions": 19518
+   },
+   "v2/zxc": {
+    "pass_log_loss": 0.325457,
+    "pass_auc": 0.85763,
+    "pass_log_loss_noint": 0.370064,
+    "pass_auc_noint": 0.791581,
+    "value_mse_skill": 0.055153,
+    "arrival_mse_skill": 0.094616,
+    "end_to_end": 0.104431,
+    "end_to_end_per_league": {
+     "idsse": 0.124266,
+     "aleague": 0.098693
+    },
+    "n_decisions": 19518
+   },
+   "v2_direction/current": {
+    "pass_log_loss": 0.325491,
+    "pass_auc": 0.858205,
+    "pass_log_loss_noint": 0.370116,
+    "pass_auc_noint": 0.791603,
+    "value_mse_skill": 0.040446,
+    "arrival_mse_skill": 0.085391,
+    "end_to_end": 0.097251,
+    "end_to_end_per_league": {
+     "idsse": 0.072554,
+     "aleague": 0.104791
+    },
+    "n_decisions": 19518
+   }
+  },
+  "metrics_common": {
+   "v1/current": {
+    "pass_log_loss": 0.325559,
+    "pass_auc": 0.857941,
+    "pass_log_loss_noint": 0.370107,
+    "pass_auc_noint": 0.791896,
+    "value_mse_skill": 0.040445,
+    "arrival_mse_skill": 0.085219,
+    "end_to_end": 0.090202,
+    "end_to_end_per_league": {
+     "idsse": 0.061845,
+     "aleague": 0.096677
+    },
+    "n_decisions": 18264
+   },
+   "v2/current": {
+    "pass_log_loss": 0.325457,
+    "pass_auc": 0.85763,
+    "pass_log_loss_noint": 0.370064,
+    "pass_auc_noint": 0.791581,
+    "value_mse_skill": 0.040446,
+    "arrival_mse_skill": 0.085391,
+    "end_to_end": 0.099472,
+    "end_to_end_per_league": {
+     "idsse": 0.069032,
+     "aleague": 0.106344
+    },
+    "n_decisions": 18264
+   },
+   "v2/zxc": {
+    "pass_log_loss": 0.325457,
+    "pass_auc": 0.85763,
+    "pass_log_loss_noint": 0.370064,
+    "pass_auc_noint": 0.791581,
+    "value_mse_skill": 0.055153,
+    "arrival_mse_skill": 0.094616,
+    "end_to_end": 0.102909,
+    "end_to_end_per_league": {
+     "idsse": 0.122741,
+     "aleague": 0.098693
+    },
+    "n_decisions": 18264
+   },
+   "v2_direction/current": {
+    "pass_log_loss": 0.325491,
+    "pass_auc": 0.858205,
+    "pass_log_loss_noint": 0.370116,
+    "pass_auc_noint": 0.791603,
+    "value_mse_skill": 0.040446,
+    "arrival_mse_skill": 0.085391,
+    "end_to_end": 0.09797,
+    "end_to_end_per_league": {
+     "idsse": 0.067742,
+     "aleague": 0.104791
+    },
+    "n_decisions": 18264
+   }
+  },
+  "gains": {
+   "v2/current vs v1/current": {
+    "all": {
+     "end_to_end": {
+      "delta": 0.009231,
+      "ci": [
+       0.007663,
+       0.010901
+      ]
+     },
+     "pass_log_loss": {
+      "delta": 0.000102,
+      "ci": [
+       -0.000138,
+       0.000336
+      ]
+     },
+     "value_mse": {
+      "delta": -0.0,
+      "ci": [
+       -0.0,
+       0.0
+      ]
+     },
+     "arrival_mse": {
+      "delta": 0.0,
+      "ci": [
+       -1e-06,
+       2e-06
+      ]
+     }
+    },
+    "common": {
+     "delta": 0.00927,
+     "ci": [
+      0.007656,
+      0.011005
+     ]
+    }
+   },
+   "v2_direction/current vs v2/current": {
+    "all": {
+     "end_to_end": {
+      "delta": -0.001448,
+      "ci": [
+       -0.002283,
+       -0.000659
+      ]
+     },
+     "pass_log_loss": {
+      "delta": -3.4e-05,
+      "ci": [
+       -0.000495,
+       0.000389
+      ]
+     },
+     "value_mse": {
+      "delta": 0.0,
+      "ci": [
+       0.0,
+       0.0
+      ]
+     },
+     "arrival_mse": {
+      "delta": 0.0,
+      "ci": [
+       0.0,
+       0.0
+      ]
+     }
+    },
+    "common": {
+     "delta": -0.001503,
+     "ci": [
+      -0.002376,
+      -0.000673
+     ]
+    }
+   },
+   "v2_direction/current vs v1/current": {
+    "all": {
+     "end_to_end": {
+      "delta": 0.007783,
+      "ci": [
+       0.006081,
+       0.009569
+      ]
+     },
+     "pass_log_loss": {
+      "delta": 6.8e-05,
+      "ci": [
+       -0.00033,
+       0.000443
+      ]
+     },
+     "value_mse": {
+      "delta": -0.0,
+      "ci": [
+       -0.0,
+       0.0
+      ]
+     },
+     "arrival_mse": {
+      "delta": 0.0,
+      "ci": [
+       -1e-06,
+       2e-06
+      ]
+     }
+    },
+    "common": {
+     "delta": 0.007767,
+     "ci": [
+      0.005993,
+      0.009602
+     ]
+    }
+   },
+   "v2/zxc vs v2/current": {
+    "all": {
+     "end_to_end": {
+      "delta": 0.005732,
+      "ci": [
+       -0.006669,
+       0.018235
+      ]
+     },
+     "pass_log_loss": {
+      "delta": 0.0,
+      "ci": [
+       0.0,
+       0.0
+      ]
+     },
+     "value_mse": {
+      "delta": 2.7e-05,
+      "ci": [
+       1.9e-05,
+       3.7e-05
+      ]
+     },
+     "arrival_mse": {
+      "delta": 1.5e-05,
+      "ci": [
+       5e-06,
+       2.5e-05
+      ]
+     }
+    },
+    "common": {
+     "delta": 0.003437,
+     "ci": [
+      -0.008566,
+      0.015893
+     ]
+    }
+   },
+   "v2/zxc vs v1/current": {
+    "all": {
+     "end_to_end": {
+      "delta": 0.014963,
+      "ci": [
+       0.002733,
+       0.026949
+      ]
+     },
+     "pass_log_loss": {
+      "delta": 0.000102,
+      "ci": [
+       -0.000138,
+       0.000336
+      ]
+     },
+     "value_mse": {
+      "delta": 2.7e-05,
+      "ci": [
+       1.9e-05,
+       3.7e-05
+      ]
+     },
+     "arrival_mse": {
+      "delta": 1.5e-05,
+      "ci": [
+       5e-06,
+       2.6e-05
+      ]
+     }
+    },
+    "common": {
+     "delta": 0.012707,
+     "ci": [
+      0.001207,
+      0.024304
+     ]
+    }
+   }
+  }
+ },
+ "verdicts": {
+  "data v2": {
+   "ship": true,
+   "bundesliga": {
+    "delta": 0.038311,
+    "ci": [
+     0.022701,
+     0.056152
+    ]
+   },
+   "pooled": {
+    "delta": 0.009231,
+    "ci": [
+     0.007663,
+     0.010901
+    ]
+   }
+  },
+  "direction target rule": {
+   "ship": false,
+   "bundesliga": {
+    "delta": -0.004575,
+    "ci": [
+     -0.008454,
+     0.001119
+    ]
+   },
+   "pooled": {
+    "delta": -0.001448,
+    "ci": [
+     -0.002283,
+     -0.000659
+    ]
+   }
+  },
+  "zone x context": {
+   "ship": false,
+   "bundesliga": {
+    "delta": 0.015044,
+    "ci": [
+     -0.009174,
+     0.03837
+    ]
+   },
+   "pooled": {
+    "delta": 0.005732,
+    "ci": [
+     -0.006669,
+     0.018235
+    ]
+   }
+  }
+ },
+ "seconds": 238,
+ "advice": {
+  "v1": {
+   "n": 4674,
+   "top1": 0.092854,
+   "top3": 0.30659,
+   "receiver_top3": 0.34831,
+   "receiver_top3_random": 0.302853,
+   "receiver_nearest3": 0.666239,
+   "completion_by_rank": {
+    "1-1": 0.778802,
+    "2-3": 0.81982,
+    "4-6": 0.851331,
+    "7+": 0.857067
+   },
+   "best_is_pass": 0.91549,
+   "gap_mean": 0.007225
+  },
+  "v2": {
+   "n": 4674,
+   "top1": 0.108258,
+   "top3": 0.337398,
+   "receiver_top3": 0.373342,
+   "receiver_top3_random": 0.302853,
+   "receiver_nearest3": 0.666239,
+   "completion_by_rank": {
+    "1-1": 0.762846,
+    "2-3": 0.825397,
+    "4-6": 0.857455,
+    "7+": 0.858304
+   },
+   "best_is_pass": 0.924262,
+   "gap_mean": 0.007145
+  },
+  "receiver_top3_gain": {
+   "delta": 0.025032,
+   "ci": [
+    0.013858,
+    0.036511
+   ]
+  }
+ }
+}

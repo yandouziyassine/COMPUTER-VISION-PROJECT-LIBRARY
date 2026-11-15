@@ -220,6 +220,8 @@ data [10.6084/m9.figshare.28196177](https://doi.org/10.6084/m9.figshare.28196177
    the passer still has it (the release, never after an interception); shots use the provider's frame. Events that
    land on the window edge or more than 3 m from the ball are dropped. Result: median event-to-ball distance
    **0.8–1.1 m** per match (5–12 m before), keeping about 66 % of passes and 163 of 171 shots.
+   *Coach v2 (2026-11-14) replaced this by a sync on the tracking's own ball releases: 91 % of passes kept, see
+   "Coach v2" below.*
 3. **Pitch control** ([`coach/pitch_control.py`](coach/pitch_control.py)): who gets to each point first. Each
    player reacts for 0.7 s, then runs at up to 5 m/s; the gap between the fastest attacker and defender becomes a
    probability (logistic, σ = 0.45 s). Closed form, so the browser can compute it exactly.
@@ -283,7 +285,7 @@ data [10.6084/m9.figshare.28196177](https://doi.org/10.6084/m9.figshare.28196177
   nearest-teammate rule agrees 67 %. That is expected (a coach that copied pros would be pointless), but it also
   means the advice is a *value* opinion, not a prediction of what a player will do.
 
-**Limits.** 7 matches from one league; event sync drops a third of the passes; failed-pass targets are inferred;
+**Limits.** 7 matches from one league; event sync drops a third of the passes (fixed in coach v2: 91 % kept); failed-pass targets are inferred;
 associations, not causal effects (players choose their passes). Logistic and ridge models were kept on purpose: the
 browser runs the exact same formulas.
 
@@ -734,6 +736,124 @@ over all 27 matches (18,308 passes), 95 % intervals from resampling whole matche
   (+0.008 [-0.003, +0.021], not distinguishable). **Not shipped yet:** it needs the context features at every valued point
   in Python and TypeScript, new parity fixtures and a rebuild of the game content, for a gain the data cannot confirm.
   It is the first change to ship when more matches are added.
+- **Re-tested with the coach v2 data (2026-11-14):** still better on its own metric, end-to-end gain still not
+  distinguishable from zero (+0.006 [-0.007, +0.018] pooled); not shipped. See "Coach v2" below.
+
+### Coach v2: event sync from the tracking, more and cleaner labels (2026-11-14)
+
+[`coach/sync.py`](coach/sync.py) (method `"release"`), [`coach/sync_eval.py`](coach/sync_eval.py) ->
+[`docs/coach_sync_results.json`](docs/coach_sync_results.json), [`coach/coach_v2.py`](coach/coach_v2.py) ->
+[`docs/coach_v2_results.json`](docs/coach_v2_results.json), tests `tests/test_20_sync_v2.py`.
+
+**Why a third of the passes were dropped.** The v1 sync trusted the hand-logged event: it snapped each pass within
+±1.5 s to the frame where the ball was nearest the logged spot, and dropped it when that spot was more than 3 m from
+the ball (757 passes) or when the best frame sat on the window edge or the passer never had the ball in the window
+(1,152). On those dropped passes the passer *does* have the ball nearby (median 0.4 m): the logged spot is a median
+5.8 m off for the "far" ones, and the release is about 3 s from the shifted time for the others. The hand clock's
+jitter is larger than the window, and the spot is too noisy to be the main signal. The frame nearest the spot is often
+not the kick either: the ball speed rises by only 2.1 m/s across the v1 frame.
+
+**The fix: let the tracking say when the ball is released.** A release of player p is the last frame of a run within
+1.5 m of the ball after which the ball gets more than 3 m from him within 0.8 s (the kick). Per half, the clock offset
+is the peak of the distribution of (release time - event time) over all events' actors; a local offset (median of the
+20 nearest events) follows the drift (it wanders by ±0.5 s within a half). Each pass then takes the release of *its*
+passer within ±3 s that minimises a time + spot cost, minus a bonus when what follows agrees with the event (the
+recorded recipient touches the ball next; an opponent or a dead ball after a failed pass). A completed pass whose
+recipient never comes within 2 m of the ball within 6 s is dropped, and two events cannot share a release. The
+provider's CalculatedFrame is still used for shots when it agrees with the event.
+
+| 7 Bundesliga matches | v1 (legacy) | **v2 (release)** |
+|---|---:|---:|
+| passes placed | 4,158 / 6,062 (68.6 %) | **5,517 (91.0 %)** |
+| open-play pass rows for the models (pass table) | 3,464 | **4,674 (+35 %)** |
+| completed passes in the arrival table | 2,934 | **3,927** |
+| shots placed | 163 / 171 | 165 / 171 |
+| **shots vs the provider's CalculatedFrame** (frame ignored, 159 shots): within 0.2 s / 0.4 s | 84 % / 93 % of 95 placed | **94 % / 98 % of 128 placed** |
+| ball speed jump across the chosen frame (median; a kick shows a jump) | 2.1 m/s | **7.0 m/s** |
+| completed: recipient is the next player on the ball / within 2 m in 6 s | 75.2 % / 99.1 % | **78.5 % / 100 %** |
+| failed: an opponent touches next, or the ball goes dead | 72.2 % | **76.5 %** |
+| logged spot to the ball at the chosen frame (median; v1 minimises it) | 0.97 m | 1.95 m |
+
+Passes kept per match: J03WMX 685 -> 908, J03WN1 586 -> 701, J03WOH 484 -> 672, J03WOY 694 -> 808, J03WPY 493 -> 778,
+J03WQQ 626 -> 846, J03WR9 590 -> 804 (87-96 % per match, 55-80 % before). On the 4,082 passes both methods place, the
+two frames agree within 0.2 s for 68 %; where they differ, v2 is later (the kick, not the touch before it). The only
+check that gets worse is the spot distance, the quantity v1 optimised. Remaining drops (passes and shots): 462 with no release of the
+passer within ±3 s, 42 without reception, 34 with the spot more than 15 m off, 10 duplicates.
+
+**Failed-pass targets.** The DFL "recipient" of a failed pass is the opponent who won it, so the intended teammate is
+still inferred from the ball path. On a proxy (3,121 completed passes with a clean reception, their path cut at
+40 / 60 / 80 % as if intercepted there), the v1 "ray" rule names the right receiver 86 / 88 / 88 % of the time. A
+"direction" rule (the ball's direction at the release, teammates moved along their run until the ball reaches them)
+names it 89 / 90 / 90 %. **Not shipped:** models trained on its labels give *worse* end-to-end advice (table below,
+pooled -0.0014 [-0.0023, -0.0007]). The real accuracy can be measured on the A-League, where SkillCorner records the
+intended receiver of failed passes: `sync_eval` does it when the raw store (USB key) is connected; it was offline here.
+
+**Does the better data make a better coach?** Held-out, every model refitted per left-out match. All configurations
+are scored on the **same** held-out rows (the v2 rows of the left-out match), and the end-to-end check is repeated on
+the passes that v1 placed too ("common"), so a gain cannot come from the recovered passes alone. End to end = Spearman
+between the coach score of the pro's chosen pass and the net xG of the next 15 s. 95 % intervals from 1000 resamples
+of whole matches.
+
+| | Bundesliga, 7-match LOMO (website recipe) | 27 matches pooled, LOMO (lab / game recipe) |
+|---|---|---|
+| pass log-loss / AUC, v1 data -> v2 data | 0.3639 / 0.851 -> 0.3626 / 0.853 (gain +0.0014 [-0.0001, +0.0030]) | 0.3256 / 0.858 -> 0.3255 / 0.858 |
+| leak check (interceptor removed): log-loss / AUC | 0.4201 / 0.779 -> 0.4197 / 0.781 | 0.3701 / 0.792 -> 0.3701 / 0.792 |
+| arrival value, MSE skill | 4.6 % -> 5.1 % | 8.5 % -> 8.5 % |
+| possession value V, MSE skill | 2.2 % -> 2.2 % | 4.0 % -> 4.0 % |
+| **end to end, all held-out passes** | **0.099 -> 0.137, +0.038 [+0.023, +0.056]** | **0.090 -> 0.099, +0.009 [+0.008, +0.011]** |
+| end to end, common passes only | 0.095 -> 0.129, +0.035 [+0.020, +0.051] | 0.090 -> 0.100, +0.009 [+0.008, +0.011] |
+| + direction target rule (rejected) | -0.005 [-0.008, +0.001] | **-0.0014 [-0.0023, -0.0007]** |
+| + zone x context value / arrival (not shipped) | +0.015 [-0.009, +0.038] | +0.006 [-0.007, +0.018] |
+
+The ship rule was fixed before looking at the numbers: a change ships if its end-to-end gain is >= 0 in both recipes
+and the lower end of the pooled interval is above -0.005; zone x context additionally needs a pooled interval above
+zero, because it costs a port of two context features to the browser and a rebuild of the game content.
+
+- **Shipped: the release sync (with the v1 "ray" targets).** Pass and value accuracy are about the same, but the coach
+  trained on it ranks the pro's choices in clearly better agreement with what followed: each pass is valued at the
+  kick, on a third more passes. The gain is large on the Bundesliga, where the data changed, and +0.009 pooled (the
+  A-League tables are unchanged: their events already carry tracking frames, and their 14,844 passes dominate the
+  pooled pass model).
+- **Zone x context, again not shipped.** With the v2 data its own metric still improves (pooled value MSE skill
+  4.0 -> 5.5 %, arrival 8.5 -> 9.5 %, both intervals above zero) and the end-to-end point estimate is positive in both
+  recipes (Bundesliga 0.137 -> 0.152), but neither interval excludes zero and the A-League is slightly lower
+  (0.106 -> 0.099). It stays the first candidate when more matches are added.
+- **The direction rule is a cautionary tale:** better receiver guesses on the proxy, worse advice. A plausible reason
+  is that it names receivers further along the ball's line (runners), so failed passes look longer and riskier than
+  the ones pros attempt; the proxy uses completed passes, which are not distributed like failed ones. It stays in the
+  code (`datasets.infer_target(rule="direction")`) for the A-League ground-truth check.
+
+**Full advice, v1- vs v2-trained website models** (`--advice`: every option ranked by `advice.options` on the 4,674
+held-out v2 passes of the 7 Bundesliga matches):
+
+| | v1 data | v2 data |
+|---|---:|---:|
+| pro's pass is the coach's best option (top-1 / top-3 of all options) | 9.3 % / 30.7 % | 10.8 % / 33.7 % |
+| pro's receiver among the coach's top-3 passes (random 30.3 %, 3 nearest teammates 66.6 %) | 34.8 % | **37.3 %**, +2.5 points [+1.4, +3.6] |
+| completion of the pro's pass by coach rank 1 / 2-3 / 4-6 / 7+ | 78 / 82 / 85 / 86 % | 76 / 83 / 86 / 86 % |
+| coach's best option is a pass | 91.5 % | 92.4 % |
+
+The coach agrees a little more with the pros but is still far from them, and it still plays bolder (its top option is
+completed less often than the ones it ranks lower). That is by design: it is a value opinion, not a copy of what
+players do.
+
+**What changed downstream.** The 7 converted matches were re-synced in place (`python -m coach.prepare --resync`,
+JSON only; the v1 JSONs are kept in `cv-data/football-coach/legacy-sync/`, and `--method legacy` reproduces the v1
+audit exactly). The website's `models.json` and the replay match's events were re-exported (`coach.export`) and the
+parity fixtures regenerated; the browser formulas are unchanged. **Not refreshed yet:** the Playmaker daily content
+(it needs the A-League raw store on the USB key; commands below) and the earlier result sections of this README, which
+describe the v1 data (benchmark, report, ghosts, profiles and their site exports included).
+
+**Limits.** Only the 7 Bundesliga matches carry the change, so its intervals are wide; the failed-pass proxy is not
+the real thing (A-League check pending); failed-pass targets are still inferred and outcome-informed (leak check
+unchanged); associations, not causal effects.
+
+```bash
+python -m coach.sync_eval            # sync v1 vs v2 + target-rule proxy (~30 s; + A-League check when D: is in)
+python -m coach.prepare --resync     # re-sync the converted matches in place (JSON only, no raw data needed)
+python -m coach.coach_v2             # data configs x models, held-out, CIs (~10 min first run, then ~2 min)
+python -m coach.coach_v2 --advice    # full advice on every held-out pass, v1- vs v2-trained models (~30 min)
+```
 
 ### Run the coach
 
@@ -743,6 +863,9 @@ python -m coach.prepare --raw D:/football-coach/idsse-raw    # 7 matches, ~15 mi
 python -m coach.evaluate                                     # all numbers + charts (~10 min on CPU)
 python -m coach.export --match J03WOH --site <folder>        # one match (h0/h1.bin int16 cm 12.5 fps, z0/z1.bin ball height) + weights
 python -m coach.parity_fixtures                              # Python <-> TypeScript parity frames for the website
+python -m coach.prepare --resync                             # re-run the event sync on the converted matches (coach v2)
+python -m coach.sync_eval                                    # sync v1 vs v2 checks (~30 s)
+python -m coach.coach_v2                                     # does the v2 data make a better coach? (~10 min)
 python -m coach.skillcorner                                  # 20 A-League matches streamed (1.7 GB), ~5 min
 python -m coach.cross_league                                 # cross-league + combined numbers and charts (~3 min)
 python -m coach.shot_pooled                                  # held-out check of the pooled shot model (~10 s after cross_league)
@@ -764,7 +887,8 @@ All numbers: [`docs/coach_results.json`](docs/coach_results.json),
 [`docs/coach_shot_pooled_results.json`](docs/coach_shot_pooled_results.json),
 [`docs/coach_report_results.json`](docs/coach_report_results.json),
 [`docs/coach_ghosts_results.json`](docs/coach_ghosts_results.json),
-[`docs/coach_benchmark_results.json`](docs/coach_benchmark_results.json) (+ `_aleague`, `_pooled`, `_cutbacks`). Tests: `tests/test_20_coach.py` (47),
+[`docs/coach_benchmark_results.json`](docs/coach_benchmark_results.json) (+ `_aleague`, `_pooled`, `_cutbacks`),
+[`docs/coach_sync_results.json`](docs/coach_sync_results.json), [`docs/coach_v2_results.json`](docs/coach_v2_results.json). Tests: `tests/test_20_coach.py` (47),
 `tests/test_20_profiles.py` (15), `tests/test_20_report.py` (14), `tests/test_20_explain.py` (15),
 `tests/test_20_benchmark.py` (20).
 

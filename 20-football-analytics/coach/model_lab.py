@@ -174,6 +174,7 @@ def match_lab_tables(m) -> dict:
         "now": np.array([r["now"] for r in rows], float).reshape(-1, N_VALUE + 2),
         "outcome": np.array(outcome, float),
         "match": pt["match"],
+        "event": np.array(idx, int),  # index in m.events (coach_v2: passes placed by both syncs)
     }
     keep = ("X", "y", "match", "weight", "X_noint", "X_full", "X_full_noint")
     return {

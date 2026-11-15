@@ -1,0 +1,636 @@
+{
+ "generated_by": {
+  "commit": "58f726e",
+  "date": "2026-11-15"
+ },
+ "matches": {
+  "J03WMX": {
+   "release": {
+    "method": "release",
+    "axis": "same_y",
+    "nominal_median_dist_m": 5.5958,
+    "nominal_p90_dist_m": 20.4263,
+    "median_dist_m": 2.0424,
+    "p90_dist_m": 4.1664,
+    "shift_s": [
+     0.2,
+     -0.08
+    ],
+    "events": 1005,
+    "kept": 928,
+    "dropped": {
+     "no_release": 68,
+     "far": 4,
+     "no_reception": 3,
+     "duplicate": 2
+    },
+    "passes": 984,
+    "passes_kept": 908,
+    "shots": 21,
+    "shots_kept": 20,
+    "calc_frames_used": 18,
+    "quality": {
+     "passes_placed": 908,
+     "passer_ball_median_m": 1.2412,
+     "passer_ball_p90_m": 1.4562,
+     "ball_speed_jump_median_ms": 7.0001,
+     "spot_median_m": 2.0786,
+     "completed_recipient_next": 0.7775,
+     "completed_recipient_within_2m": 1.0,
+     "failed_opponent_or_dead_next": 0.7974
+    },
+    "pass_table_rows_direction": 787,
+    "pass_table_rows_ray": 780
+   },
+   "legacy": {
+    "method": "legacy",
+    "axis": "same_y",
+    "nominal_median_dist_m": 5.5958,
+    "nominal_p90_dist_m": 20.4263,
+    "median_dist_m": 1.0922,
+    "p90_dist_m": 2.4057,
+    "shift_s": [
+     -0.44,
+     -0.44
+    ],
+    "events": 1005,
+    "kept": 705,
+    "dropped": {
+     "no_release": 130,
+     "far": 116,
+     "window_edge": 54
+    },
+    "passes": 984,
+    "passes_kept": 685,
+    "shots": 21,
+    "shots_kept": 20,
+    "calc_frames_used": 18,
+    "quality": {
+     "passes_placed": 685,
+     "passer_ball_median_m": 0.9139,
+     "passer_ball_p90_m": 1.8356,
+     "ball_speed_jump_median_ms": 2.4893,
+     "spot_median_m": 1.1048,
+     "completed_recipient_next": 0.7561,
+     "completed_recipient_within_2m": 0.9947,
+     "failed_opponent_or_dead_next": 0.7304
+    },
+    "pass_table_rows_ray": 587
+   },
+   "common_passes": 676
+  },
+  "J03WN1": {
+   "release": {
+    "method": "release",
+    "axis": "same_y",
+    "nominal_median_dist_m": 12.1167,
+    "nominal_p90_dist_m": 25.9253,
+    "median_dist_m": 1.733,
+    "p90_dist_m": 3.6841,
+    "shift_s": [
+     -0.64,
+     -1.44
+    ],
+    "events": 749,
+    "kept": 722,
+    "dropped": {
+     "no_release": 24,
+     "no_reception": 2,
+     "duplicate": 1
+    },
+    "passes": 728,
+    "passes_kept": 701,
+    "shots": 21,
+    "shots_kept": 21,
+    "calc_frames_used": 20,
+    "quality": {
+     "passes_placed": 701,
+     "passer_ball_median_m": 1.2889,
+     "passer_ball_p90_m": 1.4578,
+     "ball_speed_jump_median_ms": 4.9743,
+     "spot_median_m": 1.7624,
+     "completed_recipient_next": 0.7208,
+     "completed_recipient_within_2m": 1.0,
+     "failed_opponent_or_dead_next": 0.7602
+    },
+    "pass_table_rows_direction": 566,
+    "pass_table_rows_ray": 566
+   },
+   "legacy": {
+    "method": "legacy",
+    "axis": "same_y",
+    "nominal_median_dist_m": 12.1167,
+    "nominal_p90_dist_m": 25.9253,
+    "median_dist_m": 0.805,
+    "p90_dist_m": 1.9938,
+    "shift_s": [
+     -1.6,
+     -1.6
+    ],
+    "events": 749,
+    "kept": 607,
+    "dropped": {
+     "far": 64,
+     "window_edge": 33,
+     "no_release": 45
+    },
+    "passes": 728,
+    "passes_kept": 586,
+    "shots": 21,
+    "shots_kept": 21,
+    "calc_frames_used": 20,
+    "quality": {
+     "passes_placed": 586,
+     "passer_ball_median_m": 0.7736,
+     "passer_ball_p90_m": 1.7129,
+     "ball_speed_jump_median_ms": 1.4521,
+     "spot_median_m": 0.8036,
+     "completed_recipient_next": 0.7066,
+     "completed_recipient_within_2m": 0.9906,
+     "failed_opponent_or_dead_next": 0.725
+    },
+    "pass_table_rows_ray": 466
+   },
+   "common_passes": 579
+  },
+  "J03WOH": {
+   "release": {
+    "method": "release",
+    "axis": "same_y",
+    "nominal_median_dist_m": 7.7156,
+    "nominal_p90_dist_m": 19.5319,
+    "median_dist_m": 1.8245,
+    "p90_dist_m": 4.3295,
+    "shift_s": [
+     2.16,
+     1.88
+    ],
+    "events": 791,
+    "kept": 698,
+    "dropped": {
+     "no_half": 1,
+     "no_release": 75,
+     "no_reception": 6,
+     "far": 10,
+     "duplicate": 1
+    },
+    "passes": 764,
+    "passes_kept": 672,
+    "shots": 27,
+    "shots_kept": 26,
+    "calc_frames_used": 22,
+    "quality": {
+     "passes_placed": 672,
+     "passer_ball_median_m": 1.2519,
+     "passer_ball_p90_m": 1.4615,
+     "ball_speed_jump_median_ms": 7.6595,
+     "spot_median_m": 1.8861,
+     "completed_recipient_next": 0.7647,
+     "completed_recipient_within_2m": 1.0,
+     "failed_opponent_or_dead_next": 0.7654
+    },
+    "pass_table_rows_direction": 557,
+    "pass_table_rows_ray": 552
+   },
+   "legacy": {
+    "method": "legacy",
+    "axis": "same_y",
+    "nominal_median_dist_m": 7.7156,
+    "nominal_p90_dist_m": 19.5319,
+    "median_dist_m": 0.9115,
+    "p90_dist_m": 2.2666,
+    "shift_s": [
+     1.4,
+     1.04
+    ],
+    "events": 791,
+    "kept": 508,
+    "dropped": {
+     "no_half": 1,
+     "no_release": 114,
+     "far": 103,
+     "window_edge": 65
+    },
+    "passes": 764,
+    "passes_kept": 484,
+    "shots": 27,
+    "shots_kept": 24,
+    "calc_frames_used": 22,
+    "quality": {
+     "passes_placed": 484,
+     "passer_ball_median_m": 0.8929,
+     "passer_ball_p90_m": 1.8073,
+     "ball_speed_jump_median_ms": 2.0074,
+     "spot_median_m": 0.9147,
+     "completed_recipient_next": 0.7218,
+     "completed_recipient_within_2m": 0.9972,
+     "failed_opponent_or_dead_next": 0.719
+    },
+    "pass_table_rows_ray": 385
+   },
+   "common_passes": 479
+  },
+  "J03WOY": {
+   "release": {
+    "method": "release",
+    "axis": "same_y",
+    "nominal_median_dist_m": 7.7609,
+    "nominal_p90_dist_m": 18.461,
+    "median_dist_m": 1.647,
+    "p90_dist_m": 3.2388,
+    "shift_s": [
+     2.12,
+     2.08
+    ],
+    "events": 889,
+    "kept": 830,
+    "dropped": {
+     "no_release": 51,
+     "far": 1,
+     "no_reception": 6,
+     "no_half": 1
+    },
+    "passes": 867,
+    "passes_kept": 808,
+    "shots": 22,
+    "shots_kept": 22,
+    "calc_frames_used": 20,
+    "quality": {
+     "passes_placed": 808,
+     "passer_ball_median_m": 1.26,
+     "passer_ball_p90_m": 1.4517,
+     "ball_speed_jump_median_ms": 5.8363,
+     "spot_median_m": 1.6721,
+     "completed_recipient_next": 0.7856,
+     "completed_recipient_within_2m": 1.0,
+     "failed_opponent_or_dead_next": 0.7725
+    },
+    "pass_table_rows_direction": 661,
+    "pass_table_rows_ray": 656
+   },
+   "legacy": {
+    "method": "legacy",
+    "axis": "same_y",
+    "nominal_median_dist_m": 7.7609,
+    "nominal_p90_dist_m": 18.461,
+    "median_dist_m": 0.9332,
+    "p90_dist_m": 2.0914,
+    "shift_s": [
+     1.6,
+     1.36
+    ],
+    "events": 889,
+    "kept": 716,
+    "dropped": {
+     "no_release": 79,
+     "far": 54,
+     "window_edge": 39,
+     "no_half": 1
+    },
+    "passes": 867,
+    "passes_kept": 694,
+    "shots": 22,
+    "shots_kept": 22,
+    "calc_frames_used": 20,
+    "quality": {
+     "passes_placed": 694,
+     "passer_ball_median_m": 0.8395,
+     "passer_ball_p90_m": 1.7804,
+     "ball_speed_jump_median_ms": 2.3634,
+     "spot_median_m": 0.9299,
+     "completed_recipient_next": 0.7631,
+     "completed_recipient_within_2m": 0.9864,
+     "failed_opponent_or_dead_next": 0.743
+    },
+    "pass_table_rows_ray": 554
+   },
+   "common_passes": 682
+  },
+  "J03WPY": {
+   "release": {
+    "method": "release",
+    "axis": "same_y",
+    "nominal_median_dist_m": 6.1803,
+    "nominal_p90_dist_m": 21.1258,
+    "median_dist_m": 2.3556,
+    "p90_dist_m": 5.4795,
+    "shift_s": [
+     1.12,
+     0.48
+    ],
+    "events": 917,
+    "kept": 802,
+    "dropped": {
+     "no_half": 1,
+     "no_release": 87,
+     "no_reception": 15,
+     "far": 12
+    },
+    "passes": 891,
+    "passes_kept": 778,
+    "shots": 26,
+    "shots_kept": 24,
+    "calc_frames_used": 23,
+    "quality": {
+     "passes_placed": 778,
+     "passer_ball_median_m": 1.2507,
+     "passer_ball_p90_m": 1.4452,
+     "ball_speed_jump_median_ms": 7.833,
+     "spot_median_m": 2.3836,
+     "completed_recipient_next": 0.8146,
+     "completed_recipient_within_2m": 1.0,
+     "failed_opponent_or_dead_next": 0.7619
+    },
+    "pass_table_rows_direction": 668,
+    "pass_table_rows_ray": 666
+   },
+   "legacy": {
+    "method": "legacy",
+    "axis": "same_y",
+    "nominal_median_dist_m": 6.1803,
+    "nominal_p90_dist_m": 21.1258,
+    "median_dist_m": 1.1295,
+    "p90_dist_m": 2.4114,
+    "shift_s": [
+     0.16,
+     0.28
+    ],
+    "events": 917,
+    "kept": 516,
+    "dropped": {
+     "no_half": 1,
+     "far": 185,
+     "window_edge": 71,
+     "no_release": 144
+    },
+    "passes": 891,
+    "passes_kept": 493,
+    "shots": 26,
+    "shots_kept": 23,
+    "calc_frames_used": 23,
+    "quality": {
+     "passes_placed": 493,
+     "passer_ball_median_m": 0.9108,
+     "passer_ball_p90_m": 1.8219,
+     "ball_speed_jump_median_ms": 0.672,
+     "spot_median_m": 1.1281,
+     "completed_recipient_next": 0.7625,
+     "completed_recipient_within_2m": 0.98,
+     "failed_opponent_or_dead_next": 0.6989
+    },
+    "pass_table_rows_ray": 423
+   },
+   "common_passes": 482
+  },
+  "J03WQQ": {
+   "release": {
+    "method": "release",
+    "axis": "same_y",
+    "nominal_median_dist_m": 5.4048,
+    "nominal_p90_dist_m": 14.8985,
+    "median_dist_m": 1.9904,
+    "p90_dist_m": 4.3003,
+    "shift_s": [
+     2.0,
+     1.44
+    ],
+    "events": 952,
+    "kept": 872,
+    "dropped": {
+     "no_release": 72,
+     "no_reception": 4,
+     "duplicate": 4
+    },
+    "passes": 925,
+    "passes_kept": 846,
+    "shots": 27,
+    "shots_kept": 26,
+    "calc_frames_used": 25,
+    "quality": {
+     "passes_placed": 846,
+     "passer_ball_median_m": 1.2627,
+     "passer_ball_p90_m": 1.4513,
+     "ball_speed_jump_median_ms": 8.4688,
+     "spot_median_m": 2.0344,
+     "completed_recipient_next": 0.8134,
+     "completed_recipient_within_2m": 1.0,
+     "failed_opponent_or_dead_next": 0.7875
+    },
+    "pass_table_rows_direction": 767,
+    "pass_table_rows_ray": 763
+   },
+   "legacy": {
+    "method": "legacy",
+    "axis": "same_y",
+    "nominal_median_dist_m": 5.4048,
+    "nominal_p90_dist_m": 14.8985,
+    "median_dist_m": 1.0233,
+    "p90_dist_m": 2.3513,
+    "shift_s": [
+     0.84,
+     0.76
+    ],
+    "events": 952,
+    "kept": 652,
+    "dropped": {
+     "no_release": 91,
+     "far": 117,
+     "window_edge": 92
+    },
+    "passes": 925,
+    "passes_kept": 626,
+    "shots": 27,
+    "shots_kept": 26,
+    "calc_frames_used": 25,
+    "quality": {
+     "passes_placed": 626,
+     "passer_ball_median_m": 0.911,
+     "passer_ball_p90_m": 1.8022,
+     "ball_speed_jump_median_ms": 2.8941,
+     "spot_median_m": 1.0095,
+     "completed_recipient_next": 0.771,
+     "completed_recipient_within_2m": 0.9902,
+     "failed_opponent_or_dead_next": 0.7217
+    },
+    "pass_table_rows_ray": 554
+   },
+   "common_passes": 609
+  },
+  "J03WR9": {
+   "release": {
+    "method": "release",
+    "axis": "same_y",
+    "nominal_median_dist_m": 5.7204,
+    "nominal_p90_dist_m": 17.5642,
+    "median_dist_m": 1.7103,
+    "p90_dist_m": 4.2976,
+    "shift_s": [
+     1.44,
+     1.48
+    ],
+    "events": 930,
+    "kept": 830,
+    "dropped": {
+     "no_release": 85,
+     "far": 7,
+     "no_reception": 6,
+     "duplicate": 2
+    },
+    "passes": 903,
+    "passes_kept": 804,
+    "shots": 27,
+    "shots_kept": 26,
+    "calc_frames_used": 26,
+    "quality": {
+     "passes_placed": 804,
+     "passer_ball_median_m": 1.2572,
+     "passer_ball_p90_m": 1.4601,
+     "ball_speed_jump_median_ms": 7.0739,
+     "spot_median_m": 1.7658,
+     "completed_recipient_next": 0.8067,
+     "completed_recipient_within_2m": 1.0,
+     "failed_opponent_or_dead_next": 0.7007
+    },
+    "pass_table_rows_direction": 697,
+    "pass_table_rows_ray": 691
+   },
+   "legacy": {
+    "method": "legacy",
+    "axis": "same_y",
+    "nominal_median_dist_m": 5.7204,
+    "nominal_p90_dist_m": 17.5642,
+    "median_dist_m": 0.9306,
+    "p90_dist_m": 2.309,
+    "shift_s": [
+     0.92,
+     0.32
+    ],
+    "events": 930,
+    "kept": 617,
+    "dropped": {
+     "window_edge": 62,
+     "far": 118,
+     "no_release": 133
+    },
+    "passes": 903,
+    "passes_kept": 590,
+    "shots": 27,
+    "shots_kept": 27,
+    "calc_frames_used": 26,
+    "quality": {
+     "passes_placed": 590,
+     "passer_ball_median_m": 0.9344,
+     "passer_ball_p90_m": 1.8132,
+     "ball_speed_jump_median_ms": 2.4428,
+     "spot_median_m": 0.9147,
+     "completed_recipient_next": 0.7721,
+     "completed_recipient_within_2m": 0.9938,
+     "failed_opponent_or_dead_next": 0.7087
+    },
+    "pass_table_rows_ray": 495
+   },
+   "common_passes": 575
+  }
+ },
+ "pooled": {
+  "release": {
+   "passes": 6062,
+   "passes_kept": 5517,
+   "passes_kept_share": 0.9101,
+   "shots_kept": 165,
+   "shots": 171,
+   "dropped": {
+    "no_release": 462,
+    "far": 34,
+    "no_reception": 42,
+    "duplicate": 10,
+    "no_half": 3
+   },
+   "quality": {
+    "passer_ball_median_m_match_weighted": 1.2583,
+    "passer_ball_p90_m_match_weighted": 1.4547,
+    "ball_speed_jump_median_ms_match_weighted": 7.006,
+    "spot_median_m_match_weighted": 1.9461,
+    "completed_recipient_next_match_weighted": 0.7849,
+    "completed_recipient_within_2m_match_weighted": 1.0,
+    "failed_opponent_or_dead_next_match_weighted": 0.7645
+   },
+   "shots_vs_calc_frame": {
+    "n": 159,
+    "placed": 128,
+    "within_0.2s": 0.9375,
+    "within_0.4s": 0.9766,
+    "median_abs_error_s": 0.0
+   }
+  },
+  "legacy": {
+   "passes": 6062,
+   "passes_kept": 4158,
+   "passes_kept_share": 0.6859,
+   "shots_kept": 163,
+   "shots": 171,
+   "dropped": {
+    "no_release": 736,
+    "far": 757,
+    "window_edge": 416,
+    "no_half": 3
+   },
+   "quality": {
+    "passer_ball_median_m_match_weighted": 0.8814,
+    "passer_ball_p90_m_match_weighted": 1.796,
+    "ball_speed_jump_median_ms_match_weighted": 2.1049,
+    "spot_median_m_match_weighted": 0.9725,
+    "completed_recipient_next_match_weighted": 0.7516,
+    "completed_recipient_within_2m_match_weighted": 0.9905,
+    "failed_opponent_or_dead_next_match_weighted": 0.7223
+   },
+   "shots_vs_calc_frame": {
+    "n": 159,
+    "placed": 95,
+    "within_0.2s": 0.8421,
+    "within_0.4s": 0.9263,
+    "median_abs_error_s": 0.04
+   }
+  },
+  "pass_table_rows": {
+   "release_direction": 4703,
+   "release_ray": 4674,
+   "legacy_ray": 3464
+  },
+  "common_passes": {
+   "n": 4082,
+   "release_minus_legacy_median_s": 0.08,
+   "within_0.2s": 0.6818,
+   "release_later_share": 0.3138
+  },
+  "target_proxy": {
+   "direction@0.4": {
+    "n": 3121,
+    "accuracy": 0.892
+   },
+   "direction@0.6": {
+    "n": 3121,
+    "accuracy": 0.9
+   },
+   "direction@0.8": {
+    "n": 3121,
+    "accuracy": 0.9029
+   },
+   "ray@0.4": {
+    "n": 3121,
+    "accuracy": 0.8619
+   },
+   "ray@0.6": {
+    "n": 3121,
+    "accuracy": 0.8802
+   },
+   "ray@0.8": {
+    "n": 3121,
+    "accuracy": 0.884
+   }
+  }
+ },
+ "target_known_aleague": {
+  "skipped": "SkillCorner raw store offline (python -m coach.skillcorner --store-raw ...)"
+ }
+}

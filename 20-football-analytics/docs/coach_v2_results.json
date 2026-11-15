@@ -764,5 +764,24 @@
     0.036511
    ]
   }
+ },
+ "shot_min_angle": {
+  "min_angle": 0.12,
+  "before": {
+   "n": 4674,
+   "best_is_shot": 0.058408,
+   "best_is_shot_below_min_angle": 0.009628,
+   "best_shot_mean_xg": 0.04987,
+   "top1": 0.108258,
+   "top3": 0.337398
+  },
+  "after": {
+   "n": 4674,
+   "best_is_shot": 0.04878,
+   "best_is_shot_below_min_angle": 0.0,
+   "best_shot_mean_xg": 0.049984,
+   "top1": 0.111682,
+   "top3": 0.33911
+  }
  }
 }

@@ -4,6 +4,7 @@ zone x context value / arrival terms ship? Held-out, with 95 % intervals from re
     python -m coach.coach_v2              # from 20-football-analytics/ (first run builds the Bundesliga tables, ~10 min)
     python -m coach.coach_v2 --rebuild    # rebuild them (after a change to sync.py / datasets.py)
     python -m coach.coach_v2 --advice     # + full advice on every held-out pass, v1- vs v2-trained (~30 min)
+    python -m coach.coach_v2 --shots      # + the minimum shot angle, before / after (~15 min)
 
 Bundesliga data configs (the 20 A-League matches come from the model lab cache: their events carry SkillCorner frame
 numbers and recorded receivers, so neither change applies to them):
@@ -317,6 +318,61 @@ def advice_stats(tables: dict, configs=("v1", "v2"), reps=L.BOOT) -> dict:
     return out
 
 
+def shot_angle_stats(tables: dict) -> dict:
+    """advice.SHOT_MIN_ANGLE before / after on the held-out v2 pass decisions (v2-trained website models): options are
+    ranked once with no angle limit, then the withheld shots are removed (exact: removing an option keeps the order)."""
+    from . import advice as A
+    from . import cross_league as CL
+    from . import evaluate as EV
+    from . import export as X
+    from . import features as F
+
+    extra = CL.skillcorner_shots()[0]
+    keep_angle, A.SHOT_MIN_ANGLE = A.SHOT_MIN_ANGLE, 0.0
+    rows = []
+    try:
+        for mid in MATCHES:
+            m = load(OUT / mid)
+            sync.attach_frames(m, DATA["v2"][0])
+            others = [x for x in MATCHES if x != mid]
+            stacked = {k: D.stack([tables["v2"][x][k] for x in others]) for k in ("pass", "value", "arrival", "shot")}
+            stacked["shot"] = D.drop_penalties(stacked["shot"])
+            models = A.from_fitted(X.fit_models(stacked, extra))
+            for d in EV.pass_decisions(m, models):
+                p = d["sample"]
+                angle = F.shot_features(p["state"]["att"][p["carrier"]], p["state"]["def"])["goal_angle"]
+                for rule, opts in (
+                    ("before", d["options"]),
+                    ("after", [o for o in d["options"] if o["kind"] != "shot" or angle >= keep_angle]),
+                ):
+                    rows.append(
+                        {
+                            "rule": rule,
+                            "rank": 1 + next(i for i, o in enumerate(opts) if o is d["chosen"]),
+                            "best": opts[0]["kind"],
+                            "best_p": opts[0]["p"],
+                            "cut": opts[0]["kind"] == "shot" and angle < keep_angle,
+                        }
+                    )
+            print(f"  shots {mid}", flush=True)
+    finally:
+        A.SHOT_MIN_ANGLE = keep_angle
+    out = {"min_angle": keep_angle}
+    for rule in ("before", "after"):
+        r = [x for x in rows if x["rule"] == rule]
+        rk = np.array([x["rank"] for x in r])
+        shot_best = [x for x in r if x["best"] == "shot"]
+        out[rule] = {
+            "n": len(r),
+            "best_is_shot": float(np.mean([x["best"] == "shot" for x in r])),
+            "best_is_shot_below_min_angle": float(np.mean([x["cut"] for x in r])),
+            "best_shot_mean_xg": float(np.mean([x["best_p"] for x in shot_best])) if shot_best else None,
+            "top1": float(np.mean(rk == 1)),
+            "top3": float(np.mean(rk <= 3)),
+        }
+    return out
+
+
 def verdicts(res) -> dict:
     out = {}
     for name, key, strict in (
@@ -338,10 +394,17 @@ def main():
     ap.add_argument("--reps", type=int, default=L.BOOT)
     ap.add_argument("--out", type=Path, default=DOCS / "coach_v2_results.json")
     ap.add_argument("--advice", action="store_true", help="only the full-advice comparison, merged into --out")
+    ap.add_argument("--shots", action="store_true", help="only the minimum shot angle check, merged into --out")
     args = ap.parse_args()
     tables = load_tables(args.rebuild)
     from .stamp import generated_by
 
+    if args.shots:
+        res = json.loads(args.out.read_text(encoding="utf-8"))
+        res["shot_min_angle"] = L._clean(shot_angle_stats(tables))
+        args.out.write_text(json.dumps(res, indent=1), encoding="utf-8")
+        print(json.dumps(res["shot_min_angle"], indent=1))
+        return
     if args.advice:
         res = json.loads(args.out.read_text(encoding="utf-8"))
         res["advice"] = L._clean(advice_stats(tables, reps=args.reps))

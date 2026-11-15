@@ -837,6 +837,20 @@ The coach agrees a little more with the pros but is still far from them, and it 
 completed less often than the ones it ranks lower). That is by design: it is a value opinion, not a copy of what
 players do.
 
+**No shot option from the touchline (shipped).** In the replay (1st half, 00:09) the coach ranked a shot first for
+No. 29 standing on the touchline 35 m out (goal angle 0.065 rad): xG 2.8 %, score xG - V(now) = +0.0142, just above the
+best pass (+0.0141). Two causes were checked. *Missing cost after a miss?* No: after a missed open-play shot the net xG
+of the next 15 s (the shot excluded) is **+0.0023 [+0.0009, +0.0042]** on the Bundesliga (rebounds and corners outweigh
+counters), so counting it would favour shots slightly more. *Extrapolation?* Yes: the shot model learns from shots
+players took, and 99 % of the 689 open-play shots of both leagues come from a goal angle of 0.12 rad or more; below it
+the model predicts about 11 % for the 9 shots taken there, none scored, and it offered shots from spots where pros never
+shoot. The shot is now offered only from a goal angle of at least **0.12 rad** (`advice.SHOT_MIN_ANGLE`, also in the
+TypeScript port via `models.json` `advice.shot_min_angle`, the fast game scorer and the parity fixtures, which now
+include that replay moment). On the 4,674 held-out Bundesliga pass decisions (`coach_v2 --shots`): the coach's best
+option is a shot 5.8 % -> 4.9 % of the time (the 1.0 % from below 0.12 rad removed), the pro's pass is its top choice
+10.8 % -> 11.2 % (top 3: 33.7 % -> 33.9 %); in the replay match, 85 of the 432 sampled frames with a shot ranked first
+were such touchline shots. The end-to-end check scores the pro's chosen pass, so it is unaffected.
+
 **What changed downstream.** The 7 converted matches were re-synced in place (`python -m coach.prepare --resync`,
 JSON only; the v1 JSONs are kept in `cv-data/football-coach/legacy-sync/`, and `--method legacy` reproduces the v1
 audit exactly). The website's `models.json` and the replay match's events were re-exported (`coach.export`) and the
@@ -853,6 +867,7 @@ python -m coach.sync_eval            # sync v1 vs v2 + target-rule proxy (~30 s;
 python -m coach.prepare --resync     # re-sync the converted matches in place (JSON only, no raw data needed)
 python -m coach.coach_v2             # data configs x models, held-out, CIs (~10 min first run, then ~2 min)
 python -m coach.coach_v2 --advice    # full advice on every held-out pass, v1- vs v2-trained models (~30 min)
+python -m coach.coach_v2 --shots     # the minimum shot angle, before / after (~15 min)
 ```
 
 ### Run the coach

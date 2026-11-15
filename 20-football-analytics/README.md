@@ -661,7 +661,7 @@ their effect (+ raises the success chance, − lowers it, ≈ a value term), ref
 fast scorer equals `advice.options` to 1e-12 (tests/test_20_game.py).
 
 ```bash
-python -m coach.game.build --out D:/cv-data/playmaker --start 2026-12-01 --days 150 --pool 3500   # 27 matches (USB key): 117 days
+python -m coach.game.build --out D:/cv-data/playmaker --start 2026-12-01 --days 400 --pool 10000   # 27 matches (USB key), coach v2: 329 days
 python -m coach.game.build --set idsse --out ../../cv-data/playmaker-dev --days 20       # Bundesliga only
 python -m coach.game.build --validate <out>/content-v1                                   # schemas + no answers in public files
 python -m coach.rebuild_results                                                          # every results JSON, stamped
@@ -718,6 +718,11 @@ from the what-if replays above: (1) moments where the shot, the most advanced pa
 58.0, nearest teammate 54.5, and **no trivial strategy reaches 100 on any released moment** (0 %). Scoring 100 now
 needs reading the defenders; the "EXPLOIT" flags that remain in `playmaker_content_eval.json` concern the unfiltered
 candidate pool, which players never see.
+
+**Coach v2 bank (2026-11-15).** Rebuilt on the coach v2 sync and models with a pool of 10,000: 9,657 candidates pass the
+trivial-strategy filter, and days now go on once the scarce moments followed by a shot run out (they used to end the
+release at 114 days): **329 days, 1,645 moments**. Audit of the released moments: the pro averages 55.5 points, random
+37.9, the best trivial rule (most advanced pass) 59.8 and never 100; no exploit.
 
 **Longer season (2026-11-10).** With a pool of 3,500 the same rules give **117 days (585 moments)** before the build-up
 slots run out (`--days 150 --pool 3500`). The audit on that release: pro 54.8, random 37.5, most advanced pass 59.2,

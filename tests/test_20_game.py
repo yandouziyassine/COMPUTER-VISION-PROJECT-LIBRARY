@@ -281,6 +281,18 @@ def test_daily_sets_respect_zones_difficulty_matches_and_shots():
         prev_matches = {m["match"] for m in d}
 
 
+def test_daily_sets_continue_when_moments_with_a_shot_run_out():
+    f = pool()
+    for m in f:
+        m["shot_after"] = False
+    for m in f[:3]:  # only 3 moments followed by a shot, but plenty of others
+        m["shot_after"] = True
+        m["x"], m["iqr"], m["v_now"] = 40.0, 0.05, 0.05  # in the ranked pool for sure
+    days = GD.daily_sets(GD.rank_pool(f, size=200), n_days=8)
+    assert len(days) == 8
+    assert sum(m["shot_after"] for d in days for m in d) == 3  # all used while they last
+
+
 from coach.game import build as GB  # noqa: E402
 
 

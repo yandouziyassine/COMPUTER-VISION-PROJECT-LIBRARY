@@ -65,14 +65,15 @@ def daily_sets(ranked: list, n_days: int) -> list:
                 and f["match"] not in matches - {day[i]["match"]}
             ]
             swap = next((t for t in swaps if t[1]["match"] not in prev), swaps[0] if swaps else None)
-            if swap is None:
-                return days
-            i, f = swap
-            used.discard(day[i]["id"])
-            matches.discard(day[i]["match"])
-            day[i] = f
-            used.add(f["id"])
-            matches.add(f["match"])
+            # Moments followed by a shot are the scarce kind: once they run out, days go on without one (Training draws
+            # from the whole bank, so more days = more plays) instead of ending the release there.
+            if swap is not None:
+                i, f = swap
+                used.discard(day[i]["id"])
+                matches.discard(day[i]["match"])
+                day[i] = f
+                used.add(f["id"])
+                matches.add(f["match"])
         days.append(sorted(day, key=lambda f: f["difficulty"]))
         prev = matches
     return days

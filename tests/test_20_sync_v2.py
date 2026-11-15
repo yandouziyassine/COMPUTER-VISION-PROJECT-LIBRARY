@@ -178,3 +178,24 @@ def test_coach_v2_ship_rule():
     assert v["data v2"]["ship"] and not v["direction target rule"]["ship"] and not v["zone x context"]["ship"]
     v = V.verdicts(res((0.03, -0.004), (0.0, -0.004), (0.01, 0.001), (0.01, 0.001)))
     assert v["data v2"]["ship"] and v["direction target rule"]["ship"] and v["zone x context"]["ship"]
+
+
+def test_no_shot_option_from_the_touchline():
+    from coach import advice as A
+
+    s = {
+        "att": np.array([[42.0, 33.0], [30.0, 10.0]]),
+        "att_v": np.zeros((2, 2)),
+        "def": np.array([[45.0, 20.0]]),
+        "def_v": np.zeros((1, 2)),
+        "att_idx": np.array([0, 1]),
+    }
+    models = {
+        "pass": lambda X: np.full(len(X), 0.8),
+        "value": lambda X: np.full(len(X), 0.01),
+        "shot": lambda X: np.full(len(X), 0.5),
+    }
+    kinds = [o["kind"] for o in A.options(s, 0, models)]
+    assert "shot" not in kinds  # 35 m out on the touchline: goal angle 0.065 rad < SHOT_MIN_ANGLE
+    s2 = {**s, "att": np.array([[36.0, 4.0], [30.0, 10.0]])}
+    assert A.options(s2, 0, models)[0]["kind"] == "shot"

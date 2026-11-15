@@ -123,6 +123,24 @@ def candidate_frames(meta: dict, half: int, per_half: int) -> list:
     return frames[:: max(1, len(frames) // (3 * per_half))]
 
 
+def shot_cut_frames(meta: dict, half: int, h, team_of, k: int = 2, stride: int = 5) -> list:
+    """Up to k frames of the half where the carrier is within advice.SHOT_RANGE but below advice.SHOT_MIN_ANGLE (the
+    shot option is withheld there): the port must apply the same rule."""
+    out = []
+    for f in range(0, len(h.ball), stride):
+        found = carrier_at(meta, half, h, team_of, f)
+        if found is None:
+            continue
+        player, team = found
+        p = np.asarray(h.xy[f, player], float) * meta["halves"][half]["attack"][team]
+        sf = F.shot_features(p, np.zeros((0, 2)))
+        if sf["goal_dist"] <= A.SHOT_RANGE and sf["goal_angle"] < A.SHOT_MIN_ANGLE:
+            out.append(f)
+            if len(out) == k:
+                break
+    return out
+
+
 def build(export: Path, per_half: int = 15) -> dict:
     meta = json.loads((export / "match.json").read_text(encoding="utf-8"))
     models = json.loads((export / "models.json").read_text(encoding="utf-8"))
@@ -138,6 +156,10 @@ def build(export: Path, per_half: int = 15) -> dict:
                 got += 1
             if got == per_half:
                 break
+        for f in shot_cut_frames(meta, half, h, team_of):
+            rec = frame_record(meta, half, h, team_of, f, models)
+            if rec is not None:
+                frames.append(rec)
     return {
         "generated_by": "COMPUTER-VISION-PROJECT-LIBRARY/20-football-analytics/coach/parity_fixtures.py",
         "match_id": meta["match_id"],

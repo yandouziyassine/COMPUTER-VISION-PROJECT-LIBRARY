@@ -12,6 +12,13 @@ without it the possession value V is used. Carries, the loss point, V(now) and t
 Score of an option = p * V(target) + (1 - p) * (-V_opp(loss point)) - V(now): the expected change of the net expected
 goals. V_opp is the value for the opponent in possession (the point mirrored), and the loss point is where a failed
 pass is lost (features.lane_loss_point) or, for a carry, the carry point itself. A shot scores xG - V(now).
+
+The shot is offered only within SHOT_RANGE of the goal and from a goal angle of at least SHOT_MIN_ANGLE (coach v2):
+the shot model learns from shots players took, and 99 % of the 689 open-play shots of both leagues are taken from
+0.12 rad or more. Below that (the touchline, the corner flag) it extrapolates (11 % predicted for the 9 shots taken
+there, none scored) and a 3 % "shot" could outrank every pass. After a miss nothing is subtracted: on the Bundesliga
+the net xG of the next 15 s after a missed shot is +0.0023 [+0.0009, +0.0042] (rebounds and corners outweigh the
+counter-attacks), small and of the other sign than a turnover cost.
 """
 
 import numpy as np
@@ -20,6 +27,12 @@ from . import features as F
 from . import pitch_control as PC
 
 CARRY_DIST, CARRY_ANGLES, SHOT_RANGE = 6.0, (-60, -30, 0, 30, 60), 35.0
+SHOT_MIN_ANGLE = 0.12  # rad: 1st percentile of the goal angle of open-play shots (Bundesliga + A-League, 689)
+
+
+def shot_offered(sf: dict) -> bool:
+    """Whether the shot is an option, from features.shot_features at the carrier."""
+    return sf["goal_dist"] <= SHOT_RANGE and sf["goal_angle"] >= SHOT_MIN_ANGLE
 
 
 def from_fitted(fitted: dict) -> dict:
@@ -65,7 +78,7 @@ def options(s, carrier: int, models: dict) -> list:
         o["value"], o["v_lost"] = float(vk), float(vo)
         o["score"] = float(o["p"] * vk - (1 - o["p"]) * vo - v_now)
     sf = F.shot_features(here, s["def"])
-    if sf["goal_dist"] <= SHOT_RANGE:
+    if shot_offered(sf):
         p = float(models["shot"](np.array([[sf[k] for k in F.SHOT_FEATURES]]))[0])
         out.append({"kind": "shot", "to": [52.5, 0.0], "p": p, "value": 1.0, "score": p - v_now})
     return sorted(out, key=lambda o: -o["score"])

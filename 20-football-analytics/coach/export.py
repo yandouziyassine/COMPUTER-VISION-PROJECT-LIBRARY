@@ -139,7 +139,9 @@ def export_models(out: Path, matches, exclude=None, extra_shots=None):
             "carry_dist": A.CARRY_DIST,
             "carry_angles_deg": list(A.CARRY_ANGLES),
             "shot_range": A.SHOT_RANGE,
-            "score": "p * V(target) + (1 - p) * (-V_opp(loss point)) - V(now); shot: xG - V(now); "
+            "shot_min_angle": A.SHOT_MIN_ANGLE,
+            "score": "p * V(target) + (1 - p) * (-V_opp(loss point)) - V(now); shot (goal distance <= shot_range and "
+            "goal angle >= shot_min_angle rad): xG - V(now); "
             "V(target) of a pass = the arrival model, of a carry = the value model",
         },
     }

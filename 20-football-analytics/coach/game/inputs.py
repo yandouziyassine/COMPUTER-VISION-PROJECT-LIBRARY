@@ -1,7 +1,7 @@
 """Model-independent inputs of one decision and fast scores for any model set (same formula as advice.options).
 
 Option order (k = index): passes by target player index, then carries by angle (advice.CARRY_ANGLES order), then the
-shot when the carrier is within advice.SHOT_RANGE of the goal."""
+shot when advice.shot_offered (within advice.SHOT_RANGE of the goal, goal angle at least advice.SHOT_MIN_ANGLE)."""
 
 import numpy as np
 
@@ -31,7 +31,7 @@ def inputs(s: dict, carrier: int) -> dict:
         carry_p.append(float(PC.control(pt[None], s["att"], s["att_v"], s["def"], s["def_v"])[0]))
     carry_to = np.array(carry_to)
     sf = F.shot_features(here, s["def"])
-    shot_x = np.array([[sf[k] for k in F.SHOT_FEATURES]]) if sf["goal_dist"] <= A.SHOT_RANGE else None
+    shot_x = np.array([[sf[k] for k in F.SHOT_FEATURES]]) if A.shot_offered(sf) else None
     return {
         "targets": [int(s["att_idx"][j]) for j in rows],
         "angles": list(A.CARRY_ANGLES),

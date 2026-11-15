@@ -34,7 +34,7 @@ from .prepare import MATCHES, OUT
 
 NAN = -32768
 CREDIT = "Bundesliga tracking and event data: Bassek et al. (2025), DFL / Sportec Solutions, CC BY 4.0"
-SYNC_ONLY = ("t", "t_sync", "calc_frame", "dist", "sync_shift_s")  # sync diagnostics, not needed by the site
+SYNC_ONLY = ("t", "t_sync", "calc_frame", "dist", "sync_shift_s", "follow", "reception")  # sync diagnostics
 
 
 def _site_event(e: dict, step: int) -> dict:

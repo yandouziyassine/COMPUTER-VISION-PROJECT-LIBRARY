@@ -34,13 +34,15 @@ class Match:
     meta: dict = field(default_factory=dict)  # team names, colours, axis convention
 
 
-def save(m: Match, stem: Path) -> None:
+def save(m: Match, stem: Path, arrays: bool = True) -> None:
+    """Write <stem>.npz and <stem>.json; arrays=False rewrites the JSON only (ids, events, meta), e.g. after a re-sync."""
     stem = Path(stem)
-    arrays = {"team": m.team, "shirt": m.shirt}
-    for i, h in enumerate(m.halves):
-        for k in ("n", "t", "xy", "ball", "owner", "alive"):
-            arrays[f"h{i}_{k}"] = getattr(h, k)
-    np.savez_compressed(stem.with_suffix(".npz"), **arrays)
+    if arrays:
+        data = {"team": m.team, "shirt": m.shirt}
+        for i, h in enumerate(m.halves):
+            for k in ("n", "t", "xy", "ball", "owner", "alive"):
+                data[f"h{i}_{k}"] = getattr(h, k)
+        np.savez_compressed(stem.with_suffix(".npz"), **data)
     info = {
         "match_id": m.match_id,
         "player_ids": m.player_ids,

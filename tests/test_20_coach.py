@@ -192,7 +192,7 @@ def test_sync_picks_axis_convention_and_attaches_frames():
         }
     ]
     m.halves[0].ball[:, 1] = 3.0
-    report = sync.attach_frames(m)
+    report = sync.attach_frames(m, "legacy")
     assert report["axis"] == "flip_y" and report["median_dist_m"] < 0.5
     assert m.events[0]["half"] == 0 and m.events[0]["frame"] == 10
 
@@ -203,7 +203,7 @@ def test_sync_snaps_event_with_hand_timestamp_lead():
     m.halves[0].ball[:, 1] = 0.0
     # operator stamped the event 1.2 s (30 frames) before the ball is actually there
     m.events = [{"type": "pass", "t": float(m.halves[0].t[70]), "x": bx + 52.5, "y": 34.0, "team": 0}]
-    report = sync.attach_frames(m)
+    report = sync.attach_frames(m, "legacy")
     assert m.events[0]["frame"] == 100 and m.events[0]["sync_shift_s"] == pytest.approx(1.2)
     assert report["median_dist_m"] < 0.1 and report["nominal_median_dist_m"] > 2 and report["shift_s"][0] == 1.2
     assert report["kept"] == 1 and report["dropped"] == {} and m.events[0]["t_sync"] == float(m.halves[0].t[100])
@@ -216,7 +216,7 @@ def _run_events(frames, events, ball_x=None):
         m.halves[0].ball[:, 0] = ball_x
     base = {"type": "pass", "team": 0, "y": 34.0}
     m.events = [{**base, **e, "t": float(m.halves[0].t[e.pop("nominal")])} for e in events]
-    return m, sync.attach_frames(m)
+    return m, sync.attach_frames(m, "legacy")
 
 
 def test_sync_only_snaps_to_release_not_to_later_ball_position():

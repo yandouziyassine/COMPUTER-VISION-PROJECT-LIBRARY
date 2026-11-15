@@ -77,40 +77,79 @@ def _ball_path_end(m, e, s):
     return None
 
 
-def intended_target(m, e, s, where):
-    """(row of s["att"] of the teammate an unsuccessful pass was meant for, interceptor player index) or None.
+TARGET_RULES = ("direction", "ray")
+TARGET_RULE = "ray"  # "direction" was tried for coach v2 and not shipped (coach_v2.py: worse end-to-end advice)
+DIR_S, MIN_BALL_SPEED, RUN_HORIZON_S = 0.2, 5.0, 2.0
 
-    In the DFL events the Recipient of an unsuccessful pass is the opponent who got the ball, so the intended receiver
-    is not recorded. It is inferred from the ball path (_ball_path_end): the teammate nearest to the ray passer ->
-    end point among those at least half-way along it and within RAY_TOL_M of it; without such a teammate (or without
-    an interception, e.g. a ball out of play) the teammate nearest to the end point, if within FALLBACK_M.
-    """
-    end = _ball_path_end(m, e, s)
-    if end is None:
-        return None
-    point, interceptor = end
-    a = s["att"][where[e["player"]]]
-    rows = [j for pid, j in where.items() if pid != e["player"]]
+
+def ball_direction(m, e, s):
+    """(unit direction, speed m/s) of the ball over the DIR_S after the release, in the state's frame; direction None
+    when the ball moved less than 0.3 m (a stationary or untracked ball)."""
+    h = m.halves[e["half"]]
+    f = e["frame"]
+    k = min(len(h.t) - 1, f + max(1, int(round(DIR_S * F.match_fps(m)))))
+    if k <= f:
+        return None, 0.0
+    dv = (h.ball[k, :2] - h.ball[f, :2]) * s["direction"]
+    n = float(np.linalg.norm(dv))
+    if not np.isfinite(n) or n < 0.3:
+        return None, 0.0
+    return dv / n, n / (k - f) * F.match_fps(m)
+
+
+def infer_target(s, a_row: int, rows: list, point, interceptor: bool, u0=None, speed: float = 0.0, rule=None):
+    """Row of s["att"] an unsuccessful pass from row a_row was meant for, given where it ended (`point`, state frame)
+    and whether an opponent intercepted it; None when nobody fits.
+
+    "ray" (coach v1): the teammate nearest to the ray passer -> end point among those at least half-way along it and
+    within RAY_TOL_M of it. "direction" (coach v2): the same test along the ball's direction at the release (u0) with
+    each teammate moved along his velocity until the ball would reach him (at `speed`, at least MIN_BALL_SPEED, at
+    most RUN_HORIZON_S): the receiver runs onto the ball. Both fall back to the teammate nearest to the end point (within
+    FALLBACK_M) when nobody fits or without an interception. On completed passes cut at 40-80 % of their path (sync_eval)
+    the receiver is named 89-90 % of the time with "direction", 86-88 % with "ray", but models trained on "direction"
+    labels give slightly worse end-to-end advice (coach_v2.py), so "ray" stays the default (TARGET_RULE)."""
+    rule = TARGET_RULE if rule is None else rule
+    assert rule in TARGET_RULES, rule
     if not rows:
         return None
+    a = s["att"][a_row]
     v = point - a
     length = float(np.linalg.norm(v))
-    if interceptor is not None and length >= 3.0:
-        u = v / length
+    if interceptor and length >= 3.0:
+        u = v / length if rule == "ray" or u0 is None else np.asarray(u0, float)
         best, best_cost = None, np.inf
         for j in rows:
             w = s["att"][j] - a
+            if rule == "direction":
+                t = min(max(float(w @ u), 0.0) / max(speed, MIN_BALL_SPEED), RUN_HORIZON_S)
+                w = w + s["att_v"][j] * t
             cost = abs(float(w[0] * u[1] - w[1] * u[0]))  # perpendicular distance to the ray
             if float(w @ u) >= 0.5 * length and cost <= RAY_TOL_M and cost < best_cost:
                 best, best_cost = j, cost
         if best is not None:
-            return best, interceptor
+            return best
     dist = [float(np.linalg.norm(s["att"][j] - point)) for j in rows]
     k = int(np.argmin(dist))
-    return (rows[k], interceptor) if dist[k] <= FALLBACK_M else None
+    return rows[k] if dist[k] <= FALLBACK_M else None
 
 
-def pass_samples(m):
+def intended_target(m, e, s, where, rule=None):
+    """(row of s["att"] of the teammate an unsuccessful pass was meant for, interceptor player index) or None.
+
+    In the DFL events the Recipient of an unsuccessful pass is the opponent who got the ball, so the intended receiver
+    is not recorded. It is inferred from the ball path (_ball_path_end gives the end point and the interceptor) with
+    infer_target."""
+    end = _ball_path_end(m, e, s)
+    if end is None:
+        return None
+    point, interceptor = end
+    rows = [j for pid, j in where.items() if pid != e["player"]]
+    u0, speed = ball_direction(m, e, s)
+    found = infer_target(s, where[e["player"]], rows, point, interceptor is not None, u0, speed, rule)
+    return None if found is None else (found, interceptor)
+
+
+def pass_samples(m, rule=None):
     """Usable open-play passes: dicts with the event (and its index in m.events), the state at the release, carrier /
     target rows of s["att"], and for unsuccessful passes the interceptor's row in s["def"] (None when unknown).
 
@@ -136,7 +175,7 @@ def pass_samples(m):
                 if who is not None and who in s["def_idx"]:
                     interceptor = int(np.flatnonzero(s["def_idx"] == who)[0])
         else:  # the recorded recipient is an opponent: infer the intended teammate from the ball path
-            found = intended_target(m, e, s, where)
+            found = intended_target(m, e, s, where, rule)
             if found is None:
                 continue
             target, who = found

@@ -2,9 +2,13 @@
 
     python -m coach.prepare                       # from 20-football-analytics/
     python -m coach.prepare --raw D:/football-coach/idsse-raw --only J03WOH
+    python -m coach.prepare --resync                 # re-run the event sync on the converted matches (no raw data)
+    python -m coach.prepare --resync --method legacy # the coach v1 sync (before / after comparisons)
 
 Restartable: a match whose .npz exists is skipped (the USB key can disconnect). Writes sync_audit.json next to the
-matches. Raw data: Bassek et al. (2025), DFL / Sportec Solutions, CC BY 4.0.
+matches. --resync loads each converted match, re-attaches its events (sync.attach_frames, default method "release")
+and rewrites its .json and the audit; the tracking arrays (.npz) are not touched. Raw data: Bassek et al. (2025), DFL /
+Sportec Solutions, CC BY 4.0.
 """
 
 import argparse
@@ -15,7 +19,7 @@ from pathlib import Path
 import numpy as np
 
 from . import dfl, sync
-from .match import Match, save
+from .match import Match, load, save
 
 HERE = Path(__file__).resolve().parents[1]
 CV_DATA = Path(os.environ.get("CV_DATA", HERE.parents[1] / "cv-data"))
@@ -61,10 +65,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--raw", type=Path, default=RAW)
     ap.add_argument("--only", nargs="*", default=MATCHES)
+    ap.add_argument("--resync", action="store_true", help="re-sync the converted matches (JSON only)")
+    ap.add_argument("--method", default="release", choices=sync.METHODS)
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     audit_path = OUT / "sync_audit.json"
     audit = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.exists() else {}
+    if args.resync:
+        for mid in args.only:
+            m = load(OUT / mid)
+            audit[mid] = sync.attach_frames(m, args.method)
+            save(m, OUT / mid, arrays=False)
+            audit_path.write_text(json.dumps(audit, indent=2), encoding="utf-8")
+            print(mid, args.method, f"{audit[mid]['passes_kept']}/{audit[mid]['passes']} passes", flush=True)
+        return
     for mid in args.only:
         if (OUT / f"{mid}.npz").exists() and mid in audit:
             print("have", mid)
